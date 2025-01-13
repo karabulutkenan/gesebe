@@ -1,0 +1,576 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YDHTCK14LG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-YDHTCK14LG');
+    </script>
+       <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta property=’og:title’ content='Toleyis GSB Maaş Hesaplama'/>
+<meta property=’og:image’ content="https://www.toleyis.org.tr/assets/images/resources/logo-vektor.png"/>
+<meta property=’og:description’ content="Toleyis Sendikası Gençlik ve Spor Bakanlığı 18 İş Kolu Maaş Hesaplama Programı"/>
+<meta property=’og:url’ content='https://toleyis.org.tr:324/'/>
+<meta property='og:image:width' content='1200' />
+<meta property='og:image:height' content='627' />
+    <link rel="apple-touch-icon" sizes="180x180" href="https://www.toleyis.org.tr/assets/images/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://www.toleyis.org.tr/assets/images/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://www.toleyis.org.tr/assets/images/favicons/favicon-16x16.png">
+    <title>Toleyis GSB Maaş Hesaplama</title>
+  @*  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>*@
+    <link href="~/css/form.css" rel="stylesheet" />
+    <style>
+    .popup {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+    }
+
+    .popup-content {
+        background-color: white;
+        border-radius: 5px;
+        width: 70%;
+        max-width: 500px;
+        margin: 300px auto;
+        padding: 20px;
+        position: relative;
+    }
+
+    .close-popup {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+    }
+</style>
+
+    <style>
+
+        label.radio {
+          cursor: pointer;
+          text-align:center;
+        }
+        label.radio input {
+          position: absolute;
+          top: 0;
+          left: 0;
+          visibility: hidden;
+          pointer-events: none;
+        }
+        label.radio span {
+            padding: 7px 20px;
+            border: 1px solid #2980b9;
+            display: inline-block;
+            color: #2980b9;
+            border-radius: 2px;
+            text-transform: uppercase;
+        }
+        label.radio input:checked + span {
+          border-color: #2980b9;
+            background-color: #2980b9;
+            color: #fff;
+        }
+        label.radio input:disabled + span {
+          border-color: gray;
+          background-color: white;
+            color: gray;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 10px;
+            left: -1px;
+            background-color: #2ecc71; /* İstediğiniz renge ayarlayabilirsiniz */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        /* Rest of your CSS... */
+
+        .footer {
+            text-align: center;
+            background-color: #f8f9fa;
+            padding: 10px 0;
+            margin-top: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+    <section class="container">
+       <div>
+           <div>
+            <a href="/Tablo" class="back-button" style="text-decoration:none;margin-left:5px;margin-top:7px;margin-right:5px;">
+                <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512">
+                    <style>
+                        svg {
+                            fill: #ffffff;
+                    
+                        }
+                    </style>
+                    <path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+                </svg>
+            </a>
+        <header style="margin-left:3px;"> GSB Maaş Hesaplama</header>
+        </div>
+             <form class="form" id="myForm">
+
+                <label>Görev Seç</label><br />
+                <div class="izzz" style="">
+                          
+                                <label class="radio"  id="temizlik" style="text-align:center;margin:" >
+                              <input type="radio" name="gorev" id="inlineRadio2" value="Temizlik" checked >
+                        <span style="width:48%;">
+                                  TEMİZLİK</span>
+                            </label>
+                            <label class="radio" id="guvenlik"  style="text-align:center;">
+                              <input type="radio" name="gorev" id="inlineRadio1" value="Guvenlik">
+                        <span style="width:48%;margin:0px 0px 4px 0px;">ÖZEL&nbspGÜVENLİK</span>
+                         </label>
+
+                    <label class="radio" id="iklimlendirme" style="text-align:center;">
+                            <input type="radio" name="gorev" id="inlineRadio3" value="İklimlendirme">
+                        <span style="width:48%;">İKLİMLENDİRME</span>
+                            </label>
+                    <label class="radio" style="text-align:center;">
+                                <input type="radio" name="gorev" id="inlineRadio4" value="Teknisyen">
+                        <span style="width:48%;">Bakım&nbspOnarım</span>
+                            </label>
+                          </div>
+
+            @*<div name="liste" class="input-box">*@
+                <div class="daralt">
+                            <label>Çalışma Tipi Seç</label><br />
+                            <label class="radio">
+                                <input type="radio" name="saatler" id="radio8Saat" value="8" checked>
+                                <span>8 SAAT</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="saatler" id="radio12Saat" value="12" disabled>
+                                <span>12 SAAT</span>
+                            </label>
+                        </div>
+                @*</div>*@
+            <div name="liste" class="input-box">
+                        <label>Yevmiye Seç</label><br />
+                <label class="radio">
+                    <input type="radio" name="yevmiyeler" id="yevmiye1" value="@ViewBag.Yevmiye1" checked>
+                    <span> @ViewBag.Yevmiye1</span>
+                </label>
+                             <label class="radio">
+                            <input type="radio" name="yevmiyeler" id="yevmiye2" value="@ViewBag.Yevmiye2">
+                            <span >@ViewBag.Yevmiye2</span>
+                        </label>
+                                    <label class="radio">
+                        <input type="radio" name="yevmiyeler" id="yevmiye3" value="@ViewBag.Yevmiye3" >
+                            <span>@ViewBag.Yevmiye3</span>
+                    </label>
+                                       
+       
+                        </div>
+                        
+            <div name="liste" class="input-box">
+                <label>Vergi Dilimi Seç:</label><br />
+
+                        <label class="radio">
+                        <input type="radio" name="vergidilimi" id="dilim1" alt="@ViewBag.VergiDilimKatsayi1" value="@ViewBag.VergiDilimOran1" checked>
+                    <span>%@ViewBag.VergiDilimOran1</span>
+
+                        </label>
+                <label class="radio">
+                            <input type="radio" name="vergidilimi" id="dilim2" alt="@ViewBag.VergiDilimKatsayi2" value="@ViewBag.VergiDilimOran2">
+                    <span>%@ViewBag.VergiDilimOran2</span>
+                     </label>
+
+                <label class="radio">
+                        <input type="radio" name="vergidilimi" id="dilim3" alt="@ViewBag.VergiDilimKatsayi3" value="@ViewBag.VergiDilimOran3">
+                    <span>%@ViewBag.VergiDilimOran3</span>
+                </label>
+            </div>
+
+         
+
+                        <div class="column">
+                            <div class="input-box">
+                                <label for="iller" class="">İl Seç:</label>
+                         
+                            <div class="select-box">
+                  
+                            <select class="form-control" id="iller" style="background:white;">
+                                @foreach (var il in ViewBag.Iller)
+                                {
+                                    <option value="@il.Key" alt="@il.Value">@il.Key</option>
+                                }
+                            </select>
+                        </div>
+                </div>
+                           <div class="input-box">
+                            <label>Çalışılan Ay Seç:</label>
+                          
+                      
+                      <div name="liste" class="select-box">
+                            <select class="form-control" id="aybilgisi" style="background:white;">
+                                @foreach (var ay in ViewBag.Aylar)
+                                {
+                                <option value="@ay.Value" alt="@ay.Key">@ay.Key</option>
+                                }
+                            </select>
+                            </div>
+                </div>
+                            </div>
+
+                            <div name="liste" class="column">
+                          <div class="input-box">
+                            <label>Fiili Çalışma Günü Gir</label><br />
+                            <input type="number" id="fiilicalisma" min="0" max="31" class="form-control"  required/>
+                          </div>
+                            <div class="input-box">
+                            <label>Gece Çalışma Saati Gir</label>
+                            <input type="number" id="gececalisma" min="0" max="200" class="form-control" />
+                             </div>
+                         <div class="input-box">
+                    <label>Yoğurt Ücreti Çalışma Günü Gir</label>
+                            <input type="number" id="yogurtparasisaati" class="yogurtcalisma"  min="0" max="31" />
+                             </div>
+                            
+                           <div class="input-box">
+                            <label>Fazla Çalışma Saati</label>
+                        <input type="number" id="fazlacalismasaati" min="0" max="200" class="form-control"  />
+                             </div>
+                             </div>
+
+                           <div name="liste" class="input-box">
+                            <label>Kreş Yardımı Çocuk Sayısı Gir</label><br />
+                            <label class="radio">
+                                <input type="radio" name="cocuksayisi" id="cocukyok" value="0" checked>
+                                <span class="form-check-label" for="cocukyok">0</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="cocuksayisi" id="1cocuk" value="1">
+                                <span class="form-check-label" for="1cocuk">1</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="cocuksayisi" id="2cocuk" value="2">
+                                <span class="form-check-label" for="2cocuk">2</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="cocuksayisi" id="3cocuk" value="3">
+                                <span class="form-check-label" for="3cocuk">3</span>
+                            </label>
+                                 <label class="radio">
+                                <input type="radio" name="cocuksayisi" id="4cocuk" value="4">
+                                <span class="form-check-label" for="4cocuk">4</span>
+                            </label>
+                                <label class="radio">
+                                <input type="radio" name="cocuksayisi" id="5cocuk" value="5">
+                                <span class="form-check-label" for="5cocuk">5</span>
+                            </label>
+                          </div>
+
+                
+                         <div name="liste" class="input-box  ">
+                            <label>Gazi Şehit Yakını Terör Mağduru Ek Primi %10</label><br />
+                            <label class="radio">
+                                <input type="radio" name="gaziyardim" id="gazievet" value="1">
+                                <span class="form-check-label" for="gazievet">EVET</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="gaziyardim" id="gazihayir" value="0" checked>
+                                <span class="form-check-label" for="gazihayir">HAYIR</span>
+                            </label>
+                         </div>
+                        
+                         <div name="liste" class="input-box">
+                            <label>Engelli Derecesi Seç:</label><br />
+                            <label class="radio">
+                                <input type="radio" name="engelliderecesi" id="engelyok" value="0" checked>
+                                <span class="form-check-label" for="engelyok">YOK</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="engelliderecesi" id="1engel" value="1">
+                                <span class="form-check-label" for="1engel">1</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="engelliderecesi" id="2engel" value="2">
+                                <span class="form-check-label" for="2engel">2</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="engelliderecesi" id="3engel" value="3">
+                                <span class="form-check-label" for="3engel">3</span>
+                            </label>
+                        </div>
+              
+                          <div name="liste" class="belirsiz" style="width:100%">
+                            <label>UBGT Çalışma Gün Sayısı Seç:</label><br />
+                            <label class="radio">
+                                <input type="radio" name="ubgtgunsayisi" id="ubgtyok" value="0" checked>
+                                <span class="form-check-label" for="ubgtyok">0</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="ubgtgunsayisi" id="05ubgt" value="0.5">
+                        <span class="form-check-label" for="05ubgt">0.5</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="ubgtgunsayisi" id="1ubgt" value="1">
+                                <span class="form-check-label" for="1ubgt">1</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="ubgtgunsayisi" id="15ubgt" value="1.5">
+                                <span class="form-check-label" for="15ubgt">1.5</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="ubgtgunsayisi" id="2ubgt" value="2">
+                                <span class="form-check-label" for="2ubgt">2</span>
+                            </label>
+                               <label class="radio">
+                                <input type="radio" name="ubgtgunsayisi" id="25ubgt" value="2.5">
+                                <span class="form-check-label" for="25ubgt">2.5</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="ubgtgunsayisi" id="3ubgt" value="3">
+                    <span class="form-check-label" for="3ubgt">3</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="ubgtgunsayisi" id="35ubgt" value="3.5">
+                                <span class="form-check-label" for="35ubgt">3.5</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="ubgtgunsayisi" id="4ubgt" value="4">
+                                <span class="form-check-label" for="4ubgt">4</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="ubgtgunsayisi" id="45ubgt" value="4.5">
+                                <span class="form-check-label" for="45ubgt">4.5</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="ubgtgunsayisi" id="5ubgt" value="5">
+                    <span class="form-check-label" for="5ubgt">5</span>
+                            </label>
+                        </div>
+                
+                    <div name="liste" class="input-box">
+                            <label >İşe giriş tarihini Seç:</label>
+                    <input type="month" id="kidemyili" min="2018-01" max="2024-01" class="form-control" value="2023-01" style="background:white;">
+                </div>
+
+                    <div name="liste" class="input-box">
+                    <button type="submit" id="calc" style="margin-top:0;" class="popup-button">HESAPLA</button>
+                    </div>
+            </form>
+                    <br />
+                 
+         
+                          </section>
+<div id="popup" class="popup">
+    <div class="popup-content">
+        <span class="close-popup" onclick="closePopup()">&times;</span>
+        <!-- Add your popup content here -->
+      <p id="sonuc" style="text-align: center; font-size: 20px; font-weight: bold;"> </p>
+    </div>
+</div>
+
+    <footer class="footer">
+        <!-- Copyright -->
+        <div class="text-center p-3">
+            <p class="text-dark">© 2023 Tasarım &amp; Kodlama | Toleyis Sendikası Sosyal Medya Ekibi</p>
+            <p style="font-size:12px;">Bu hesaplamada yer alan bilgiler sadece genel bilgilendirme amaçlıdır ve Toleyis Sendikası, yetkilileri ve çalışanları tarafından profesyonel bağlamda herhangi bir tavsiye veya hizmet sunmayı amaçlamamakta ve bilgilerin doğruluğuna dair herhangi bir garanti vermemektedir. Toleyis Sendikası, yetkilileri ya da çalışanları bu hesaplamada yer alan bilgilerin üçüncü kişiler tarafından kullanılması sonucunda ortaya çıkabilecek zarar veya ziyandan sorumlu değildir.</p>
+        </div>
+        <!-- Copyright -->
+    </footer>
+    <script>
+
+    </script>
+    <script>
+        var guvenlikRadio = document.getElementById("inlineRadio1");
+        var iklimlendirmeRadio = document.getElementById("inlineRadio3");
+
+        var radio12Saat = document.getElementById("radio12Saat");
+        var radio8Saat = document.getElementById("radio8Saat");
+        var yogurtcalisma = document.querySelector(".yogurtcalisma");
+        var fiiliCalismaInput = document.getElementById("fiilicalisma");
+        var geceCalismaInput = document.getElementById("gececalisma");
+        var fazlaCalismaInput = document.getElementById("fazlacalismasaati");
+
+        // Fonksiyonların tanımlanması
+        function disableYogurtCalisma() {
+            yogurtcalisma.disabled = true;
+            yogurtcalisma.value = '';
+        }
+
+        function enableYogurtCalisma() {
+            yogurtcalisma.disabled = false;
+        }
+
+        function clearInputFields() {
+            fiiliCalismaInput.value = '';
+            geceCalismaInput.value = '';
+            yogurtcalisma.value = '';
+            fazlaCalismaInput.value = '';
+        }
+
+        // Olay dinleyicilerin eklenmesi
+        guvenlikRadio.addEventListener("click", function () {
+            radio12Saat.disabled = false;
+            disableYogurtCalisma();
+            clearInputFields();
+        });
+
+        iklimlendirmeRadio.addEventListener("click", function () {
+            radio12Saat.disabled = false;
+            disableYogurtCalisma();
+            clearInputFields();
+        });
+
+        var otherRadios = document.querySelectorAll('input[name="gorev"]:not(#inlineRadio1):not(#inlineRadio3)');
+        otherRadios.forEach(function (radio) {
+            radio.addEventListener("click", function () {
+                radio12Saat.disabled = true;
+                enableYogurtCalisma();
+                clearInputFields();
+            });
+        });
+
+        fiiliCalismaInput.addEventListener("input", function () {
+            if (iklimlendirmeRadio.checked) {
+                yogurtcalisma.value = fiiliCalismaInput.value;
+            }
+        });
+    </script>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script>
+        document.getElementById("myForm").addEventListener("submit", function (event) {
+            event.preventDefault(); // Sayfa yenilenmesini engelle
+
+            // Form verilerini al ve istediğiniz işlemi yap
+        });
+    </script>
+    <script>
+        function openPopup() {
+            document.getElementById("popup").style.display = "block";
+        }
+
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+        }
+    </script>
+    <script>
+        $("#calc").click(x => {
+             var myForm = document.getElementById("myForm");
+            if (myForm.checkValidity()) {
+            var iller = $("#iller").val();
+            var ildurum = $('option:selected', "#iller").attr('alt');
+            var aybilgisi = $("#aybilgisi").val();
+            var aybilgisi2 = $('option:selected', "#aybilgisi").attr('alt');
+            var fiilicalisma = $("#fiilicalisma").val();
+            var gececalisma = $("#gececalisma").val();
+            var kidemyili =$("#kidemyili").val();
+            var fazlacalismasaati = $("#fazlacalismasaati").val();
+            var yogurtparasisaati = $("#yogurtparasisaati").val();
+            var calismasaati = $('input[name="saatler"]:checked').val();
+            var cocuksayisi = $('input[name="cocuksayisi"]:checked').val();
+            var gaziyardim = $('input[name="gaziyardim"]:checked').val();
+            var engelliderecesi = $('input[name="engelliderecesi"]:checked').val();
+            var ubgtgunsayisi = $('input[name="ubgtgunsayisi"]:checked').val();
+            var gorev = $('input[name="gorev"]:checked').val();
+            var yevmiyeler = $('input[name="yevmiyeler"]:checked').val();
+            var vergioran = $('input[name="vergidilimi"]:checked').val();
+            var vergicarpan = $('input[name="vergidilimi"]:checked').attr('alt');
+
+            $.ajax({
+                contentType: "application/json",
+                dataType: "json",
+                type: "Get",
+                url: "/GsbMaasHesaplama/ToplamaIslemi", 
+                data: {
+                    iller: iller,
+                    ildurum: ildurum,
+                    aybilgisi: aybilgisi,
+                    aybilgisi2: aybilgisi2,
+                    fiilicalisma: fiilicalisma,
+                    gececalisma: gececalisma,
+                    kidemyili: kidemyili,
+                    yogurtparasisaati: yogurtparasisaati,
+                    fazlacalismasaati: fazlacalismasaati,
+                    calismasaati: calismasaati,
+                    yevmiyeler: yevmiyeler,
+                    vergioran: vergioran,
+                    vergicarpan: vergicarpan,
+                    cocuksayisi: cocuksayisi,
+                    gaziyardim: gaziyardim,
+                    engelliderecesi: engelliderecesi,
+                    ubgtgunsayisi: ubgtgunsayisi,
+                    gorev : gorev
+                },
+                success: function (funk) {
+                    let result = jQuery.parseJSON(funk);
+                    console.log(result);
+                    let values = jQuery.parseJSON(funk);
+                    console.log(values);//user değişti
+                    $("#sonuc").text(result);
+                    openPopup();
+                },
+                error: function () {
+                    alert("Lütfen tüm formu doldurunuz.");
+                }
+            });
+            } else {
+                // Form is not valid, show an error message or handle it as needed
+                //alert("Please fill out all required fields.");
+            }
+        });
+
+    </script>
+
+    <script>
+        document.getElementById('aybilgisi').addEventListener('change', function () {
+            var secilenAy = this.options[this.selectedIndex].text;
+            if (secilenAy === 'Aralık') {
+                updateYevmiyeValues('1378,64', '1350,11', '1340,61');
+            } else {
+                updateYevmiyeValues('@ViewBag.Yevmiye1', '@ViewBag.Yevmiye2', '@ViewBag.Yevmiye3');
+            }
+        });
+
+        function updateYevmiyeValues(yevmiye1, yevmiye2, yevmiye3) {
+            var yevmiyeLabels = document.querySelectorAll('label.radio');
+            yevmiyeLabels.forEach(function (label) {
+                var input = label.querySelector('input[type="radio"]');
+                var span = label.querySelector('span');
+                if (input.id === 'yevmiye1') {
+                    input.value = yevmiye1;
+                    span.textContent = yevmiye1;
+                } else if (input.id === 'yevmiye2') {
+                    input.value = yevmiye2;
+                    span.textContent = yevmiye2;
+                } else if (input.id === 'yevmiye3') {
+                    input.value = yevmiye3;
+                    span.textContent = yevmiye3;
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

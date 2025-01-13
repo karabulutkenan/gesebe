@@ -1,0 +1,61 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <div>
+        <input type="number" id="sayi1" />
+        <input type="number" id="sayi2" />
+        <button type="button" id="hesaplaBtn">Hesapla</button>
+    </div>
+    <div>
+        <label>Toplam:</label>
+        <span id="toplamSonuc"></span>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script>
+        console.log("1")
+        $("#hesaplaBtn").click(x => {
+                var sayi1 = parseInt($("#sayi1").val());
+                var sayi2 = parseInt($("#sayi2").val());
+
+                $.ajax({
+                    contentType: "application/json",
+                    dataType: "json",
+                    type: "Get",
+                    url: "/Ornek/ToplamaIslemi", // Controller adınızı ve action adınızı düzgün şekilde değiştirin
+                    data: { sayi1: sayi1, sayi2: sayi2 },
+                    success: function (funk) {
+                        let result = jQuery.parseJSON(funk);
+                        console.log(result);
+                        let values = jQuery.parseJSON(funk);
+                        console.log(values);//user değişti
+                        $("#toplamSonuc").text(result);
+                    },
+                    error: function () {
+                        alert("Bir hata oluştu.");
+                    }
+                });
+            });
+            console.log("2")
+    </script>
+
+  
+
+
+    @*<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>*@
+    <script>
+        //console.log("Merhaba")
+    </script>
+</body>
+</html>

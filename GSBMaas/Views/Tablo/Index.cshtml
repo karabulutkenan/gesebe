@@ -1,0 +1,326 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YDHTCK14LG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-YDHTCK14LG');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property=’og:title’ content='Toleyis GSB Maaş Hesaplama' />
+    <meta property=’og:image’ content="https://www.toleyis.org.tr/assets/images/resources/logo-vektor.png" />
+    <meta property=’og:description’ content="Toleyis Sendikası Gençlik ve Spor Bakanlığı 18 İş Kolu Maaş Hesaplama Programı" />
+    <meta property=’og:url’ content='https://toleyis.org.tr:324/' />
+    <meta property='og:image:width' content='1200' />
+    <meta property='og:image:height' content='627' />
+    <link rel="apple-touch-icon" sizes="180x180" href="https://www.toleyis.org.tr/assets/images/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://www.toleyis.org.tr/assets/images/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://www.toleyis.org.tr/assets/images/favicons/favicon-16x16.png">
+    <title>Toleyis GSB Maaş Hesaplama</title>
+    <style>
+        .rakam {
+            font-weight: bold;
+            margin-bottom: 0px;
+        }
+
+        th {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        table {
+            border-collapse: collapse;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        /*   .footer {
+                    position: fixed;
+                    left: 0;
+                    bottom: 0;
+                    width: 100%;
+                }*/
+        .mycontainer{
+            width:100%
+        }
+        @@media(min-width:768px){
+            .mycontainer{
+                width:1200px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+            img {
+                width: 100%;
+            }
+
+            @@media(min-width:768px) {
+                img {
+                    width: 500px;
+                }
+        }
+        .mysmallcontainer{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+        }
+
+    </style>
+    <style>
+        .popup {
+            top:20%;
+            display: none;
+            position: fixed;
+            width:100%;
+            height:500px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <div class="mycontainer">
+    <div class="mysmallcontainer">
+
+    <div class="table-responsive" style="margin: 0px 5px 0px 5px;">
+              
+                    <div class="text-center mt-2 mb-3"><img src="/images/logo.png" width="100%"></div>
+             
+        <table class="table table-bordered border-dark text-center" style="text-transform: uppercase; font-size: 13px;">
+            <!-- <img src="logofiligran.png" alt="" width="100%" style="position: absolute;opacity: 0.3;" > -->
+            <tr>
+                <th class="table-bordered border-dark  text-center" style="background-color: #f8cbad;" colspan="3">
+                    <p class="mb-0" style="font-size: 14px;"><b>ORTALAMA ÖRNEK ELE GEÇECEK NET MAAŞLAR @ViewBag.Ikramiye</b></p>
+                </th>
+
+            </tr>
+            <tr>
+                <td class="table-primary table-bordered border-dark" id="anasayfaAy">@ViewBag.AyAdi AYI</td>
+                <td class="table-success table-bordered border-dark">Büyük Şehir</td>
+                <td class="table-success table-bordered border-dark">Küçük Şehir</td>
+            </tr>
+            <tr>
+                <td class="table-secondary table-bordered border-dark text-start">Temizlik Görevlisi (26 GÜN)</td>
+                <td><p id="temizlikgorevlisiBuyukSehir" class="rakam ">@ViewBag.TemizlikBuyuk</p></td>
+                <td><p id="temizlikgorevlisiKucukSehir" class="rakam">@ViewBag.TemizlikKucuk</p></td>
+            </tr>
+            <tr>
+                <td class="table-secondary table-bordered border-dark  text-start">Özel Güvenlik Görevlisi (12 SAAT)</td>
+                <td><p id="ozelGuvenlik12BuyukSehir" class="rakam">@ViewBag.OnIkiGuvenlikBuyuk</p></td>
+                <td><p id="ozelGuvenlik12KucukSehir" class="rakam">@ViewBag.OnIkiGuvenlikKucuk</p></td>
+            </tr>
+            <tr>
+                <td class="table-secondary table-bordered border-dark  text-start">Özel Güvenlik Görevlisi (8 SAAT)</td>
+                <td><p id="ozelGuvenlik8BuyukSehir" class="rakam ">@ViewBag.SekizGuvenlikBuyuk</p></td>
+                <td><p id="ozelGuvenlik8KucukSehir" class="rakam">@ViewBag.SekizGuvenlikKucuk</p></td>
+            </tr>
+            <tr>
+                <td class="table-secondary table-bordered border-dark  text-start">İklimlendirme Görevlisi (8 SAAT)</td>
+                <td><p id="iklimlendirmeBuyukSehir" class="rakam">@ViewBag.IklimlendirmeBuyuk</p></td>
+                <td><p id="iklimlendirmeKucukSehir" class="rakam">@ViewBag.IklimlendirmeKucuk</p></td>
+            </tr>
+            <tr>
+                 <td class="table-secondary table-bordered border-dark  text-start">İklimlendirme Görevlisi (12 SAAT)</td>
+                 <td><p id="iklimlendirmeBuyukSehir" class="rakam">@ViewBag.IklimlendirmeBuyuk12</p></td>
+                 <td><p id="iklimlendirmeKucukSehir" class="rakam">@ViewBag.IklimlendirmeKucuk12</p></td>
+            </tr>
+            <tr>
+                <td class="table-secondary table-bordered border-dark  text-start">Bakım Onarım - Teknisyen (26 GÜN)</td>
+                <td><p id="teknisyenBuyukSehir" class="rakam">@ViewBag.TeknisyenBuyuk</p></td>
+                <td><p id="teknisyenKucukSehir" class="rakam">@ViewBag.TeknisyenKucuk</p></td>
+            </tr>
+        </table>
+
+                <!-- KENAN YENİ BİRŞEY DENİYOR                 -->
+
+              <br />
+
+                <table id="tabloId1" class="table table-bordered border-dark text-center" style="text-transform: uppercase; font-size: 13px;">
+                    <!-- <img src="logofiligran.png" alt="" width="100%" style="position: absolute;opacity: 0.3;" > -->
+                    <tr>
+                        <th class="table-bordered border-dark  text-center" style="background-color: red;" colspan="3">
+                            <p class="mb-0" style="font-size: 14px; color:white; "><b>ORTALAMA 14 GÜNLÜK FARK TABLOSU (01 OCAK ÇALIŞMALARI HARİÇ)</b></p>
+                        </th>
+
+                    </tr>
+                    <tr>
+                        <td class="table-primary table-bordered border-dark" style="background-color: navajowhite" id="anasayfaAy">01 OCAK 14 OCAK ARASI ÇALIŞMALAR</td>
+                        <td class="table-success table-bordered border-dark" style="background-color: sandybrown">Büyük Şehir</td>
+                        <td class="table-success table-bordered border-dark" style="background-color: sandybrown">Küçük Şehir</td>
+                    </tr>
+                    <tr>
+                        <td class="table-secondary table-bordered border-dark text-start" style="background-color: aliceblue">Temizlik Görevlisi (11 GÜN ÇALIŞMIŞ)</td>
+                        <td><p id="temizlikgorevlisiBuyukSehir" class="rakam ">1.042,39</p></td>
+                        <td><p id="temizlikgorevlisiKucukSehir" class="rakam">1.017,89</p></td>
+                    </tr>
+                    <tr>
+                        <td class="table-secondary table-bordered border-dark  text-start" style="background-color: aliceblue">Özel Güvenlik Görevlisi (12 SAAT) 7 GÜN ÇALIŞMIŞ</td>
+                        <td><p id="ozelGuvenlik12BuyukSehir" class="rakam">1.087,48</p></td>
+                        <td><p id="ozelGuvenlik12KucukSehir" class="rakam">1.062,98</p></td>
+                    </tr>
+                    <tr>
+                        <td class="table-secondary table-bordered border-dark  text-start" style="background-color: aliceblue">Özel Güvenlik Görevlisi (8 SAAT) 12 GÜN ÇALIŞMIŞ</td>
+                        <td><p id="ozelGuvenlik8BuyukSehir" class="rakam ">1.083,86</p></td>
+                        <td><p id="ozelGuvenlik8KucukSehir" class="rakam">1.059,36</p></td>
+                    </tr>
+                    <tr>
+                        <td class="table-secondary table-bordered border-dark  text-start" style="background-color: aliceblue">İklimlendirme Görevlisi (8 SAAT)12 GÜN ÇALIŞMIŞ</td>
+                        <td><p id="iklimlendirmeBuyukSehir" class="rakam">1.105,34</p></td>
+                        <td><p id="iklimlendirmeKucukSehir" class="rakam">1.080,84</p></td>
+                    </tr>
+                    <tr>
+                        <td class="table-secondary table-bordered border-dark  text-start" style="background-color: aliceblue">İklimlendirme Görevlisi (12 SAAT) 7 GÜN ÇALIŞMIŞ</td>
+                        <td><p id="iklimlendirmeBuyukSehir" class="rakam">1.100,01</p></td>
+                        <td><p id="iklimlendirmeKucukSehir" class="rakam">1.075,51</p></td>
+                    </tr>
+                    <tr>
+                        <td class="table-secondary table-bordered border-dark  text-start" style="background-color: aliceblue">Bakım Onarım - Teknisyen (11 GÜN ÇALIŞMIŞ)</td>
+                        <td><p id="teknisyenBuyukSehir" class="rakam">1.048,55</p></td>
+                        <td><p id="teknisyenKucukSehir" class="rakam">1.024,05</p></td>
+                    </tr>
+                </table>
+
+                <!-- KENAN YENİ BİRŞEY DENİYOR 2 TEDİYE                -->
+
+                <br />
+
+                <table id="tabloId2" class="table table-bordered border-dark text-center" style="text-transform: uppercase; font-size: 14px;">
+                    <!-- <img src="logofiligran.png" alt="" width="100%" style="position: absolute;opacity: 0.3;" > -->
+                    <tr>
+                        <th class="table-bordered border-dark  text-center" style="background-color: cornflowerblue;" colspan="3">
+                            <p class="mb-0" style="font-size: 14px; color:white; "><b>24 OCAK'TA YATACAK TEDİYE RAKAMLARI (NET)</b></p>
+                        </th>
+
+                    </tr>
+                    <tr>
+                        <td class="table-secondary table-bordered border-dark text-start" style="background-color: aliceblue">YEVMİYESİ 1.457,91 OLANLAR İÇİN</td>
+                        <td><p id="temizlikgorevlisiBuyukSehir" class="rakam ">16.109,90 TL</td>
+               
+                    </tr>
+                    <tr>
+                        <td class="table-secondary table-bordered border-dark text-start" style="background-color: aliceblue">YEVMİYESİ 1.427,74 OLANLAR İÇİN</td>
+                        <td><p id="temizlikgorevlisiBuyukSehir" class="rakam ">15.776,52 TL</p></td>
+                        
+                    </tr>
+                    <tr>
+                        <td class="table-secondary table-bordered border-dark  text-start" style="background-color: aliceblue">YEVMİYESİ 1.417,70 OLANLAR İÇİN</td>
+                        <td><p id="ozelGuvenlik12BuyukSehir" class="rakam">15.665,59 TL</p></td>
+                        
+                    </tr>
+                   
+                   
+                    
+                </table>
+
+
+
+        <div>
+            <div class="alert alert-danger" role="alert" style="margin: 10px;">
+                <h4 class="alert-heading text-center">ÖNEMLİ UYARI!</h4>
+                <p style="font-weight: bold;font-size: 10px;" class="text-center mb-0">
+                            BU TABLO AİDAT KESİLMİŞ, VERGİ DÜŞÜLMÜŞ VE ORTALAMA HESAPLANMIŞ NET ÜCRETLERİ GÖSTERİR. NAFAKA ÖDEMESİ, İCRA KESİNTİSİ VE BES GİBİ ÖDEMELERİ İÇERMEMEKTEDİR. NET OLARAK KENDİ MAAŞINIZI HESAPLAMAK İÇİN LÜTFEN "KENDİ MAAŞIMI HESAPLA" BUTONUNA BASARAK İLGİLİ SAYFAYA GİDİNİZ.
+                </p>
+            </div>
+        </div>
+                <div class="text-center">
+                    <a href="/GsbMaasHesaplama" class="btn btn-primary btn-large btn-block" class="hesapla">Kendi Maaşımı Hesapla</a>
+                </div>
+                <footer class="bg-light text-center text-lg-start footer">
+                    <!-- Copyright -->
+                    <div class="text-center p-3">
+                        <p class="text-dark">© 2023 Tasarım & Kodlama | Toleyis Sendikası Sosyal Medya Ekibi</p>
+                        <p style="font-size:12px;">Bu hesaplamada yer alan bilgiler sadece genel bilgilendirme amaçlıdır ve Toleyis Sendikası, yetkilileri ve çalışanları tarafından profesyonel bağlamda herhangi bir tavsiye veya hizmet sunmayı amaçlamamakta ve bilgilerin doğruluğuna dair herhangi bir garanti vermemektedir. Toleyis Sendikası, yetkilileri ya da çalışanları bu hesaplamada yer alan bilgilerin üçüncü kişiler tarafından kullanılması sonucunda ortaya çıkabilecek zarar veya ziyandan sorumlu değildir.</p>
+                    </div>
+                    <!-- Copyright -->
+                </footer>
+    </div>
+
+    
+    <img src="logofiligran.png" width="220px" alt="" style="position: absolute; top: 200px; left: 50%; transform: translate(-50%); opacity: 0.5;">
+            <div class="popup" id="popup">
+                <h2 style="margin-top:40px;">Aydınlatma Metni</h2>
+                <p style="font-size:16px;">Bu hesaplamada yer alan bilgiler sadece genel bilgilendirme amaçlıdır ve Toleyis Sendikası, yetkilileri ve çalışanları tarafından profesyonel bağlamda herhangi bir tavsiye veya hizmet sunmayı amaçlamamakta ve bilgilerin doğruluğuna dair herhangi bir garanti vermemektedir. 
+                    Toleyis Sendikası, yetkilileri ya da çalışanları bu hesaplamada yer alan bilgilerin üçüncü kişiler tarafından kullanılması sonucunda ortaya çıkabilecek zarar veya ziyandan sorumlu değildir.</p>
+                <label>
+                    <input type="checkbox" id="checkbox" />Okudum Onaylıyorum.
+                </label>
+                <br />
+                <button id="tamamButton" disabled class="btn btn-primary btn-block mt-1" style="width:100%">Tamam</button>
+            </div>
+
+            <script>
+                // Popup açma ve kapama işlemleri
+                const popup = document.getElementById("popup");
+                const checkbox = document.getElementById("checkbox");
+                const tamamButton = document.getElementById("tamamButton");
+                // LocalStorage'da daha önce onayladı mı kontrolü
+                const popupOnaylandi = localStorage.getItem("popupOnaylandi");
+                if (!popupOnaylandi) {
+                    popup.style.display = "block";
+                }
+
+                // Checkbox durumuna göre Tamam butonunu aktif veya pasif yapma
+                checkbox.addEventListener("change", function () {
+                    tamamButton.disabled = !this.checked;
+                });
+
+                // Tamam butonuna tıklandığında işlemler
+                tamamButton.addEventListener("click", function () {
+                    // Popup'ı kapat
+                    popup.style.display = "none";
+                    // Kullanıcının onayladığını işaretle ve LocalStorage'a kaydet
+                    localStorage.setItem("popupOnaylandi", true);
+                });
+            </script>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    var today = new Date();
+                    var subat1 = new Date(today.getFullYear(), 1, 1); // Şubat ayı için 0'dan başlayarak 1, 1 Şubat
+
+                    // ID'leri kullanarak tabloları seçin
+                    var table1 = document.getElementById('tabloId1'); // Bu ve aşağıdaki ID'lerinizi tablolarınızın ID'leriyle değiştirin
+                    var table2 = document.getElementById('tabloId2');
+
+                    if (today >= subat1) {
+                        if (table1) table1.style.display = 'none'; // Tablo varsa gizle
+                        if (table2) table2.style.display = 'none'; // Tablo varsa gizle
+                    }
+                });
+            </script>
+
+
+
+
+
+
+    </div>
+    </div>
+    <br />
+
+
+</body>
+</html>
+
+<script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>

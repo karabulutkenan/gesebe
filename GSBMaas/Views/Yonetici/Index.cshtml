@@ -1,0 +1,130 @@
+﻿@model GSBMaas.Context.Sabit
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <p class="card-description"> Sabit Değer Güncelleme Paneli </p>
+
+
+            <form asp-controller="Yonetici" asp-action="Index" method="post">
+                <input asp-for="ID" hidden />
+                <h4>Fiyatlandırma</h4>
+                <label>Sosyal Yardım</label>
+                <input asp-for="SosyalYardim" class="form-control" />
+                <br />
+                <label>Vergi İstisna Tutarı</label>
+                <input asp-for="VergiIstisnaTutar" class="form-control" />
+                <br />
+                <label>Büyük Şehir Yol Ücreti</label>
+                <input asp-for="BuyukSehirYol" class="form-control" />
+                <br />
+                <label>Küçük Şehir Yol Ücreti</label>
+                <input asp-for="KucukSehirYol" class="form-control" />
+                <br />
+                <label>Bir Gün Yemek Ücreti</label>
+                <input asp-for="BirGunYemek" class="form-control" />
+                <br />
+                <label>Bir Gün Yoğurt Ücreti</label>
+                <input asp-for="BirGunYogurt" class="form-control" />
+                <br />
+                <label>Bir Yıl Hizmet Zammı</label>
+                <input asp-for="BirYilHizmetZammi" class="form-control" />
+                <br />
+                <label>Kreş Yardımı</label>
+                <input asp-for="KresYardimi" class="form-control" />
+                <br />
+                <hr />
+                <h4>Yevmiyeler</h4>
+                <label>Yevmiye 1</label>
+                <input asp-for="Yevmiye1" class="form-control" />
+                <br />
+                <label>Yevmiye 2</label>
+                <input asp-for="Yevmiye2" class="form-control" />
+                <br />
+                <label>Yevmiye 3</label>
+                <input asp-for="Yevmiye3" class="form-control" />
+                <br />
+                <hr />
+                <h4>Vergi Dilimi Katsayı Oranları</h4>
+                <label>Katsayı 1</label>
+                <input asp-for="VergiDilimKatsayi1" class="form-control" />
+                <br />
+                <label>Katsayı 2</label>
+                <input asp-for="VergiDilimKatsayi2" class="form-control" />
+                <br />
+                <label>Katsayı 3</label>
+                <input asp-for="VergiDilimKatsayi3" class="form-control" />
+                <br />
+                <hr />
+                <h4>Vergi Dilimi Yüzde Oranları</h4>
+                <label>Oran 1</label>
+                <input asp-for="VergiDilimOran1" class="form-control" />
+                <br />
+                <label>Oran 2</label>
+                <input asp-for="VergiDilimOran2" class="form-control" />
+                <br />
+                <label>Oran 3</label>
+                <input asp-for="VergiDilimOran3" class="form-control" />
+                <br />
+                <hr />
+                <h4>Engelli Derece Fiyatlandırma</h4>
+                <label>Derece 1</label>
+                <input asp-for="EngelliDerece1" class="form-control" />
+                <br />
+                <label>Derece 2</label>
+                <input asp-for="EngelliDerece2" class="form-control" />
+                <br />
+                <label>Derece 3</label>
+                <input asp-for="EngelliDerece3" class="form-control" />
+                <br />
+                <hr />
+                <h4>Vergi Ayları İstistna Tutarları</h4>
+                <label>Ocak</label>
+                <input asp-for="OcakVergi" class="form-control" />
+                <br />
+                <label>Şubat</label>
+                <input asp-for="SubatVergi" class="form-control" />
+                <br />
+                <label>Mart</label>
+                <input asp-for="MartVergi" class="form-control" />
+                <br />
+                 <label>Nisan</label>
+                <input asp-for="NisanVergi" class="form-control" />
+                <br />
+                <label>Mayıs</label>
+                <input asp-for="MayisVergi" class="form-control" />
+                <br />
+                <label>Haziran</label>
+                <input asp-for="HaziranVergi" class="form-control" />
+                <br />
+                <label>Temmuz</label>
+                <input asp-for="TemmuzVergi" class="form-control" />
+                <br />
+                <label>Ağustos</label>
+                <input asp-for="AgustosVergi" class="form-control" />
+                <br />
+                <label>Eylül</label>
+                <input asp-for="EylulVergi" class="form-control" />
+                <br />
+                <label>Ekim</label>
+                <input asp-for="EkimVergi" class="form-control" />
+                <br />
+                <label>Kasım</label>
+                <input asp-for="KasimVergi" class="form-control" />
+                <br />
+                <label>Aralık</label>
+                <input asp-for="AralikVergi" class="form-control" />
+                <br />
+                <button class="btn btn-block btn-lg btn-outline-dark">Kaydet</button>
+            </form>
+
+          
+        </div>
+    </div>
+</div>
+
