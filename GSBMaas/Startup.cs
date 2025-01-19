@@ -63,7 +63,7 @@ namespace GSBMaas
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                     pattern: "{controller=Tablo}/{action=Index}");
+                     pattern: "{controller=Home}/{action=Index}");
             });
         }
     }
