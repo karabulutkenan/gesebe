@@ -28,9 +28,15 @@ namespace GSBMaas.Controllers
             return View();
         }
         public IActionResult Sayfa()
+
         {
             return View();
         }
+        public IActionResult DilekceOrnekleri()
+        {
+            return View();
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -97,16 +97,40 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
 </head>
-<body>
+<header class="bg-white shadow-sm py-1">
+    <div class="container d-flex justify-content-between align-items-center">
+        <!-- Left: Home Icon -->
+        <a href="/Home" class="text-decoration-none text-dark">
+            <i class="bi bi-house-fill" style="font-size: 1.5rem;"></i>
+        </a>
 
+        <!-- Center: Title and Subtitle -->
+        <div class="text-center">
+            <img src="/images/esendikalogo.png" alt="E-Sendika Logo" class="me-3" style="height: 60px;">
+            <p class="text-muted" style="font-size: 0.9rem;">Dijital Sendikacılığın İlk Adımı</p>
+        </div>
+
+        <!-- Right: Menu Icon -->
+        <button class="btn btn-link text-dark p-0">
+            <i class="bi bi-list" style="font-size: 1.5rem;"></i>
+        </button>
+    </div>
+</header>
+<div class="d-flex align-items-center bg-info shadow-sm py-2" style="margin-left:5px; margin-bottom:10px;">
+    <h1 class="h6 mb-0 text-white text-uppercase shadow-sm" style="margin-right: 10px; margin-left: 10px;">GSB MAAŞ HESAPLAMA</h1>
+    <p class=" text-white mb-0 shadow-sm" style="font-size: 0.8rem;">Maaş - Tediye - İkramiye Hesaplamaları</p>
+</div>
+
+<body>
+    
     <div class="mycontainer">
     <div class="mysmallcontainer">
-
+           
     <div class="table-responsive" style="margin: 0px 5px 0px 5px;">
-              
-                    <div class="text-center mt-2 mb-3"><img src="/images/logo.png" width="100%"></div>
-             
-        <table class="table table-bordered border-dark text-center" style="text-transform: uppercase; font-size: 13px;">
+
+               
+                
+                <table class="table table-bordered border-dark text-center" style="text-transform: uppercase; font-size: 13px; ">
             <!-- <img src="logofiligran.png" alt="" width="100%" style="position: absolute;opacity: 0.3;" > -->
             <tr>
                 <th class="table-bordered border-dark  text-center" style="background-color: #f8cbad;" colspan="3">
@@ -324,3 +348,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+<!-- Bootstrap Icons CDN -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
