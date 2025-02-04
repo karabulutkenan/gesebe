@@ -1,0 +1,99 @@
+﻿@{
+    ViewData["Title"] = "Kamu Misafirhaneleri";
+    var iller = ViewBag.Iller as List<string> ?? new List<string>(); // NULL kontrolü ile güvenli hale getirme
+}
+
+<div class="container-fluid p-0">
+    <!-- Header -->
+    <header class="bg-secondary shadow-sm py-2">
+        <div class="container">
+            <div class="d-flex align-items-center">
+                <h1 class="h6 mb-0 text-white text-uppercase" style="margin-right: 10px;">Kamu Misafirhaneleri</h1>
+                <p class="text-white mb-0" style="font-size: 0.8rem;">Dilediğiniz ilde misafirhane bulabilirsiniz.</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Arama Formu -->
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-md-4">
+                <input type="text" class="form-control" id="aramaKelime" placeholder="Misafirhane Adı ile Ara">
+            </div>
+            <div class="col-md-4">
+                <select class="form-select" id="ilSec">
+                    <option value="">İl Seç</option>
+                    @if (iller.Count > 0)
+                    {
+                        @foreach (var il in iller)
+                        {
+                            <option value="@il">@il</option>
+                        }
+                    }
+                    else
+                    {
+                        <option disabled>İller yüklenemedi!</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-primary w-100" onclick="MisafirhaneAra()">Ara</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sonuç Listesi -->
+    <div class="container mt-4" id="sonucListesi">
+        <p class="text-muted">Yükleniyor...</p>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        MisafirhaneAra(); // Sayfa açıldığında tüm misafirhaneleri getir
+    });
+
+    function MisafirhaneAra() {
+        var aramaKelime = document.getElementById("aramaKelime").value.trim();
+        var ilSec = document.getElementById("ilSec").value.trim();
+
+        fetch(`/Moderator/GetMisafirhaneler?il=${encodeURIComponent(ilSec)}&kelime=${encodeURIComponent(aramaKelime)}`)
+            .then(response => response.json())
+            .then(data => {
+                var sonucDiv = document.getElementById("sonucListesi");
+                sonucDiv.innerHTML = "";
+
+                if (!data || data.length === 0) {
+                    sonucDiv.innerHTML = `<p class="text-danger">Bu ilde kayıtlı bir misafirhane bulunamadı.</p>`;
+                } else {
+                    var table = `<div class="table-responsive">
+                                        <table class="table table-bordered table-hover">
+                                            <thead class="table-dark">
+                                                <tr>
+                                                    <th>Adı</th>
+                                                    <th>İli</th>
+                                                    <th>Telefon</th>
+                                                    <th>Adres</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>`;
+
+                    data.sort((a, b) => a.adi.localeCompare(b.adi));
+
+                    data.forEach(m => {
+                        table += `<tr>
+                                        <td>${m.adi}</td>
+                                        <td>${m.il}</td>
+                                        <td>${m.telefon ? m.telefon : "Belirtilmemiş"}</td>
+                                        <td>${m.adres}</td>
+                                      </tr>`;
+                    });
+
+                    table += `</tbody></table></div>`;
+                    sonucDiv.innerHTML = table;
+                }
+            })
+            .catch(error => console.error("Hata:", error));
+    }
+</script>

@@ -1,0 +1,36 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model GSBMaas.Models.Misafirhane
+
+<form id="misafirhaneForm">
+    <div class="mb-3">
+        <label class="form-label">Misafirhane Adı</label>
+        <input type="text" id="Adi" name="Adi" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">İli</label>
+        <select id="Ili" name="Ili" class="form-select" required>
+            <option value="" disabled selected>İl Seçiniz</option>
+            @foreach (var il in ViewBag.Iller as List<string>)
+            {
+                <option value="@il">@il</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Sabit Telefon</label>
+        <input type="text" id="SabitTelefon" name="SabitTelefon" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Cep Telefon</label>
+        <input type="text" id="CepTelefon" name="CepTelefon" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Adres</label>
+        <textarea id="Adres" name="Adres" class="form-control" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-success w-100">Kaydet</button>
+</form>

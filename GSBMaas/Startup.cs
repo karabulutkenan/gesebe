@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace GSBMaas
 {
@@ -21,24 +16,27 @@ namespace GSBMaas
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            })
-            .AddCookie(options =>
-            {
-                options.LoginPath = "/Yonetici/Giris"; // Kullanıcı giriş yapmadan erişmeye çalıştığında yönlenecek sayfa
-            });
+            services.AddAuthentication()
+                .AddCookie("ModeratorAuth", options =>
+                {
+                    options.LoginPath = "/Moderator/Giris";
+                    options.AccessDeniedPath = "/Moderator/Giris";
+                })
+                .AddCookie("YoneticiAuth", options =>
+                {
+                    options.LoginPath = "/Yonetici/Giris";
+                    options.AccessDeniedPath = "/Yonetici/Giris";
+                });
 
+            // Yetkilendirme servisini ekleyin
+            services.AddAuthorization();
+
+            // MVC servislerini ekleyin
+            services.AddControllersWithViews();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -48,14 +46,15 @@ namespace GSBMaas
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
+            // Kimlik doğrulama ve yetkilendirme
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -63,7 +62,7 @@ namespace GSBMaas
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                     pattern: "{controller=Tablo}/{action=Index}");
+                    pattern: "{controller=Tablo}/{action=Index}/{id?}");
             });
         }
     }

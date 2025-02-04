@@ -2,51 +2,67 @@
     ViewData["Title"] = "E-Sendika Anasayfa";
 }
 
-<div class="container mt-3">
-    
-    <div class="row gy-4 gx-4" style="row-gap: 5px;">
-        <div class="col-6 col-md-4 d-flex">
-            <a href="/Tablo" class="text-decoration-none w-100">
-                <div class="tile bg-info text-white text-center p-4 rounded shadow flex-fill" style="min-height: 150px;">
-                    <img src="/images/gsbMaasHesaplama.png" alt="GSB Maaş Hesaplama" class="mb-2" style="height: 80px;">
-                    <h4>GSB
-                    Maaş Hesaplama</h4>
+<div class="container-fluid px-0 mt-4">
+    <div class="row gx-0" style="row-gap: 10px;">
+        <!-- Satır aralığı 10px -->
+        <!-- GSB Maaş Hesaplama -->
+        <div class="col-6 col-md-4">
+            <a href="/Tablo" class="text-decoration-none">
+                <div class="tile bg-info text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
+                    <i class="bi bi-calculator" style="font-size: 3rem;"></i>
+                    <h5 class="mt-2">GSB Maaş Hesaplama</h5>
                 </div>
             </a>
         </div>
-        <div class="col-6 col-md-4 d-flex">
-            <a href="/Home/DilekceOrnekleri" class="text-decoration-none w-100" target="_self">
-                <div class="tile bg-danger text-white text-center p-4 rounded shadow flex-fill" style="min-height: 150px;">
-                    <img src="/images/dilekceOrnekleri.png" alt="Dilekçe Örnekleri" class="mb-2" style="height: 80px;">
-                    
-                    
-                    <h4> Dilekçe Örnekleri</h4>
-                    
+
+        <!-- Dilekçe Örnekleri -->
+        <div class="col-6 col-md-4">
+            <a href="/Home/DilekceOrnekleri" class="text-decoration-none">
+                <div class="tile bg-danger text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
+                    <i class="bi bi-file-earmark-text" style="font-size: 3rem;"></i>
+                    <h5 class="mt-2">Dilekçe Örnekleri</h5>
                 </div>
             </a>
         </div>
-        <div class="col-6 col-md-4 d-flex">
-            <div class="tile bg-secondary text-white text-center p-4 rounded shadow flex-fill" style="min-height: 150px;">
-                <img src="/images/kamuMisafirhaneleri.png" alt="Kamu Misafirhaneleri" class="mb-2" style="height: 80px;">
-                <h4>Kamu Misafirhaneleri İletişim Bilgileri</h4>
-            </div></a></div>
-        <div class="col-6 col-md-4 d-flex">
-            <div class="tile bg-warning text-white text-center p-4 rounded shadow flex-fill" style="min-height: 150px;">
-                <img src="/images/kanunYonetmelikler.png" alt="Kanun ve Yönetmelikler" class="mb-2" style="height: 80px;">
-                <h4>Kanun, Yönetmelik ve Yargıtay Kararları</h4>
-            </div>
+
+        <!-- Kamu Misafirhaneleri -->
+        <div class="col-6 col-md-4">
+            <a href="/Home/KamuMisafirhaneleri" class="text-decoration-none">
+                <div class="tile bg-secondary text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
+                    <i class="bi bi-building" style="font-size: 3rem;"></i>
+                    <h5 class="mt-2">Kamu Misafirhaneleri</h5>
+                </div>
+            </a>
         </div>
-        <div class="col-6 col-md-4 d-flex">
-            <div class="tile bg-success text-white text-center p-4 rounded shadow flex-fill" style="min-height: 150px;">
-                <img src="/images/kidemTazminatiHesaplama.png" alt="Kıdem Tazminatı Hesaplama" class="mb-2" style="height: 80px;">
-                <h4>Kıdem Tazminatı Hesaplama</h4>
-            </div>
+
+        <!-- Kanun ve Yönetmelikler -->
+        <div class="col-6 col-md-4">
+            <a href="#" class="text-decoration-none">
+                <div class="tile bg-warning text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
+                    <i class="bi bi-book" style="font-size: 3rem;"></i>
+                    <h5 class="mt-2">Kanun ve Yönetmelikler</h5>
+                </div>
+            </a>
         </div>
-        <div class="col-6 col-md-4 d-flex">
-            <div class="tile bg-primary text-white text-center p-4 rounded shadow flex-fill" style="min-height: 150px;">
-                <img src="/images/sikcaSorulanSorular.png" alt="Sıkça Sorulan Sorular" class="mb-2" style="height: 80px;">
-                <h4>Sıkça Sorulan Sorular ve Cevaplar</h4>
-            </div>
+
+        <!-- Kıdem Tazminatı Hesaplama -->
+        <div class="col-6 col-md-4">
+            <a href="#" class="text-decoration-none">
+                <div class="tile bg-success text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
+                    <i class="bi bi-cash-stack" style="font-size: 3rem;"></i>
+                    <h5 class="mt-2">Kıdem Tazminatı Hesaplama</h5>
+                </div>
+            </a>
+        </div>
+
+        <!-- İşçi İşveren İlişkileri (Sorular-Cevaplar) -->
+        <div class="col-6 col-md-4">
+            <a href="#" class="text-decoration-none">
+                <div class="tile bg-primary text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
+                    <i class="bi bi-question-circle" style="font-size: 3rem;"></i>
+                    <h5 class="mt-2 text-center">İşçi İşveren İlişkileri (Sorular-Cevaplar)</h5>
+                </div>
+            </a>
         </div>
     </div>
 </div>

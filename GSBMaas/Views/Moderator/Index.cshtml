@@ -1,0 +1,106 @@
+﻿@{
+    ViewData["Title"] = "Moderator Paneli";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moderator Paneli</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <header class="d-flex justify-content-between align-items-center p-3 mb-4 bg-light border-bottom">
+        <h1 class="h5 text-uppercase">Moderatör İşlemleri</h1>
+        <a href="/Moderator/Cikis" class="btn btn-danger">Çıkış</a>
+    </header>
+
+    <div class="container mt-5">
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            <!-- Kamu Misafirhanesi Ekle -->
+            <div class="col">
+                <div class="card h-100 text-center bg-secondary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Kamu Misafirhanesi Ekle</h5>
+                        <button class="btn btn-light mt-3" id="openMisafirhaneModal">Ekle</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Soru Cevap Ekle -->
+            <div class="col">
+                <div class="card h-100 text-center bg-primary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Soru Cevap Ekle</h5>
+                        <a href="#" class="btn btn-light mt-3">Ekle</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal fade" id="misafirhaneModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Kamu Misafirhanesi Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalContent">
+                    <!-- AJAX ile içerik buraya yüklenecek -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap ve jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#openMisafirhaneModal").click(function () {
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("MisafirhaneEkle", "Moderator")",
+                    success: function (data) {
+                        $("#modalContent").html(data);
+                        $("#misafirhaneModal").modal("show");
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Modal yüklenirken hata oluştu: " + xhr.responseText);
+                    }
+                });
+            });
+
+            // Form AJAX ile gönderilecek
+            $(document).on("submit", "#misafirhaneForm", function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("MisafirhaneEkle", "Moderator")",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.message);
+                            $("#misafirhaneModal").modal("hide");
+                            setTimeout(function () {
+                                window.location.href = "@Url.Action("Index", "Moderator")";
+                            }, 500);
+                        } else {
+                            alert("Hata oluştu: " + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Sunucu hatası: " + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
