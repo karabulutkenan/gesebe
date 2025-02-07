@@ -15,7 +15,9 @@ namespace GSBMaas.Controllers
     {
         private const string CorrectPassword = "Ekip2025**"; // Moderatör şifresi
         private const string Scheme = "ModeratorAuth"; // Moderator için AuthenticationScheme
-        AppDbContext db = new AppDbContext(); // YÖNETİCİ KONTROLLERDEKİ GİBİ TANIMLANDI
+
+        // ❗ AppDbContext DI ile değil, eski haliyle kullanılıyor!
+        private readonly AppDbContext db = new AppDbContext();
 
         [HttpGet]
         public IActionResult Giris()
@@ -28,7 +30,6 @@ namespace GSBMaas.Controllers
         {
             if (password == CorrectPassword)
             {
-                // Şifre doğruysa kimlik doğrulama oluştur
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, "moderator")
@@ -37,13 +38,10 @@ namespace GSBMaas.Controllers
                 var principal = new ClaimsPrincipal(identity);
 
                 await HttpContext.SignInAsync(Scheme, principal);
-
-                // Moderatör Index sayfasına yönlendir
                 return RedirectToAction("Index");
             }
             else
             {
-                // Hatalı şifre için hata mesajı göster
                 ViewBag.ErrorMessage = "Hatalı şifre! Lütfen tekrar deneyin.";
                 return View();
             }
@@ -81,38 +79,9 @@ namespace GSBMaas.Controllers
         [HttpGet]
         public IActionResult MisafirhaneEkle()
         {
-            ViewBag.Iller = GetIller(); // İl listesini ViewBag'e ekle
-            return PartialView("_MisafirhaneEkle"); // Partial View olarak döndür
+            ViewBag.Iller = GetIller();
+            return PartialView("_MisafirhaneEkle");
         }
-
-        [HttpGet]
-        public IActionResult GetMisafirhaneler(string il, string kelime)
-        {
-            var misafirhaneler = db.Misafirhaneler.AsQueryable(); // Tüm misafirhaneleri çek
-
-            if (!string.IsNullOrEmpty(il)) // Eğer il seçilmişse filtrele
-            {
-                misafirhaneler = misafirhaneler.Where(m => m.Ili == il);
-            }
-
-            if (!string.IsNullOrEmpty(kelime)) // Eğer arama kelimesi varsa isme göre filtrele
-            {
-                misafirhaneler = misafirhaneler.Where(m => m.Adi.Contains(kelime));
-            }
-
-            var sonuc = misafirhaneler
-                .Select(m => new
-                {
-                    adi = m.Adi,
-                    il = m.Ili,
-                    telefon = string.IsNullOrEmpty(m.CepTelefon) ? m.SabitTelefon : m.CepTelefon,
-                    adres = m.Adres
-                })
-                .ToList();
-
-            return Json(sonuc);
-        }
-
 
         [HttpPost]
         public IActionResult MisafirhaneEkle(Misafirhane misafirhane)

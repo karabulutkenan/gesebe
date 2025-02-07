@@ -1,10 +1,9 @@
 ﻿@{
     ViewData["Title"] = "Kamu Misafirhaneleri";
-    var iller = ViewBag.Iller as List<string> ?? new List<string>(); // NULL kontrolü ile güvenli hale getirme
+    var iller = ViewBag.Iller as List<string> ?? new List<string>();
 }
 
 <div class="container-fluid p-0">
-    <!-- Header -->
     <header class="bg-secondary shadow-sm py-2">
         <div class="container">
             <div class="d-flex align-items-center">
@@ -13,26 +12,19 @@
             </div>
         </div>
     </header>
+   
 
-    <!-- Arama Formu -->
     <div class="container mt-3">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-4 ">
                 <input type="text" class="form-control" id="aramaKelime" placeholder="Misafirhane Adı ile Ara">
             </div>
             <div class="col-md-4">
-                <select class="form-select" id="ilSec">
-                    <option value="">İl Seç</option>
-                    @if (iller.Count > 0)
+                <select class="form-select form-control" id="ilSec">
+                    <option value="">İl Seçiniz</option>
+                    @foreach (var il in iller)
                     {
-                        @foreach (var il in iller)
-                        {
-                            <option value="@il">@il</option>
-                        }
-                    }
-                    else
-                    {
-                        <option disabled>İller yüklenemedi!</option>
+                        <option value="@il">@il</option>
                     }
                 </select>
             </div>
@@ -41,24 +33,22 @@
             </div>
         </div>
     </div>
-
-    <!-- Sonuç Listesi -->
+    <p class=" text-danger mb-0" style="font-size: 0.8rem;">ÖNEMLİ: Tüm Misafirhaneler ücretldir. Ücretleri ilgili misafirhanenin telefonundan öğrenebilirsiniz.</p>
     <div class="container mt-4" id="sonucListesi">
         <p class="text-muted">Yükleniyor...</p>
     </div>
 </div>
 
-<!-- JavaScript -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        MisafirhaneAra(); // Sayfa açıldığında tüm misafirhaneleri getir
+        MisafirhaneAra();
     });
 
     function MisafirhaneAra() {
         var aramaKelime = document.getElementById("aramaKelime").value.trim();
-        var ilSec = document.getElementById("ilSec").value.trim();
+        var ilSec = document.getElementById("ilSec").value;
 
-        fetch(`/Moderator/GetMisafirhaneler?il=${encodeURIComponent(ilSec)}&kelime=${encodeURIComponent(aramaKelime)}`)
+        fetch(`/KamuMisafirhaneleri/GetMisafirhaneler?il=${encodeURIComponent(ilSec)}&kelime=${encodeURIComponent(aramaKelime)}`)
             .then(response => response.json())
             .then(data => {
                 var sonucDiv = document.getElementById("sonucListesi");
@@ -78,8 +68,6 @@
                                                 </tr>
                                             </thead>
                                             <tbody>`;
-
-                    data.sort((a, b) => a.adi.localeCompare(b.adi));
 
                     data.forEach(m => {
                         table += `<tr>
