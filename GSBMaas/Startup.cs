@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace GSBMaas
 {
@@ -30,6 +31,15 @@ namespace GSBMaas
                     options.AccessDeniedPath = "/Yonetici/Giris";
                 });
 
+            // ✅ **Session ve Cache Servisleri Eklendi**
+            services.AddDistributedMemoryCache(); // Session için gerekli cache servisi
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Oturum süresi 30 dakika
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             // Yetkilendirme servisini ekleyin
             services.AddAuthorization();
 
@@ -53,6 +63,9 @@ namespace GSBMaas
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            // ✅ **Session Middleware Aktif Edildi**
+            app.UseSession();
 
             // Kimlik doğrulama ve yetkilendirme
             app.UseAuthentication();

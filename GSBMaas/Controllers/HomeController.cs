@@ -1,11 +1,13 @@
 ﻿using GSBMaas.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using Microsoft.AspNetCore.Http;
+using System;
 
 namespace GSBMaas.Controllers
 {
@@ -22,6 +24,7 @@ namespace GSBMaas.Controllers
         {
             return View();
         }
+
         public IActionResult KamuMisafirhaneleri()
         {
             return View();
@@ -31,16 +34,18 @@ namespace GSBMaas.Controllers
         {
             return View();
         }
-        public IActionResult Sayfa()
 
+        public IActionResult Sayfa()
         {
             return View();
         }
+
         public IActionResult DilekceOrnekleri()
         {
             return View();
         }
-        public  IActionResult KanunVeYonetmelikler()
+
+        public IActionResult KanunVeYonetmelikler()
         {
             return View();
         }
@@ -50,13 +55,101 @@ namespace GSBMaas.Controllers
             return View();
         }
 
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
+        // ✅ **Yeni GirisKontrol Metodu - HttpClient DI'siz Kullanıldı**
+        [HttpPost]
+        public async Task<IActionResult> GirisKontrol([FromBody] GirisModel model)
+        {
+            string apiUrl = "https://toleyis.agembilisim.com.tr/asya/ws/uye/select.do"; // API URL
+            string apiKey = "8701027b-8542-4dc8-8852-edf73ff180e3"; // Rest API Key
+            string username = "rest.service"; // Kullanıcı Adı
+            string password = "uP7G=76q"; // Şifre
 
+            var requestBody = new
+            {
+                tcKimlikNo = model.TcKimlik,
+                dogrulamaKodu = model.UyelikKodu
+            };
+
+            var json = JsonSerializer.Serialize(requestBody);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            // ✅ **DÜZELTME: `Content-Type` başlığını `HttpContent.Headers` içine ekledik**
+            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Clear();
+                httpClient.DefaultRequestHeaders.Add("Rest-Api-Key", apiKey);
+                httpClient.DefaultRequestHeaders.Add("Username", username);
+                httpClient.DefaultRequestHeaders.Add("Password", password);
+
+                Console.WriteLine("📤 API'ye Gönderilen Veri: " + json); // 📌 API'ye gönderilen veriyi logla
+
+                var response = await httpClient.PostAsync(apiUrl, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+
+                Console.WriteLine("📥 API Cevabı: " + responseString); // 📌 API’den dönen cevabı logla
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = JsonSerializer.Deserialize<ApiResponse>(responseString);
+
+                    if (result.code == 200 && result.result != null && result.result.uye == "E") // ✅ API başarılı döndü mü kontrol et
+                    {
+                        HttpContext.Session.SetString("UserLoggedIn", "true");
+                        HttpContext.Session.SetString("UserTc", model.TcKimlik);
+                        HttpContext.Session.SetString("UserAd", result.result.ad);
+                        HttpContext.Session.SetString("UserSoyad", result.result.soyad);
+                        return Json(new { success = true });
+                    }
+                    else
+                    {
+                        return Json(new { success = false, message = "Üyelik doğrulaması başarısız!" });
+                    }
+                }
+                else
+                {
+                    return Json(new { success = false, message = "API bağlantı hatası! HTTP Status Code: " + response.StatusCode });
+                }
+            }
+        }
+
+
+
+
+
+        public IActionResult Cikis()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Giris");
+        }
+    }
+
+    public class GirisModel
+    {
+        public string TcKimlik { get; set; }
+        public string UyelikKodu { get; set; }
+    }
+
+    public class ApiResponse
+    {
+        public int code { get; set; }
+        public string message { get; set; }
+        public Result result { get; set; }
+    }
+
+    public class Result
+    {
+        public string tcKimlikNo { get; set; }
+        public string dogrulamaKodu { get; set; }
+        public string ad { get; set; }
+        public string soyad { get; set; }
+        public string uye { get; set; }
     }
 }

@@ -111,5 +111,41 @@
             }
         });
     </script>
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            let tcKimlik = document.getElementById("tcKimlik").value;
+            let uyelikKodu = document.getElementById("uyelikKodu").value;
+            let errorDiv = document.getElementById("tcError");
+
+            if (!isValidTCKN(tcKimlik)) {
+                errorDiv.style.display = "block";
+                return;
+            } else {
+                errorDiv.style.display = "none";
+            }
+
+            fetch("/Home/GirisKontrol", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ tcKimlik: tcKimlik, uyelikKodu: uyelikKodu })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = "/Home/Index"; // Giriş başarılıysa yönlendir
+                    } else {
+                        alert("Doğrulama başarısız: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert("Bağlantı hatası! Lütfen tekrar deneyin.");
+                });
+        });
+    </script>
+
 </body>
 </html>
