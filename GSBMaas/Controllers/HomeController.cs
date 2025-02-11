@@ -124,11 +124,13 @@ namespace GSBMaas.Controllers
 
 
 
+        [HttpPost]
         public IActionResult Cikis()
         {
-            HttpContext.Session.Clear();
-            return RedirectToAction("Giris");
+            HttpContext.Session.Clear(); // ✅ Kullanıcı bilgilerini temizle
+            return RedirectToAction("Giris"); // ✅ Giriş sayfasına yönlendir
         }
+
     }
 
     public class GirisModel
