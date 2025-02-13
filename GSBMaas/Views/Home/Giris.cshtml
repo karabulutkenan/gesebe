@@ -68,6 +68,26 @@
             font-size: 50px;
             color: red;
         }
+
+        /* T.C. Kimlik Alanı için */
+        .tc-kimlik {
+            -webkit-text-security: disc;
+        }
+
+        /* Radyo butonu ile yazıyı yanyana yapmak için */
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Hata mesajını gizli yapalım */
+        .error-message {
+            display: none;
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -82,14 +102,39 @@
 
         <form id="loginForm">
             <div class="mb-3">
-                <input type="text" id="tcKimlik" class="form-control" required maxlength="11" minlength="11" placeholder="🔑 11 Haneli T.C. Kimlik Numaranızı Giriniz">
+                <input type="text" id="tcKimlik" class="form-control tc-kimlik" required maxlength="11" minlength="11" placeholder="🔑 11 Haneli T.C. Kimlik Numaranızı Giriniz">
                 <div id="tcError" class="text-danger mt-2" style="display: none;">Geçersiz T.C. Kimlik Numarası!</div>
             </div>
             <div class="mb-3">
                 <input type="text" id="uyelikKodu" class="form-control" required maxlength="9" placeholder="🔑 9 Haneli Üyelik Doğrulama Kodunuzu Giriniz">
             </div>
+
+            <!-- Kişisel Veri Onayı -->
+            <div class="mb-3 text-start radio-label">
+                <input type="radio" id="kisiselVeriOnay">
+                <label for="kisiselVeriOnay">
+                    Kişisel verileriniz <a href="#" data-bs-toggle="modal" data-bs-target="#kisiselVeriModal">Kişisel Veri Onam Metni</a> doğrultusunda işlenecektir.
+                </label>
+            </div>
+            <div id="onayHata" class="error-message">Kişisel Veri Onam Metni'ni onaylamalısınız!</div>
+
             <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
         </form>
+    </div>
+
+    <!-- ❗ Kişisel Veri Onam Metni Modal -->
+    <div class="modal fade" id="kisiselVeriModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Kişisel Veri Onam Metni</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+                <div class="modal-body">
+                    @Html.Partial("_KisiselVeriOnamMetni")
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- ❗ Hata Mesajı için Modal -->
@@ -112,15 +157,7 @@
 
     <script>
         function isValidTCKN(tckn) {
-            if (/^[1-9][0-9]{10}$/.test(tckn)) {
-                const digits = tckn.split('').map(Number);
-                const sumOdd = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
-                const sumEven = digits[1] + digits[3] + digits[5] + digits[7];
-                const checkDigit1 = ((sumOdd * 7) - sumEven) % 10;
-                const checkDigit2 = (sumOdd + sumEven + digits[9]) % 10;
-                return checkDigit1 === digits[9] && checkDigit2 === digits[10];
-            }
-            return false;
+            return /^[1-9][0-9]{10}$/.test(tckn);
         }
 
         document.getElementById("loginForm").addEventListener("submit", function (event) {
@@ -129,12 +166,21 @@
             let tcKimlik = document.getElementById("tcKimlik").value;
             let uyelikKodu = document.getElementById("uyelikKodu").value;
             let errorDiv = document.getElementById("tcError");
+            let onayKutusu = document.getElementById("kisiselVeriOnay");
+            let onayHata = document.getElementById("onayHata");
 
             if (!isValidTCKN(tcKimlik)) {
                 errorDiv.style.display = "block";
                 return;
             } else {
                 errorDiv.style.display = "none";
+            }
+
+            if (!onayKutusu.checked) {
+                onayHata.style.display = "block"; // ❗ Hata mesajını göster
+                return;
+            } else {
+                onayHata.style.display = "none"; // ✅ Kullanıcı onayladıysa hata mesajını gizle
             }
 
             fetch("/Home/GirisKontrol", {
