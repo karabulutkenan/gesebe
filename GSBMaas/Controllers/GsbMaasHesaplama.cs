@@ -21,12 +21,14 @@ namespace GSBMaas.Controllers
         {
 
 
-                if (string.IsNullOrEmpty(HttpContext.Session.GetString("KullaniciAdi")))
-                {
-                    return RedirectToAction("Giris", "Home"); // Giriş yoksa yönlendir
-                }
-                
-                var deger = db.Sabits.Find(1);
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserAd")) ||
+            string.IsNullOrEmpty(HttpContext.Session.GetString("UserSoyad")))
+            {
+                return RedirectToAction("Giris", "Home"); // Giriş yoksa yönlendir
+            }
+
+
+            var deger = db.Sabits.Find(1);
             var aylar = new Dictionary<string, int>
             {
                 { "Ocak", 31 },

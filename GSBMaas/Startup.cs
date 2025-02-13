@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using Microsoft.AspNetCore.Http;
+
 
 namespace GSBMaas
 {
@@ -32,13 +34,15 @@ namespace GSBMaas
                 });
 
             // ✅ **Session ve Cache Servisleri Eklendi**
-            services.AddDistributedMemoryCache(); // Session için gerekli cache servisi
+            services.AddDistributedMemoryCache(); // Session için bellek içi cache
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30); // Oturum süresi 30 dakika
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Session süresi 30 dakika
+                options.Cookie.HttpOnly = true;  // Tarayıcı tarafında erişimi sınırla
+                options.Cookie.IsEssential = true; // GDPR uyumluluğu
+                options.Cookie.SameSite = SameSiteMode.Strict; // Cross-site saldırılara karşı önlem
             });
+
 
             // Yetkilendirme servisini ekleyin
             services.AddAuthorization();
@@ -61,13 +65,10 @@ namespace GSBMaas
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
 
-            // ✅ **Session Middleware Aktif Edildi**
-            app.UseSession();
+            app.UseSession();  // ✅ **Session Middleware'i Doğru Yerde!**
 
-            // Kimlik doğrulama ve yetkilendirme
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -75,8 +76,9 @@ namespace GSBMaas
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Tablo}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
+
     }
 }

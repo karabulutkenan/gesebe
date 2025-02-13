@@ -1,5 +1,6 @@
 ﻿using GSBMaas.Context;
 using GSBMaas.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,12 @@ namespace GSBMaas.Controllers
                               .ToList();
 
                 ViewBag.Iller = iller;
+
+                if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserAd")) ||
+                string.IsNullOrEmpty(HttpContext.Session.GetString("UserSoyad")))
+                {
+                    return RedirectToAction("Giris", "Home");
+                }
 
                 return View();
             }

@@ -22,31 +22,61 @@ namespace GSBMaas.Controllers
 
         public IActionResult Index()
         {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserAd")) ||
+                string.IsNullOrEmpty(HttpContext.Session.GetString("UserSoyad")))
+            {
+                return RedirectToAction("Giris", "Home");
+            }
             return View();
         }
 
         public IActionResult KamuMisafirhaneleri()
         {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserAd")) ||
+                string.IsNullOrEmpty(HttpContext.Session.GetString("UserSoyad")))
+            {
+                return RedirectToAction("Giris", "Home");
+            }
             return View();
         }
 
         public IActionResult Privacy()
         {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserAd")) ||
+                string.IsNullOrEmpty(HttpContext.Session.GetString("UserSoyad")))
+            {
+                return RedirectToAction("Giris", "Home");
+            }
             return View();
         }
 
         public IActionResult Sayfa()
         {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserAd")) ||
+                string.IsNullOrEmpty(HttpContext.Session.GetString("UserSoyad")))
+            {
+                return RedirectToAction("Giris", "Home");
+            }
             return View();
         }
 
         public IActionResult DilekceOrnekleri()
         {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserAd")) ||
+                string.IsNullOrEmpty(HttpContext.Session.GetString("UserSoyad")))
+            {
+                return RedirectToAction("Giris", "Home");
+            }
             return View();
         }
 
         public IActionResult KanunVeYonetmelikler()
         {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserAd")) ||
+                string.IsNullOrEmpty(HttpContext.Session.GetString("UserSoyad")))
+            {
+                return RedirectToAction("Giris", "Home");
+            }
             return View();
         }
 
@@ -120,6 +150,16 @@ namespace GSBMaas.Controllers
             }
         }
 
+        public IActionResult TestSession()
+        {
+            var userAd = HttpContext.Session.GetString("UserAd");
+            var userSoyad = HttpContext.Session.GetString("UserSoyad");
+
+            Console.WriteLine("Session Test: Kullanıcı Adı - " + userAd);
+            Console.WriteLine("Session Test: Kullanıcı Soyadı - " + userSoyad);
+
+            return Json(new { Ad = userAd, Soyad = userSoyad });
+        }
 
 
 
