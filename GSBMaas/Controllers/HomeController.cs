@@ -22,11 +22,11 @@ namespace GSBMaas.Controllers
 
         public IActionResult Index()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserAd")) ||
-                string.IsNullOrEmpty(HttpContext.Session.GetString("UserSoyad")))
-            {
-                return RedirectToAction("Giris", "Home");
-            }
+            //if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserAd")) ||
+            //    string.IsNullOrEmpty(HttpContext.Session.GetString("UserSoyad")))
+            //{
+            //    return RedirectToAction("Giris", "Home");
+            //}
             return View();
         }
 

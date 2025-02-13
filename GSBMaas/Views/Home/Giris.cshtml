@@ -116,13 +116,28 @@
             <div class="mb-3 text-start radio-label">
                 <input type="radio" id="kisiselVeriOnay">
                 <label for="kisiselVeriOnay">
-                    Kişisel verileriniz <a href="#" data-bs-toggle="modal" data-bs-target="#kisiselVeriModal">Kişisel Veri Onam Metni</a> doğrultusunda işlenecektir.
+                    Kişisel verileriniz <a href="#" id="onamMetniLink">Kişisel Veri Onam Metni</a> doğrultusunda işlenecektir.
                 </label>
             </div>
             <div id="onayHata" class="error-message">Kişisel Veri Onam Metni'ni onaylamalısınız!</div>
 
             <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
         </form>
+    </div>
+
+    <!-- ❗ Kişisel Veri Onam Modalı -->
+    <div class="modal fade" id="kisiselVeriModal" tabindex="-1" aria-labelledby="kisiselVeriModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Kişisel Veri Onam Metni</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+                <div class="modal-body">
+                    @Html.Partial("_KisiselVeriOnamMetni")
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- ❗ Giriş Başarılı Modal -->
@@ -142,6 +157,11 @@
         function isValidTCKN(tckn) {
             return /^[1-9][0-9]{10}$/.test(tckn);
         }
+
+        document.getElementById("onamMetniLink").addEventListener("click", function (event) {
+            event.preventDefault();
+            $("#kisiselVeriModal").modal("show"); // ✅ Onam Metni Modalını Aç
+        });
 
         document.getElementById("loginForm").addEventListener("submit", function (event) {
             event.preventDefault();
@@ -176,17 +196,17 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        $("#welcomeModal").modal("show"); // ✅ Modal açılıyor
+                        $("#welcomeModal").modal("show");
 
                         setTimeout(() => {
-                            window.location.href = "/Home/Index"; // ✅ 3 saniye sonra yönlendir
+                            window.location.href = "/Home/Index";
                         }, 3000);
                     } else {
-                        $("#errorModal").modal("show"); // ❗ Giriş başarısızsa hata modalını aç
+                        $("#errorModal").modal("show");
                     }
                 })
                 .catch(error => {
-                    $("#errorModal").modal("show"); // ❗ Bağlantı hatası olursa hata modalını aç
+                    $("#errorModal").modal("show");
                 });
         });
     </script>
