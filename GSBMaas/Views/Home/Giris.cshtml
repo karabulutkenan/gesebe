@@ -1,7 +1,11 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Http
+@{
     Layout = null;
 }
-
+@{
+    var userAd = Context.Session.GetString("UserAd") ?? "Misafir";
+    var userSoyad = Context.Session.GetString("UserSoyad") ?? "";
+}
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -95,9 +99,8 @@
         <img src="~/images/esendikalogo.png" alt="E-Sendika Logo">
 
         <p class="info-text">
-            Bu uygulama sadece <b>TOLEYİS üyelerine</b> özeldir. <br>
-            Üyeliğinize ait <b>Sendika Üyeliği Doğrulama Kodu</b> ile <br>
-            <b>T.C. Kimlik numaranızı</b> giriniz.
+            Bu uygulama <b>TOLEYİS üyelerine</b> özeldir. <br>
+            Giriş yapmak için Üyeliğinize ait <b>Sendika Üyeliği Doğrulama Kodu</b> ile <b>T.C. Kimlik numaranızı</b> giriniz.
         </p>
 
         <form id="loginForm">
@@ -122,34 +125,14 @@
         </form>
     </div>
 
-    <!-- ❗ Kişisel Veri Onam Metni Modal -->
-    <div class="modal fade" id="kisiselVeriModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalLabel">Kişisel Veri Onam Metni</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-                </div>
-                <div class="modal-body">
-                    @Html.Partial("_KisiselVeriOnamMetni")
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ❗ Hata Mesajı için Modal -->
-    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <!-- ❗ Giriş Başarılı Modal -->
+    <div class="modal fade" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body text-center">
-                    <i class="bi bi-exclamation-triangle-fill error-icon"></i>
-                    <h4 class="mt-3 text-danger">Hata Oluştu!</h4>
-                    <p class="mt-2">
-                        Girmiş olduğunuz TC kimlik numarası veya doğrulama kodu hatalıdır.<br>
-                        Lütfen kontrol ederek tekrar deneyiniz.<br>
-                        Sendika üyelik durumunuzun kontrolü için, bağlı bulunduğunuz sendika şubenizle iletişime geçebilirsiniz.
-                    </p>
-                    <button type="button" class="btn btn-danger w-50" data-bs-dismiss="modal">Tamam</button>
+            <div class="modal-content text-center p-4">
+                <div class="modal-body">
+                    <img src="~/images/icon.gif" alt="Yükleniyor..." width="80">
+                    <h4 class="mt-3 text-primary">Hoşgeldiniz</h4>
+                    <p class="text-muted">Yönlendiriliyorsunuz...</p>
                 </div>
             </div>
         </div>
@@ -177,10 +160,10 @@
             }
 
             if (!onayKutusu.checked) {
-                onayHata.style.display = "block"; // ❗ Hata mesajını göster
+                onayHata.style.display = "block";
                 return;
             } else {
-                onayHata.style.display = "none"; // ✅ Kullanıcı onayladıysa hata mesajını gizle
+                onayHata.style.display = "none";
             }
 
             fetch("/Home/GirisKontrol", {
@@ -193,13 +176,17 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.location.href = "/Home/Index"; // Giriş başarılıysa yönlendir
+                        $("#welcomeModal").modal("show"); // ✅ Modal açılıyor
+
+                        setTimeout(() => {
+                            window.location.href = "/Home/Index"; // ✅ 3 saniye sonra yönlendir
+                        }, 3000);
                     } else {
-                        $("#errorModal").modal("show"); // ❗ Hata Modalını Aç
+                        $("#errorModal").modal("show"); // ❗ Giriş başarısızsa hata modalını aç
                     }
                 })
                 .catch(error => {
-                    $("#errorModal").modal("show"); // ❗ Bağlantı hatası olursa da modal göster
+                    $("#errorModal").modal("show"); // ❗ Bağlantı hatası olursa hata modalını aç
                 });
         });
     </script>
