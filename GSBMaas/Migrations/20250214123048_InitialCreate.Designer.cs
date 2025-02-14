@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GSBMaas.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231203173503_initial")]
-    partial class initial
+    [Migration("20250214123048_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -126,6 +126,40 @@ namespace GSBMaas.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Sabits");
+                });
+
+            modelBuilder.Entity("GSBMaas.Models.Misafirhane", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Adi")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Adres")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("CepTelefon")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Ili")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("SabitTelefon")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Misafirhaneler");
                 });
 #pragma warning restore 612, 618
         }

@@ -46,6 +46,54 @@ namespace GSBMaas.Controllers
                 return View();
             }
         }
+        [Authorize(AuthenticationSchemes = Scheme)]
+        [HttpPost]
+        public IActionResult Index(Sabit model)
+        {
+            if (ModelState.IsValid)
+            {
+                var sabit = db.Sabits.Find(model.ID);
+                if (sabit != null)
+                {
+                    sabit.SosyalYardim = model.SosyalYardim;
+                    sabit.VergiIstisnaTutar = model.VergiIstisnaTutar;
+                    sabit.BuyukSehirYol = model.BuyukSehirYol;
+                    sabit.KucukSehirYol = model.KucukSehirYol;
+                    sabit.BirGunYemek = model.BirGunYemek;
+                    sabit.BirGunYogurt = model.BirGunYogurt;
+                    sabit.BirYilHizmetZammi = model.BirYilHizmetZammi;
+                    sabit.KresYardimi = model.KresYardimi;
+                    sabit.Yevmiye1 = model.Yevmiye1;
+                    sabit.Yevmiye2 = model.Yevmiye2;
+                    sabit.Yevmiye3 = model.Yevmiye3;
+                    sabit.VergiDilimKatsayi1 = model.VergiDilimKatsayi1;
+                    sabit.VergiDilimKatsayi2 = model.VergiDilimKatsayi2;
+                    sabit.VergiDilimKatsayi3 = model.VergiDilimKatsayi3;
+                    sabit.VergiDilimOran1 = model.VergiDilimOran1;
+                    sabit.VergiDilimOran2 = model.VergiDilimOran2;
+                    sabit.VergiDilimOran3 = model.VergiDilimOran3;
+                    sabit.EngelliDerece1 = model.EngelliDerece1;
+                    sabit.EngelliDerece2 = model.EngelliDerece2;
+                    sabit.EngelliDerece3 = model.EngelliDerece3;
+                    sabit.OcakVergi = model.OcakVergi;
+                    sabit.SubatVergi = model.SubatVergi;
+                    sabit.MartVergi = model.MartVergi;
+                    sabit.NisanVergi = model.NisanVergi;
+                    sabit.MayisVergi = model.MayisVergi;
+                    sabit.HaziranVergi = model.HaziranVergi;
+                    sabit.TemmuzVergi = model.TemmuzVergi;
+                    sabit.AgustosVergi = model.AgustosVergi;
+                    sabit.EylulVergi = model.EylulVergi;
+                    sabit.EkimVergi = model.EkimVergi;
+                    sabit.KasimVergi = model.KasimVergi;
+                    sabit.AralikVergi = model.AralikVergi;
+
+                    db.SaveChanges(); // **Değişiklikleri kaydet**
+                }
+            }
+
+            return RedirectToAction("Index"); // Güncelleme sonrası sayfayı yeniden yükle
+        }
 
         [HttpGet]
         public IActionResult Cikis()

@@ -85,27 +85,58 @@
     <!-- ✅ MENÜ (Sağdan Açılan) -->
     <div id="menuBackdrop"></div>
     <div id="menuCanvas">
-        <div class="p-3 bg-primary text-white d-flex justify-content-between align-items-center">
-            <h5>Hoşgeldiniz, @userAd @userSoyad</h5>
+        <div class="p-3 bg-info text-white d-flex justify-content-between align-items-center">
+            <h6>Hoşgeldiniz, @userAd @userSoyad</h6>
             <button class="btn-close btn-close-white" id="closeMenu"></button>
         </div>
         <div class="p-3">
             <ul class="list-group">
-                <li class="list-group-item"><a href="/Home" class="text-decoration-none text-dark">🏠 Anasayfa</a></li>
-                <li class="list-group-item"><a href="/Tablo" class="text-decoration-none text-dark">📊 GSB Maaş Hesaplama</a></li>
-                <li class="list-group-item"><a href="/Home/DilekceOrnekleri" class="text-decoration-none text-dark">📜 Dilekçe Örnekleri</a></li>
-                <li class="list-group-item"><a href="/KamuMisafirhaneleri" class="text-decoration-none text-dark">🏨 Kamu Misafirhaneleri</a></li>
-                <li class="list-group-item"><a href="/Home/KanunVeYonetmelikler" class="text-decoration-none text-dark">📖 Kanun ve Yönetmelikler</a></li>
-                <li class="list-group-item"><a href="/KamuKidemTazminatiHesaplama" class="text-decoration-none text-dark">💰 Kıdem Tazminatı Hesaplama</a></li>
-                <li class="list-group-item"><a href="/SorularCevaplar" class="text-decoration-none text-dark">❓ Soru-Cevap</a></li>
+                <li class="list-group-item">
+                    <a href="/Home" class="text-decoration-none text-dark">
+                        <i class="bi bi-house-fill text-dark"></i> Anasayfa
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <a href="/Tablo" class="text-decoration-none text-dark">
+                        <i class="bi bi-calculator text-info"></i> GSB Maaş Hesaplama
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <a href="/Home/DilekceOrnekleri" class="text-decoration-none text-dark">
+                        <i class="bi bi-file-earmark-text text-danger"></i> Dilekçe Örnekleri
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <a href="/KamuMisafirhaneleri" class="text-decoration-none text-dark">
+                        <i class="bi bi-building text-secondary"></i> Kamu Misafirhaneleri
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <a href="/Home/KanunVeYonetmelikler" class="text-decoration-none text-dark">
+                        <i class="bi bi-book text-warning"></i> Kanun ve Yönetmelikler
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <a href="/KamuKidemTazminatiHesaplama" class="text-decoration-none text-dark">
+                        <i class="bi bi-cash-stack text-success"></i> Kıdem Tazminatı Hesaplama
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <a href="/SorularCevaplar" class="text-decoration-none text-dark">
+                        <i class="bi bi-question-circle text-primary"></i> Soru-Cevap
+                    </a>
+                </li>
             </ul>
             <div class="mt-3">
                 <form asp-controller="Home" asp-action="Cikis" method="post">
-                    <button type="submit" class="btn btn-danger w-100">🚪 Çıkış Yap</button>
+                    <button type="submit" class="btn btn-danger w-100">
+                        <i class="bi bi-box-arrow-right text-white"></i> Çıkış Yap
+                    </button>
                 </form>
             </div>
         </div>
     </div>
+
 
     <!-- ✅ Proje İlham Kaynağı Modalı -->
     <div class="modal fade" id="inspirationModal" tabindex="-1" aria-labelledby="inspirationModalLabel" aria-hidden="true">
