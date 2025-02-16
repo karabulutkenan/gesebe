@@ -45,7 +45,7 @@
                     var renkler = new List<string> { "bg-info", "bg-danger", "bg-secondary", "bg-warning", "bg-success", "bg-primary" };
                     <div class="col">
                         <a href="@dilekceler[i].DosyaYolu" class="text-decoration-none" download>
-                            <div class="card h-100 @renkler[i % renkler.Count] text-center shadow-sm text-white">
+                            <div class="card h-100 @renkler[i % renkler.Count] text-center shadow-sm  rounded text-white">
                                 <div class="card-body d-flex flex-column justify-content-center">
                                     <i class="bi bi-file-earmark-text mb-1" style="font-size: 1.5rem;"></i>
                                     <h5 class="card-title text-white">@dilekceler[i].Baslik</h5>

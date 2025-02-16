@@ -10,62 +10,62 @@
 }
 
 <!-- ✅ Sayfa Başlığı -->
-<div class="d-flex align-items-center bg-info shadow-sm py-2 mt-2 rounded">
-    <h1 class="h6 mb-0 text-white text-uppercase shadow-sm mx-3">GSB MAAŞ HESAPLAMA</h1>
-    <p class="text-white mb-0 shadow-sm" style="font-size: 0.8rem;">Maaş - Tediye - İkramiye Hesaplamaları</p>
+<div class="d-flex align-items-center bg-info py-1 ">
+    <h1 class=" mb-0 text-white text-uppercase mx-2" style="font-size: 1rem" > GSB MAAŞ HESAPLAMA </h1>
+    <p class="text-white mb-0 " style="font-size: 0.8rem;">Maaş - Tediye - İkramiye Hesaplamaları</p>
 </div>
 
 <!-- ✅ Kullanıcı Bilgisi ve Hesaplama Butonu -->
-<div class="container mt-2">
-    <div class="d-flex justify-content-between align-items-center bg-light rounded shadow-sm p-2">
+<div class=" mt-2">
+    <div class="d-flex justify-content-between align-items-center bg-light rounded shadow-sm">
         <h6 class="text-dark">👋 @userAd @userSoyad</h6>
         <a href="/GsbMaasHesaplama" class="btn btn-primary">Kendi Maaşını Hesapla</a>
     </div>
 </div>
 
 <!-- ✅ TABLO VERİLERİ -->
-<div class="container mt-2">
+<div class=" mt-2">
     <div class="table-responsive">
-        <table class="table table-bordered border-dark text-center" style="text-transform: uppercase; font-size: 11px;">
+        <table class="table table-bordered  text-center" style="text-transform: uppercase; font-size: 12px;">
             <tr>
-                <th class="table-bordered border-dark text-center bg-danger text-white" colspan="3">
-                    <p class="mb-0" style="font-size: 14px;"><b>ORTALAMA ÖRNEK ELE GEÇECEK NET MAAŞLAR @ViewBag.Ikramiye</b></p>
+                <th class="table-bordered  text-center bg-danger text-white" colspan="3">
+                    <p class="mb-0" style="font-size: 13px;"><b>ORTALAMA ÖRNEK ELE GEÇECEK NET MAAŞLAR @ViewBag.Ikramiye</b></p>
                 </th>
             </tr>
             <tr>
-                <td class="table-primary table-bordered border-dark">@ViewBag.AyAdi AYI</td>
-                <td class="table-success table-bordered border-dark">Büyük Şehir</td>
-                <td class="table-success table-bordered border-dark">Küçük Şehir</td>
+                <td class="text-white bg-primary table-bordered ">@ViewBag.AyAdi AYI</td>
+                <td class="text-white bg-success table-bordered ">B. Şehir</td>
+                <td class="text-white bg-info table-bordered ">K. Şehir</td>
             </tr>
             <tr>
-                <td class="table-info table-bordered border-dark text-start">Temizlik Görevlisi (26 GÜN)</td>
-                <td><p class="rakam">@ViewBag.TemizlikBuyuk</p></td>
-                <td><p class="rakam">@ViewBag.TemizlikKucuk</p></td>
+                <td class="table-info table-bordered">Temizlik Görevlisi (26 GÜN)</td>
+                <td >@ViewBag.TemizlikBuyuk</</td>
+                <td >@ViewBag.TemizlikKucuk</td>
             </tr>
             <tr>
-                <td class="table-info table-bordered border-dark text-start">Özel Güvenlik Görevlisi (12 SAAT)</td>
-                <td><p class="rakam">@ViewBag.OnIkiGuvenlikBuyuk</p></td>
-                <td><p class="rakam">@ViewBag.OnIkiGuvenlikKucuk</p></td>
+                <td class=" .table-sm table-primary table-bordered  text-start">Özel Güvenlik Görevlisi (12 SAAT)</td>
+                <td>@ViewBag.OnIkiGuvenlikBuyuk</td>
+                <td>@ViewBag.OnIkiGuvenlikKucuk</td>
             </tr>
             <tr>
-                <td class="table-info table-bordered border-dark text-start">Özel Güvenlik Görevlisi (8 SAAT)</td>
-                <td><p class="rakam">@ViewBag.SekizGuvenlikBuyuk</p></td>
-                <td><p class="rakam">@ViewBag.SekizGuvenlikKucuk</p></td>
+                <td class="table-info table-bordered  text-start">Özel Güvenlik Görevlisi (8 SAAT)</td>
+                <td>@ViewBag.SekizGuvenlikBuyuk</td>
+                <td>@ViewBag.SekizGuvenlikKucuk</td>
             </tr>
             <tr>
-                <td class="table-info table-bordered border-dark  text-start">İklimlendirme Görevlisi (8 SAAT)</td>
-                <td><p id="iklimlendirmeBuyukSehir" class="rakam">@ViewBag.IklimlendirmeBuyuk</p></td>
-                <td><p id="iklimlendirmeKucukSehir" class="rakam">@ViewBag.IklimlendirmeKucuk</p></td>
+                <td class="table-primary table-bordered   text-start">İklimlendirme Görevlisi (8 SAAT)</td>
+                <td>@ViewBag.IklimlendirmeBuyuk</td>
+                <td>@ViewBag.IklimlendirmeKucuk</td>
             </tr>
             <tr>
-                <td class="table-info table-bordered border-dark  text-start">İklimlendirme Görevlisi (12 SAAT)</td>
-                <td><p id="iklimlendirmeBuyukSehir" class="rakam">@ViewBag.IklimlendirmeBuyuk12</p></td>
-                <td><p id="iklimlendirmeKucukSehir" class="rakam">@ViewBag.IklimlendirmeKucuk12</p></td>
+                <td class="table-info table-bordered   text-start">İklimlendirme Görevlisi (12 SAAT)</td>
+                <td>@ViewBag.IklimlendirmeBuyuk12</td>
+                <td>@ViewBag.IklimlendirmeKucuk12</td>
             </tr>
             <tr>
-                <td class="table-info table-bordered border-dark  text-start">Bakım Onarım - Teknisyen (26 GÜN)</td>
-                <td><p id="teknisyenBuyukSehir" class="rakam">@ViewBag.TeknisyenBuyuk</p></td>
-                <td><p id="teknisyenKucukSehir" class="rakam">@ViewBag.TeknisyenKucuk</p></td>
+                <td class="table-primary table-bordered   text-start">Bakım Onarım - Teknisyen (26 GÜN)</td>
+                <td>@ViewBag.TeknisyenBuyuk</td>
+                <td>@ViewBag.TeknisyenKucuk</td>
             </tr>
         </table>
     </div>
@@ -81,7 +81,7 @@
     </p>
 </div>
 <div class="text-center">
-    <a href="/GsbMaasHesaplama" class="btn btn-primary btn-large btn-block" class="hesapla">Kendi Maaşımı Hesapla</a>
+    <a href="/GsbMaasHesaplama" class="btn btn-primary btn-large btn-block hesapla">Kendi Maaşımı Hesapla</a>
 </div>
 <div class="text-center p-3">
         <p style="font-size:12px;">Bu hesaplamada yer alan bilgiler sadece genel bilgilendirme amaçlıdır ve Toleyis Sendikası, yetkilileri ve çalışanları tarafından profesyonel bağlamda herhangi bir tavsiye veya hizmet sunmayı amaçlamamakta ve bilgilerin doğruluğuna dair herhangi bir garanti vermemektedir. Toleyis Sendikası, yetkilileri ya da çalışanları bu hesaplamada yer alan bilgilerin üçüncü kişiler tarafından kullanılması sonucunda ortaya çıkabilecek zarar veya ziyandan sorumlu değildir.</p>

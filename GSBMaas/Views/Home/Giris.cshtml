@@ -116,10 +116,25 @@
             <div class="mb-3 text-start radio-label">
                 <input type="radio" id="kisiselVeriOnay">
                 <label for="kisiselVeriOnay">
-                    Kişisel verileriniz <a href="#" data-bs-toggle="modal" data-bs-target="#kisiselVeriModal">Kişisel Veri Onam Metni</a> doğrultusunda işlenecektir.
+                    Kişisel verileriniz <a href="#" id="onamMetniLink">Kişisel Veri Onam Metni</a> doğrultusunda işlenecektir.
                 </label>
             </div>
             <div id="onayHata" class="error-message">Kişisel Veri Onam Metni'ni onaylamalısınız!</div>
+
+            <!-- ❗ Kişisel Veri Onam Modalı -->
+            <div class="modal fade" id="kisiselVeriModal" tabindex="-1" aria-labelledby="kisiselVeriModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Kişisel Veri Onam Metni</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                        </div>
+                        <div class="modal-body">
+                            @Html.Partial("_KisiselVeriOnamMetni")
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
         </form>
@@ -161,11 +176,34 @@
             return /^[1-9][0-9]{10}$/.test(tckn);
         }
 
+        document.getElementById("onamMetniLink").addEventListener("click", function (event) {
+            event.preventDefault();
+            $("#kisiselVeriModal").modal("show"); // ✅ Kişisel Veri Modalı açılacak
+        });
+
         document.getElementById("loginForm").addEventListener("submit", function (event) {
             event.preventDefault();
 
             let tcKimlik = document.getElementById("tcKimlik").value;
             let uyelikKodu = document.getElementById("uyelikKodu").value;
+            let errorDiv = document.getElementById("tcError");
+            let onayKutusu = document.getElementById("kisiselVeriOnay");
+            let onayHata = document.getElementById("onayHata");
+
+            if (!isValidTCKN(tcKimlik)) {
+                errorDiv.style.display = "block";
+                return;
+            } else {
+                errorDiv.style.display = "none";
+            }
+
+            // ✅ Eğer kişisel veri onayı işaretlenmemişse form gönderme
+            if (!onayKutusu.checked) {
+                onayHata.style.display = "block";
+                return;
+            } else {
+                onayHata.style.display = "none";
+            }
 
             fetch("/Home/GirisKontrol", {
                 method: "POST",
@@ -190,5 +228,6 @@
                 });
         });
     </script>
+
 </body>
 </html>
