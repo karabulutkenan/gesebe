@@ -21,7 +21,9 @@ namespace GSBMaas.Context
         public DbSet<Sabit> Sabits { get; set; }
 
         public DbSet<Misafirhane> Misafirhaneler { get; set; }
-        }
+        public DbSet<Moderator> Moderatorler { get; set; }
 
-    
+    }
+
+
 }
