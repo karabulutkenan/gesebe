@@ -1,5 +1,96 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model List<GSBMaas.Models.Moderator>
+
 @{
+    ViewData["Title"] = "Moderator Yönetimi";
 }
+
+<header class="d-flex justify-content-between align-items-center p-3 mb-4 bg-light border-bottom">
+    <h1 class="h5 text-uppercase">Moderasyon Yönetimi</h1>
+    <a href="/Yonetici/Cikis" class="btn btn-danger">Çıkış</a>
+</header>
+
+<div class="container">
+    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModeratorModal">Yeni Moderatör Ekle</button>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ad</th>
+                <th>Soyad</th>
+                <th>Kullanıcı Adı</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var moderator in Model)
+            {
+                <tr>
+                    <td>@moderator.ID</td>
+                    <td>@moderator.Ad</td>
+                    <td>@moderator.Soyad</td>
+                    <td>@moderator.KullaniciAdi</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editModerator(@moderator.ID, '@moderator.Ad', '@moderator.Soyad', '@moderator.KullaniciAdi')">Düzenle</button>
+                        <a href="/Yonetici/SilModerator/@moderator.ID" class="btn btn-danger btn-sm">Sil</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Moderatör Ekleme Modalı -->
+<div class="modal fade" id="addModeratorModal" tabindex="-1" aria-labelledby="addModeratorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Yeni Moderatör Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addModeratorForm" method="post" action="/Yonetici/EkleModerator">
+                    <div class="mb-3">
+                        <label>Ad</label>
+                        <input type="text" name="Ad" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Soyad</label>
+                        <input type="text" name="Soyad" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Kullanıcı Adı</label>
+                        <input type="text" name="KullaniciAdi" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Şifre</label>
+                        <input type="password" name="Sifre" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Ekle</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Moderatör Düzenleme Scripti -->
+<script>
+    function editModerator(id, ad, soyad, kullaniciAdi) {
+        let newAd = prompt("Yeni Ad", ad);
+        let newSoyad = prompt("Yeni Soyad", soyad);
+        let newKullaniciAdi = prompt("Yeni Kullanıcı Adı", kullaniciAdi);
+
+        if (newAd && newSoyad && newKullaniciAdi) {
+            window.location.href = `/Yonetici/DuzenleModerator?id=${id}&ad=${newAd}&soyad=${newSoyad}&kullaniciAdi=${newKullaniciAdi}`;
+        }
+    }
+</script>

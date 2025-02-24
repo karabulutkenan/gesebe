@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Linq;
+using GSBMaas.Models;
+using BCrypt.Net;
+
 
 namespace GSBMaas.Controllers
 {
@@ -20,7 +24,7 @@ namespace GSBMaas.Controllers
         {
             return View();
         }
-
+        
         [HttpPost]
         public async Task<IActionResult> Giris(string password)
         {
@@ -104,10 +108,88 @@ namespace GSBMaas.Controllers
 
         [Authorize(AuthenticationSchemes = Scheme)]
         [HttpGet]
+        public IActionResult Moderatorler()
+        {
+            var moderatorler = db.Moderatorler.ToList();
+            return View(moderatorler);
+        }
+
+        [Authorize(AuthenticationSchemes = Scheme)]
+        [HttpPost]
+        public IActionResult EkleModerator(string Ad, string Soyad, string KullaniciAdi, string Sifre)
+        {
+            if (string.IsNullOrEmpty(Ad) || string.IsNullOrEmpty(Soyad) || string.IsNullOrEmpty(KullaniciAdi) || string.IsNullOrEmpty(Sifre))
+            {
+                TempData["ErrorMessage"] = "Tüm alanları doldurmalısınız!";
+                return RedirectToAction("Moderatorler");
+            }
+
+            // Şifreyi hashle
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(Sifre);
+
+            var yeniModerator = new Moderator
+            {
+                Ad = Ad,
+                Soyad = Soyad,
+                KullaniciAdi = KullaniciAdi,
+                SifreHash = hashedPassword
+            };
+
+            db.Moderatorler.Add(yeniModerator);
+            db.SaveChanges();
+
+            TempData["SuccessMessage"] = "Moderasyon başarıyla eklendi.";
+            return RedirectToAction("Moderatorler");
+        }
+
+        [Authorize(AuthenticationSchemes = Scheme)]
+        [HttpGet]
+        public IActionResult DuzenleModerator(int id, string ad, string soyad, string kullaniciAdi)
+        {
+            var moderator = db.Moderatorler.Find(id);
+            if (moderator != null)
+            {
+                moderator.Ad = ad;
+                moderator.Soyad = soyad;
+                moderator.KullaniciAdi = kullaniciAdi;
+
+                db.SaveChanges();
+                TempData["SuccessMessage"] = "Moderasyon başarıyla güncellendi.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Güncellenecek moderatör bulunamadı.";
+            }
+
+            return RedirectToAction("Moderatorler");
+        }
+        [Authorize(AuthenticationSchemes = Scheme)]
+        [HttpGet]
+        public IActionResult SilModerator(int id)
+        {
+            var moderator = db.Moderatorler.Find(id);
+            if (moderator != null)
+            {
+                db.Moderatorler.Remove(moderator);
+                db.SaveChanges();
+                TempData["SuccessMessage"] = "Moderasyon başarıyla silindi.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Silinecek moderatör bulunamadı.";
+            }
+
+            return RedirectToAction("Moderatorler");
+        }
+
+
+        [Authorize(AuthenticationSchemes = Scheme)]
+        [HttpGet]
         public IActionResult Index()
         {
             var deger = db.Sabits.Find(1);
             return View(deger);
         }
+       
     }
 }

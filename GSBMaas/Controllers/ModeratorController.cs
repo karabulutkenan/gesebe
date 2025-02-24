@@ -4,19 +4,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using GSBMaas.Models;
 using GSBMaas.Context;
 using System.Linq;
+using BCrypt.Net;
 
 namespace GSBMaas.Controllers
 {
     public class ModeratorController : Controller
     {
-        private const string CorrectPassword = "Ekip2025**"; // Moderatör şifresi
         private const string Scheme = "ModeratorAuth"; // Moderator için AuthenticationScheme
 
-        // ❗ AppDbContext DI ile değil, eski haliyle kullanılıyor!
         private readonly AppDbContext db = new AppDbContext();
 
         [HttpGet]
@@ -26,23 +26,33 @@ namespace GSBMaas.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Giris(string password)
+        public async Task<IActionResult> Giris(string kullaniciAdi, string password)
         {
-            if (password == CorrectPassword)
+            // 🔹 Veritabanından moderatörü bul
+            var moderator = db.Moderatorler.FirstOrDefault(m => m.KullaniciAdi == kullaniciAdi);
+
+            if (moderator != null && BCrypt.Net.BCrypt.Verify(password, moderator.SifreHash)) // 🔹 Şifre doğrulama
             {
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, "moderator")
+                    new Claim(ClaimTypes.Name, moderator.KullaniciAdi),
+                    new Claim("ModeratorAd", moderator.Ad),
+                    new Claim("ModeratorSoyad", moderator.Soyad)
                 };
                 var identity = new ClaimsIdentity(claims, Scheme);
                 var principal = new ClaimsPrincipal(identity);
 
                 await HttpContext.SignInAsync(Scheme, principal);
+
+                // 🔹 Session’a moderatör bilgilerini kaydet
+                HttpContext.Session.SetString("ModeratorAd", moderator.Ad);
+                HttpContext.Session.SetString("ModeratorSoyad", moderator.Soyad);
+
                 return RedirectToAction("Index");
             }
             else
             {
-                ViewBag.ErrorMessage = "Hatalı şifre! Lütfen tekrar deneyin.";
+                ViewBag.ErrorMessage = "Hatalı kullanıcı adı veya şifre!";
                 return View();
             }
         }
