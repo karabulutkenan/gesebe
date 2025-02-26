@@ -5,6 +5,7 @@
 @{
     var userAd = Context.Session.GetString("UserAd") ?? "Misafir";
     var userSoyad = Context.Session.GetString("UserSoyad") ?? "";
+    
 }
 <!DOCTYPE html>
 <html lang="tr">
@@ -137,8 +138,39 @@
             </div>
 
             <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+            <!-- Moderatör Girişi Butonu -->
+            <div class="text-center mt-3">
+                <a href="#" id="moderatorGirisBtn" class="text-primary">Moderatör Girişi</a>
+            </div>
+
         </form>
     </div>
+    <!-- Moderatör Girişi Modal -->
+    <div class="modal fade" id="moderatorGirisModal" tabindex="-1" aria-labelledby="moderatorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="moderatorModalLabel">Moderatör Girişi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="moderatorLoginForm">
+                        <div class="mb-3">
+                            <label for="moderatorKullaniciAdi" class="form-label">Kullanıcı Adı</label>
+                            <input type="text" id="moderatorKullaniciAdi" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="moderatorSifre" class="form-label">Şifre</label>
+                            <input type="password" id="moderatorSifre" class="form-control" required>
+                        </div>
+                        <div id="moderatorError" class="text-danger text-center" style="display: none;">Hatalı giriş!</div>
+                        <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- ❗ Giriş Başarılı Modal -->
     <div class="modal fade" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeModalLabel" aria-hidden="true">
@@ -228,6 +260,43 @@
                 });
         });
     </script>
+    <script>
+        $(document).ready(function () {
+            // Moderatör giriş butonuna tıklanınca modalı aç
+            $("#moderatorGirisBtn").click(function (event) {
+                event.preventDefault();
+                $("#moderatorGirisModal").modal("show");
+            });
+
+            // Moderatör giriş formunu gönder
+            $("#moderatorLoginForm").submit(function (event) {
+                event.preventDefault(); // Sayfanın yenilenmesini engelle
+
+                let kullaniciAdi = $("#moderatorKullaniciAdi").val();
+                let sifre = $("#moderatorSifre").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/GirisKontrolModerator", // Yeni eklediğimiz metoda istek yap
+                    contentType: "application/json",
+                    data: JSON.stringify({ TcKimlik: kullaniciAdi, UyelikKodu: sifre }), // Moderatör kullanıcı adı ve şifre gönderiyoruz
+                    success: function (data) {
+                        if (data.success) {
+                            $("#moderatorGirisModal").modal("hide"); // Başarılıysa modalı kapat
+                            window.location.href = "/Home/Index"; // Ana sayfaya yönlendir
+                        } else {
+                            $("#moderatorError").show(); // Hata mesajını göster
+                        }
+                    },
+                    error: function () {
+                        $("#moderatorError").show(); // Genel hata mesajını göster
+                    }
+                });
+            });
+        });
+    </script>
+
+
 
 </body>
 </html>

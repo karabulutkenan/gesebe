@@ -6,11 +6,24 @@
 @{
     var userAd = Context.Session.GetString("UserAd") ?? "Misafir";
     var userSoyad = Context.Session.GetString("UserSoyad") ?? "";
+    var unvan = Context.Session.GetString("Unvan") ?? "";
 }
 
 <div class="container mt-2">
     <div class="d-flex justify-content-between align-items-center bg-light rounded shadow-sm">
-        <h6 class="text-dark">👋 Hoşgeldin, <b>@userAd @userSoyad</b></h6>
+        @if ( @unvan=="TOLEYİS SENDİKASI" )
+        {
+            <h6 class="text-dark">
+                👋 Hoşgeldiniz, <b>@userAd BAŞKAN</b>  <br />
+                <b style="font-size: 8px; color:darkgrey"> 🏢 @unvan</b>
+            </h6>
+        }
+        else {
+            <h6 class="text-dark">
+            👋 Hoşgeldiniz, <b>@userAd @userSoyad</b>  <br /> 
+            <b style="font-size: 8px; color:darkgrey"> 🏢 @unvan</b>
+        </h6>
+        }
         <form asp-controller="Home" asp-action="Cikis" method="post">
             <button type="submit" class="btn btn-danger">Çıkış</button>
         </form>

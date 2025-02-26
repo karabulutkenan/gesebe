@@ -8,6 +8,9 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using System;
+using GSBMaas.Context;
+using System.Linq;
+
 
 namespace GSBMaas.Controllers
 {
@@ -136,6 +139,7 @@ namespace GSBMaas.Controllers
                         HttpContext.Session.SetString("UserTc", model.TcKimlik);
                         HttpContext.Session.SetString("UserAd", result.result.ad);
                         HttpContext.Session.SetString("UserSoyad", result.result.soyad);
+                        HttpContext.Session.SetString("Unvan", result.result.unvan);
                         return Json(new { success = true });
                     }
                     else
@@ -148,6 +152,28 @@ namespace GSBMaas.Controllers
                     return Json(new { success = false, message = "API bağlantı hatası! HTTP Status Code: " + response.StatusCode });
                 }
             }
+        }
+
+        [HttpPost]
+        public IActionResult GirisKontrolModerator([FromBody] GirisModel model)
+        {
+            using (var db = new AppDbContext()) // Veritabanına bağlan
+            {
+                var moderator = db.Moderatorler.FirstOrDefault(m => m.KullaniciAdi == model.TcKimlik); // Kullanıcı adını bul
+
+                if (moderator != null && BCrypt.Net.BCrypt.Verify(model.UyelikKodu, moderator.SifreHash)) // Şifreyi doğrula
+                {
+                    // Giriş başarılı, Session’a bilgileri ekleyelim
+                    HttpContext.Session.SetString("UserLoggedIn", "true");
+                    HttpContext.Session.SetString("UserAd", moderator.Ad);
+                    HttpContext.Session.SetString("UserSoyad", moderator.Soyad);
+                    HttpContext.Session.SetString("KullaniciAdi", moderator.KullaniciAdi);
+                    return Json(new { success = true });
+                }
+            }
+
+            // Eğer giriş başarısızsa hata mesajı gönder
+            return Json(new { success = false, message = "Moderatör girişi başarısız!" });
         }
 
         public IActionResult TestSession()
@@ -193,5 +219,6 @@ namespace GSBMaas.Controllers
         public string ad { get; set; }
         public string soyad { get; set; }
         public string uye { get; set; }
+        public string unvan { get; set; }
     }
 }
