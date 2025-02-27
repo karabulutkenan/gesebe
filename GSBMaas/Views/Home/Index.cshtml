@@ -13,16 +13,16 @@
     <div class="d-flex justify-content-between align-items-center bg-light rounded shadow-sm">
         @if ( @unvan=="TOLEYİS SENDİKASI" )
         {
-            <h6 class="text-dark">
-                👋 Hoşgeldiniz, <b>@userAd BAŞKAN</b>  <br />
+            <h7 class="text-dark">
+                Hoşgeldiniz, <b>@userAd BAŞKAN</b>  <br />
                 <b style="font-size: 8px; color:darkgrey"> 🏢 @unvan</b>
-            </h6>
+            </h7>
         }
         else {
-            <h6 class="text-dark">
-            👋 Hoşgeldiniz, <b>@userAd @userSoyad</b>  <br /> 
+            <h7 class="text-dark">
+            Hoşgeldiniz, <b>@userAd @userSoyad</b>  <br /> 
             <b style="font-size: 8px; color:darkgrey"> 🏢 @unvan</b>
-        </h6>
+        </h7>
         }
         <form asp-controller="Home" asp-action="Cikis" method="post">
             <button type="submit" class="btn btn-danger">Çıkış</button>
@@ -31,12 +31,12 @@
 </div>
 
 <div class="container-fluid px-0 mt-2">
-    <div class="row gx-0" style="row-gap: 10px;">
+    <div class="row gx-0" style="row-gap: 15px;">
         <!-- Satır aralığı 10px -->
         <!-- GSB Maaş Hesaplama -->
         <div class="col-6 col-md-4">
             <a href="/Tablo" class="text-decoration-none">
-                <div class="tile bg-info rounded text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
+                <div class="tile bg-info shadow rounded text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
                     <i class="bi bi-calculator" style="font-size: 3rem;"></i>
                     <h5 class="mt-2">GSB Maaş Hesaplama</h5>
                 </div>
@@ -46,7 +46,7 @@
         <!-- Dilekçe Örnekleri -->
         <div class="col-6 col-md-4">
             <a href="/Home/DilekceOrnekleri" class="text-decoration-none">
-                <div class="tile bg-danger rounded text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
+                <div class="tile bg-danger rounded shadow text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
                     <i class="bi bi-file-earmark-text" style="font-size: 3rem;"></i>
                     <h5 class="mt-2">Dilekçe Örnekleri</h5>
                 </div>
@@ -56,7 +56,7 @@
         <!-- Kamu Misafirhaneleri -->
         <div class="col-6 col-md-4">
             <a href="/KamuMisafirhaneleri" class="text-decoration-none">
-                <div class="tile bg-secondary rounded text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
+                <div class="tile bg-secondary rounded shadow text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
                     <i class="bi bi-building" style="font-size: 3rem;"></i>
                     <h5 class="mt-2">Kamu Misafirhaneleri</h5>
                 </div>
@@ -66,7 +66,7 @@
         <!-- Kanun ve Yönetmelikler -->
         <div class="col-6 col-md-4">
             <a href="/Home/KanunVeYonetmelikler" class="text-decoration-none">
-                <div class="tile bg-warning rounded text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
+                <div class="tile bg-warning rounded shadow text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
                     <i class="bi bi-book" style="font-size: 3rem;"></i>
                     <h5 class="mt-2">Kanun ve Yönetmelikler</h5>
                 </div>
@@ -76,7 +76,7 @@
         <!-- Kıdem Tazminatı Hesaplama -->
         <div class="col-6 col-md-4">
             <a href="/KamuKidemTazminatiHesaplama/Index" class="text-decoration-none">
-                <div class="tile bg-success rounded text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
+                <div class="tile bg-success rounded shadow text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
                     <i class="bi bi-cash-stack" style="font-size: 3rem;"></i>
                     <h5 class="mt-2">Kamu Kıdem Tazminatı Hesaplama</h5>
                 </div>
@@ -86,7 +86,7 @@
         <!-- İşçi İşveren İlişkileri (Sorular-Cevaplar) -->
         <div class="col-6 col-md-4">
             <a href="/SorularCevaplar" class="text-decoration-none">
-                <div class="tile bg-primary rounded text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
+                <div class="tile bg-primary rounded shadow text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
                     <i class="bi bi-question-circle" style="font-size: 3rem;"></i>
                     <h5 class="mt-2 text-center">İşçi İşveren İlişkileri (Sorular-Cevaplar)</h5>
                 </div>
