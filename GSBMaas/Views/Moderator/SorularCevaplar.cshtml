@@ -1,0 +1,76 @@
+﻿@model List<GSBMaas.Models.Soru>
+
+@{
+    ViewData["Title"] = "Soru & Cevap Yönetimi";
+}
+
+<header class="d-flex justify-content-between align-items-center p-3 mb-4 bg-light border-bottom">
+    <h1 class="h5 text-uppercase">Soru & Cevap Yönetimi</h1>
+    <a href="/Moderator/Cikis" class="btn btn-danger">Çıkış</a>
+</header>
+
+<div class="container">
+    <!-- Başarı ve Hata Mesajları -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <!-- Yeni Soru Ekleme -->
+    <h4>Yeni Soru Ekle</h4>
+    <form method="post" asp-action="EkleSoru">
+        <input type="text" name="kategori" class="form-control mb-2" placeholder="Kategori">
+        <textarea name="soruMetni" class="form-control mb-2" placeholder="Soruyu yazınız"></textarea>
+        <input type="text" name="soruSahibi" class="form-control mb-2" placeholder="Soruyu soran">
+        <button type="submit" class="btn btn-primary">Soruyu Ekle</button>
+    </form>
+
+    <hr>
+
+    <!-- Soru Listesi -->
+    <h4>Mevcut Sorular</h4>
+    <ul class="list-group">
+        @foreach (var soru in Model)
+        {
+            <li class="list-group-item">
+                <strong>@soru.Kategori:</strong> @soru.SoruMetni
+                <br>
+                <small class="text-muted">Soruyu soran: @soru.SoruSahibi, Tarih: @soru.SoruTarihi</small>
+                @if (!string.IsNullOrEmpty(soru.CevapMetni))
+                {
+                    <div class="mt-2">
+                        <span class="badge bg-success">Cevaplandı</span>
+                        <p><strong>Cevap:</strong> @soru.CevapMetni</p>
+                        <p><strong>Cevaplayan:</strong> @soru.Cevaplayan | <strong>Tarih:</strong> @soru.CevapTarihi</p>
+                        <p><strong>Kaynak:</strong> @soru.Kaynak</p>
+                        @if (!soru.OnaylandiMi)
+                        {
+                            <form method="post" asp-action="OnaylaSoru">
+                                <input type="hidden" name="id" value="@soru.ID">
+                                <button type="submit" class="btn btn-success">Onayla</button>
+                            </form>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <form method="post" asp-action="EkleCevap">
+                        <input type="hidden" name="id" value="@soru.ID">
+                        <textarea name="cevapMetni" class="form-control mb-2" placeholder="Cevabınızı yazınız"></textarea>
+                        <input type="text" name="kaynak" class="form-control mb-2" placeholder="Kaynak (Opsiyonel)">
+                        <button type="submit" class="btn btn-info">Cevapla</button>
+                    </form>
+                }
+
+                <form method="post" asp-action="SilSoru">
+                    <input type="hidden" name="id" value="@soru.ID">
+                    <button type="submit" class="btn btn-danger">Sil</button>
+                </form>
+            </li>
+        }
+    </ul>
+</div>

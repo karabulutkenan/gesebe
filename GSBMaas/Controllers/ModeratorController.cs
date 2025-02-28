@@ -10,6 +10,7 @@ using GSBMaas.Models;
 using GSBMaas.Context;
 using System.Linq;
 using BCrypt.Net;
+using System;
 
 namespace GSBMaas.Controllers
 {
@@ -105,5 +106,100 @@ namespace GSBMaas.Controllers
 
             return Json(new { success = false, message = "Hata oluştu, lütfen tekrar deneyin!" });
         }
+
+        //SORU CEVAP BÖLÜMÜ BAŞLADI
+
+        [Authorize(AuthenticationSchemes = Scheme)]
+        [HttpGet]
+        public IActionResult SorularCevaplar()
+        {
+            var sorular = db.Sorular.OrderByDescending(s => s.SoruTarihi).ToList();
+            return View(sorular);
+        }
+
+        [Authorize(AuthenticationSchemes = Scheme)]
+        [HttpPost]
+        public IActionResult EkleSoru(string kategori, string soruMetni, string soruSahibi)
+        {
+            if (string.IsNullOrEmpty(kategori) || string.IsNullOrEmpty(soruMetni) || string.IsNullOrEmpty(soruSahibi))
+            {
+                TempData["ErrorMessage"] = "Tüm alanları doldurmalısınız!";
+                return RedirectToAction("SorularCevaplar");
+            }
+
+            var yeniSoru = new Soru
+            {
+                Kategori = kategori,
+                SoruMetni = soruMetni,
+                SoruSahibi = soruSahibi,
+                SoruTarihi = DateTime.Now
+            };
+
+            db.Sorular.Add(yeniSoru);
+            db.SaveChanges();
+
+            TempData["SuccessMessage"] = "Soru başarıyla eklendi.";
+            return RedirectToAction("SorularCevaplar");
+        }
+
+        [Authorize(AuthenticationSchemes = Scheme)]
+        [HttpPost]
+        public IActionResult EkleCevap(int id, string cevapMetni, string kaynak)
+        {
+            var soru = db.Sorular.Find(id);
+            if (soru == null || string.IsNullOrEmpty(cevapMetni))
+            {
+                TempData["ErrorMessage"] = "Cevap eklenirken hata oluştu!";
+                return RedirectToAction("SorularCevaplar");
+            }
+
+            soru.CevapMetni = cevapMetni;
+            soru.Cevaplayan = HttpContext.Session.GetString("ModeratorAd");
+            soru.CevapTarihi = DateTime.Now;
+            soru.Kaynak = kaynak;
+            soru.OnaylandiMi = false; // Cevap eklendi ama onaylanmadı
+
+            db.SaveChanges();
+
+            TempData["SuccessMessage"] = "Cevap başarıyla eklendi. Onaylanması gerekiyor!";
+            return RedirectToAction("SorularCevaplar");
+        }
+
+        [Authorize(AuthenticationSchemes = Scheme)]
+        [HttpPost]
+        public IActionResult OnaylaSoru(int id)
+        {
+            var soru = db.Sorular.Find(id);
+            if (soru != null)
+            {
+                soru.OnaylandiMi = true;
+                db.SaveChanges();
+                TempData["SuccessMessage"] = "Soru başarıyla onaylandı!";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Soru bulunamadı!";
+            }
+            return RedirectToAction("SorularCevaplar");
+        }
+
+        [Authorize(AuthenticationSchemes = Scheme)]
+        [HttpPost]
+        public IActionResult SilSoru(int id)
+        {
+            var soru = db.Sorular.Find(id);
+            if (soru != null)
+            {
+                db.Sorular.Remove(soru);
+                db.SaveChanges();
+                TempData["SuccessMessage"] = "Soru başarıyla silindi.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Soru bulunamadı!";
+            }
+            return RedirectToAction("SorularCevaplar");
+        }
+
     }
 }
