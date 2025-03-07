@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GSBMaas.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250228103213_AddKategoriTable")]
-    partial class AddKategoriTable
+    [Migration("20250307204942_SoruSoranUpdate")]
+    partial class SoruSoranUpdate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -197,36 +197,39 @@ namespace GSBMaas.Migrations
 
             modelBuilder.Entity("GSBMaas.Models.Soru", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("CevapMetni")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<DateTime?>("CevapTarihi")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Cevaplayan")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Kategori")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("KategoriId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Kaynak")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("OnaylandiMi")
                         .HasColumnType("bit");
 
                     b.Property<string>("SoruMetni")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("SoruSahibi")
+                    b.Property<string>("SoruSoran")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -234,7 +237,9 @@ namespace GSBMaas.Migrations
                     b.Property<DateTime>("SoruTarihi")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
+
+                    b.HasIndex("KategoriId");
 
                     b.ToTable("Sorular");
                 });
@@ -253,7 +258,18 @@ namespace GSBMaas.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Kategoriler");
+                    b.ToTable("SoruKategoriler");
+                });
+
+            modelBuilder.Entity("GSBMaas.Models.Soru", b =>
+                {
+                    b.HasOne("GSBMaas.Models.SoruKategori", "SoruKategori")
+                        .WithMany()
+                        .HasForeignKey("KategoriId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SoruKategori");
                 });
 #pragma warning restore 612, 618
         }

@@ -11,6 +11,7 @@ using GSBMaas.Context;
 using System.Linq;
 using BCrypt.Net;
 using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace GSBMaas.Controllers
 {
@@ -109,97 +110,231 @@ namespace GSBMaas.Controllers
 
         //SORU CEVAP BÖLÜMÜ BAŞLADI
 
+
+        [Authorize(AuthenticationSchemes = Scheme)]
+        [HttpPost]
+        public IActionResult SoruKategoriEkle(string Ad)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(Ad))
+                {
+                    return Json(new { success = false, message = "⚠️ Kategori adı boş olamaz!" });
+                }
+
+                var yeniKategori = new SoruKategori { Ad = Ad };
+                db.SoruKategoriler.Add(yeniKategori);
+                db.SaveChanges();
+
+                return Json(new { success = true, message = "✅ Kategori başarıyla eklendi!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "⚠️ Hata oluştu: " + ex.Message });
+            }
+        }
+
+        // ✅ Kategori Güncelleme
+        [Authorize(AuthenticationSchemes = Scheme)]
+        [HttpPost]
+        public IActionResult SoruKategoriGuncelle(int id, string Ad)
+        {
+            try
+            {
+                var kategori = db.SoruKategoriler.Find(id);
+                if (kategori == null)
+                {
+                    return Json(new { success = false, message = "❌ Kategori bulunamadı!" });
+                }
+
+                if (string.IsNullOrEmpty(Ad))
+                {
+                    return Json(new { success = false, message = "⚠️ Kategori adı boş olamaz!" });
+                }
+
+                kategori.Ad = Ad;
+                db.SaveChanges();
+                return Json(new { success = true, message = "✅ Kategori başarıyla güncellendi!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "⚠️ Hata oluştu: " + ex.Message });
+            }
+        }
+
+
+        // ✅ Kategori Silme
+        [Authorize(AuthenticationSchemes = Scheme)]
+        [HttpDelete]
+        public IActionResult SoruKategoriSil(int id)
+        {
+            try
+            {
+                var kategori = db.SoruKategoriler.Find(id);
+                if (kategori == null)
+                {
+                    return Json(new { success = false, message = "❌ Kategori bulunamadı!" });
+                }
+
+                db.SoruKategoriler.Remove(kategori);
+                db.SaveChanges();
+                return Json(new { success = true, message = "✅ Kategori başarıyla silindi!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "⚠️ Hata oluştu: " + ex.Message });
+            }
+        }
+
+
+
+
         [Authorize(AuthenticationSchemes = Scheme)]
         [HttpGet]
         public IActionResult SorularCevaplar()
         {
-            var sorular = db.Sorular.OrderByDescending(s => s.SoruTarihi).ToList();
+            var sorular = db.Sorular.Include(s => s.SoruKategori).ToList();
+            var kategoriler = db.SoruKategoriler.ToList();
+
+            ViewBag.SoruKategoriler = kategoriler;
             return View(sorular);
         }
 
         [Authorize(AuthenticationSchemes = Scheme)]
         [HttpPost]
-        public IActionResult EkleSoru(string kategori, string soruMetni, string soruSahibi)
+        public IActionResult SoruEkle(int kategoriId, string SoruMetni, string CevapMetni, string Kaynak)
         {
-            if (string.IsNullOrEmpty(kategori) || string.IsNullOrEmpty(soruMetni) || string.IsNullOrEmpty(soruSahibi))
+            try
             {
-                TempData["ErrorMessage"] = "Tüm alanları doldurmalısınız!";
-                return RedirectToAction("SorularCevaplar");
+                if (kategoriId <= 0 || string.IsNullOrEmpty(SoruMetni) || string.IsNullOrEmpty(CevapMetni))
+                {
+                    return Json(new { success = false, message = "Tüm alanları doldurun!" });
+                }
+
+                DateTime now = DateTime.Now;
+
+                var yeniSoru = new Soru
+                {
+                    KategoriId = kategoriId,
+                    SoruMetni = SoruMetni,
+                    CevapMetni = CevapMetni,
+                    Cevaplayan = "Sistem Yöneticisi",
+                    Kaynak = Kaynak,
+                    SoruTarihi = now,
+                    CevapTarihi = now,
+                    OnaylandiMi = true
+                };
+
+                db.Sorular.Add(yeniSoru);
+                db.SaveChanges();
+
+                return Json(new { success = true, message = "✅ Soru başarıyla eklendi ve onaylandı!" });
             }
-
-            var yeniSoru = new Soru
+            catch (Exception ex)
             {
-                Kategori = kategori,
-                SoruMetni = soruMetni,
-                SoruSahibi = soruSahibi,
-                SoruTarihi = DateTime.Now
-            };
-
-            db.Sorular.Add(yeniSoru);
-            db.SaveChanges();
-
-            TempData["SuccessMessage"] = "Soru başarıyla eklendi.";
-            return RedirectToAction("SorularCevaplar");
+                return Json(new { success = false, message = "⚠️ Hata oluştu: " + ex.Message });
+            }
         }
 
-        [Authorize(AuthenticationSchemes = Scheme)]
-        [HttpPost]
-        public IActionResult EkleCevap(int id, string cevapMetni, string kaynak)
-        {
-            var soru = db.Sorular.Find(id);
-            if (soru == null || string.IsNullOrEmpty(cevapMetni))
-            {
-                TempData["ErrorMessage"] = "Cevap eklenirken hata oluştu!";
-                return RedirectToAction("SorularCevaplar");
-            }
-
-            soru.CevapMetni = cevapMetni;
-            soru.Cevaplayan = HttpContext.Session.GetString("ModeratorAd");
-            soru.CevapTarihi = DateTime.Now;
-            soru.Kaynak = kaynak;
-            soru.OnaylandiMi = false; // Cevap eklendi ama onaylanmadı
-
-            db.SaveChanges();
-
-            TempData["SuccessMessage"] = "Cevap başarıyla eklendi. Onaylanması gerekiyor!";
-            return RedirectToAction("SorularCevaplar");
-        }
+        //SORU DÜZENLEME
 
         [Authorize(AuthenticationSchemes = Scheme)]
-        [HttpPost]
-        public IActionResult OnaylaSoru(int id)
+        [HttpGet]
+        public IActionResult GetSoru(int id)
         {
             var soru = db.Sorular.Find(id);
             if (soru != null)
             {
+                return Json(new
+                {
+                    success = true,
+                    kategoriId = soru.KategoriId,
+                    soruMetni = soru.SoruMetni,
+                    cevapMetni = soru.CevapMetni,
+                    kaynak = soru.Kaynak
+                });
+            }
+            return Json(new { success = false, message = "❌ Soru bulunamadı!" });
+        }
+
+
+        [Authorize(AuthenticationSchemes = Scheme)]
+        [HttpPost]
+        public IActionResult SoruGuncelle(int id, int kategoriId, string SoruMetni, string CevapMetni, string Kaynak)
+        {
+            try
+            {
+                var soru = db.Sorular.Find(id);
+                if (soru != null)
+                {
+                    soru.KategoriId = kategoriId;
+                    soru.SoruMetni = SoruMetni;
+                    soru.CevapMetni = CevapMetni;
+                    soru.Kaynak = Kaynak;
+                    soru.CevapTarihi = DateTime.Now; // Güncellendiğinde tarihi güncelle
+
+                    db.SaveChanges();
+                    return Json(new { success = true, message = "✅ Soru başarıyla güncellendi!" });
+                }
+                return Json(new { success = false, message = "❌ Soru bulunamadı!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "⚠️ Hata oluştu: " + ex.Message });
+            }
+        }
+
+
+
+
+        // ✅ Moderatör soruyu onaylayacak
+        [Authorize(AuthenticationSchemes = Scheme)]
+        [HttpPost]
+        public IActionResult SoruOnayla(int id)
+        {
+            try
+            {
+                var soru = db.Sorular.Find(id);
+                if (soru == null)
+                {
+                    return Json(new { success = false, message = "❌ Soru bulunamadı!" });
+                }
+
                 soru.OnaylandiMi = true;
+                soru.CevapTarihi = DateTime.Now;
                 db.SaveChanges();
-                TempData["SuccessMessage"] = "Soru başarıyla onaylandı!";
+
+                return Json(new { success = true, message = "✅ Soru başarıyla onaylandı!" });
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Soru bulunamadı!";
+                return Json(new { success = false, message = "⚠️ Hata oluştu: " + ex.Message });
             }
-            return RedirectToAction("SorularCevaplar");
         }
 
+
+        // ✅ Moderatör soruyu silebilir
         [Authorize(AuthenticationSchemes = Scheme)]
-        [HttpPost]
-        public IActionResult SilSoru(int id)
+        [HttpDelete]
+        public IActionResult SoruSil(int id)
         {
-            var soru = db.Sorular.Find(id);
-            if (soru != null)
+            try
             {
-                db.Sorular.Remove(soru);
-                db.SaveChanges();
-                TempData["SuccessMessage"] = "Soru başarıyla silindi.";
+                var soru = db.Sorular.Find(id);
+                if (soru != null)
+                {
+                    db.Sorular.Remove(soru);
+                    db.SaveChanges();
+                    return Json(new { success = true, message = "✅ Soru başarıyla silindi!" });
+                }
+                return Json(new { success = false, message = "❌ Soru bulunamadı!" });
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Soru bulunamadı!";
+                return Json(new { success = false, message = "⚠️ Hata oluştu: " + ex.Message });
             }
-            return RedirectToAction("SorularCevaplar");
         }
+
 
     }
 }

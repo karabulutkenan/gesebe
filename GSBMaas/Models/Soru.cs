@@ -1,33 +1,38 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GSBMaas.Models
 {
     public class Soru
     {
         [Key]
-        public int ID { get; set; }
-
-        [Required, MaxLength(255)]
-        public string Kategori { get; set; }
+        public int Id { get; set; }
 
         [Required]
+        [ForeignKey("SoruKategori")]
+        public int KategoriId { get; set; }
+        public SoruKategori SoruKategori { get; set; }
+
+        [Required, MaxLength(500)]
         public string SoruMetni { get; set; }
 
-        [Required, MaxLength(100)]
-        public string SoruSahibi { get; set; }
+        [MaxLength(2000)]
+        public string CevapMetni { get; set; }
 
-        [Required]
+        [Required, MaxLength(100)]
+        public string SoruSoran { get; set; }
+
+        [Required, MaxLength(100)]
+        public string Cevaplayan { get; set; }
+
+        [MaxLength(500)]
+        public string Kaynak { get; set; }
+
         public DateTime SoruTarihi { get; set; } = DateTime.Now;
 
-        public string CevapMetni { get; set; } // Cevap nullable olabilir
+        public DateTime? CevapTarihi { get; set; }
 
-        public string Cevaplayan { get; set; } // Cevaplayan nullable olabilir
-
-        public DateTime? CevapTarihi { get; set; } // Nullable (Cevap yoksa boş kalabilir)
-
-        public string Kaynak { get; set; } // Cevap verilen kaynağın bilgisi (nullable)
-
-        public bool OnaylandiMi { get; set; } = false; // Cevap onaylanmış mı?
+        public bool OnaylandiMi { get; set; } = false; // ✅ Onaylanmamış olarak eklenecek
     }
 }

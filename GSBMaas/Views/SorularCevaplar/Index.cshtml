@@ -1,44 +1,218 @@
 ﻿@using Microsoft.AspNetCore.Http
 @{
     ViewData["Title"] = "İşçi İşveren İlişkileri Sorular ve Cevaplar";
-    
 }
+
 @{
     var userAd = Context.Session.GetString("UserAd") ?? "Misafir";
     var userSoyad = Context.Session.GetString("UserSoyad") ?? "";
 }
-<div class="container-fluid p-0">
-    <!-- Header -->
+
+<div class="container-fluid p-0 pb-5 ">
+    <!-- ✅ Header -->
     <header class="bg-primary shadow-sm py-2">
-        <div class="container">
+        <div class="container d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
-                <h1 class="h6 mb-0 text-white text-uppercase" style="margin-right: 10px;">İşçi İşveren İlişkileri</h1>
-                <p class="text-white mb-0" style="font-size: 0.8rem;">Tüm sorularınıza cevap bulabilirsiniz.</p>
+                <h9 class=" mb-0 text-white text-uppercase me-2">İşçi İşveren İlişkileri (Sorular - Cevaplar)</h9>
+                
             </div>
+            <button class="btn btn-danger fw-bold px-3 border-light " id="soruSorBtn">
+                <i class="bi bi-pencil-square"></i> Soru Sor
+            </button>
         </div>
-
     </header>
-    @* <div class="container mt-2">
-        <div class="d-flex justify-content-between align-items-center bg-light rounded shadow-sm p-2">
-            <h6 class="text-primary">👋 Hoşgeldin, @userAd @userSoyad</h6>
-            <form asp-controller="Home" asp-action="Cikis" method="post">
-                <button type="submit" class="btn btn-danger">Çıkış</button>
-            </form>
-        </div>
-    </div> *@
-    <!-- Body -->
-    <main class="bg-light py-2">
-        <div class="container mt-2">
-            <p class="text-black mb-0" style="font-size: 0.8rem;">ÇOK YAKINDA HİZMETİNİZDE OLACAK.</p>
-            
-        </div>
-    </main>
 
-    <!-- Footer -->
+    <!-- ✅ Kategoriler -->
+    <div class="container mt-3 ">
+        <div class="d-flex flex-wrap justify-content-start">
+            <!-- ✅ Tüm Kategoriler Butonu -->
+            <button class="btn btn-primary kategori-btn m-1" data-id="0">
+                Tüm Kategoriler
+            </button>
+
+            @if (ViewBag.SoruKategoriler != null && ViewBag.SoruKategoriler.Count > 0)
+            {
+                var renkler = new List<string> { "primary", "success", "danger", "warning", "info" };
+                int index = 0;
+
+                foreach (var kategori in ViewBag.SoruKategoriler)
+                {
+                    <button class="btn btn-outline-@renkler[index % renkler.Count] kategori-btn m-1"
+                            data-id="@kategori.Id">
+                        @kategori.Ad
+                    </button>
+                    index++;
+                }
+            }
+        </div>
+    </div>
+
+    <!-- ✅ Arama Kutusu -->
+    <div class="container mt-3">
+        <input type="text" id="soruAra" class="form-control" placeholder="Sorular içinde ara...">
+    </div>
+
+    <!-- ✅ Soru Listesi Tablo -->
+    <!-- ✅ Soru Listesi Tablo -->
+    <div class="container mt-4">
+        <table class="table table-hover table-bordered shadow-sm" id="soruTablo">
+            <thead class="table-dark" style="display:none">
+                <tr>
+                    <th>Soru</th>
+                    <th class="text-center">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ViewBag.Sorular != null && ViewBag.Sorular.Count > 0)
+                {
+                    var sıralıSorular = ((List<GSBMaas.Models.Soru>)ViewBag.Sorular).OrderBy(s => s.SoruMetni).ToList();
+
+                    foreach (var soru in sıralıSorular)
+                    {
+                        <tr data-kategori="@soru.KategoriId">
+                            <td>@soru.SoruMetni</td>
+                            <td class="text-center">
+                                <button class="btn btn-info btn-sm cevap-oku" data-id="@soru.Id"
+                                        data-soru="@soru.SoruMetni" data-cevap="@soru.CevapMetni"
+                                        data-kaynak="@soru.Kaynak">
+                                    Cevabı Oku
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="2" class="text-muted text-center">Henüz onaylanmamış soru bulunmuyor.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
 </div>
+
+<!-- ✅ Cevap Gösterme Modalı -->
+<div class="modal fade" id="cevapModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cevap</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Soru:</strong> <span id="modalSoru"></span></p>
+                <p><strong>Cevap:</strong> <span id="modalCevap"></span></p>
+                <p><strong>Kaynak:</strong> <span id="modalKaynak"></span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Soru Sor Modalı -->
+<div class="modal fade" id="soruSorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Soru Sor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="soruSorForm">
+                    <input type="hidden" id="soruSoran" name="SoruSoran" value="@userAd @userSoyad">
+                    
+
+                    <div class="mb-3">
+                        <label class="form-label">Sorunuz</label>
+                        <textarea id="soruMetni" name="SoruMetni" class="form-control" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Soruyu Gönder</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- Bootstrap Icons CDN -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // ✅ Cevap Modalını Aç
+        document.querySelectorAll(".cevap-oku").forEach(button => {
+            button.addEventListener("click", function () {
+                document.getElementById("modalSoru").textContent = this.getAttribute("data-soru");
+                document.getElementById("modalCevap").textContent = this.getAttribute("data-cevap");
+                document.getElementById("modalKaynak").textContent = this.getAttribute("data-kaynak");
+
+                let modal = new bootstrap.Modal(document.getElementById("cevapModal"));
+                modal.show();
+            });
+        });
+
+        // ✅ Kategoriye Göre Filtreleme (Varsayılan: Tüm Kategoriler)
+        document.querySelectorAll(".kategori-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                let kategoriId = this.getAttribute("data-id");
+
+                // **Seçilen Kategoriyi Belirgin Hale Getir**
+                document.querySelectorAll(".kategori-btn").forEach(btn => {
+                    btn.classList.remove("btn-primary");
+                    btn.classList.add("btn-outline-primary");
+                });
+                this.classList.add("btn-primary");
+                this.classList.remove("btn-outline-primary");
+
+                // **Tabloyu Filtrele**
+                document.querySelectorAll("#soruTablo tbody tr").forEach(row => {
+                    if (kategoriId === "0" || row.getAttribute("data-kategori") === kategoriId) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+            });
+        });
+
+        // ✅ Soru Arama
+        document.getElementById("soruAra").addEventListener("input", function () {
+            let query = this.value.toLowerCase();
+            document.querySelectorAll("#soruTablo tbody tr").forEach(row => {
+                let soruMetni = row.querySelector("td").textContent.toLowerCase();
+                row.style.display = soruMetni.includes(query) ? "" : "none";
+            });
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // ✅ Soru Sor Modalını Aç
+        document.getElementById("soruSorBtn").addEventListener("click", function () {
+            let modal = new bootstrap.Modal(document.getElementById("soruSorModal"));
+            modal.show();
+        });
+
+        // ✅ Soru Gönderme İşlemi
+        document.getElementById("soruSorForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            let formData = new FormData(this);
+
+            fetch("/SorularCevaplar/SoruEkle", { method: "POST", body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("✅ " + data.message);
+                        location.reload();
+                    } else {
+                        alert("❌ Hata: " + data.message);
+                    }
+                })
+                .catch(error => alert("⚠️ Sunucu hatası: " + error.message));
+        });
+    });
+
+</script>
