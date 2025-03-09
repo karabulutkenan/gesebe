@@ -74,7 +74,7 @@
                             <td class="text-center">
                                 <button class="btn btn-info btn-sm cevap-oku" data-id="@soru.Id"
                                         data-soru="@soru.SoruMetni" data-cevap="@soru.CevapMetni"
-                                        data-kaynak="@soru.Kaynak">
+                                        data-kaynak="@soru.Kaynak" data-soran="@soru.SoruSoran">
                                     Cevabı Oku
                                 </button>
                             </td>
@@ -105,10 +105,12 @@
                 <p><strong>Soru:</strong> <span id="modalSoru"></span></p>
                 <p><strong>Cevap:</strong> <span id="modalCevap"></span></p>
                 <p><strong>Kaynak:</strong> <span id="modalKaynak"></span></p>
+                <p><strong>Soran:</strong> <span id="modalSoran"></span></p>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- ✅ Soru Sor Modalı -->
 <div class="modal fade" id="soruSorModal" tabindex="-1" aria-hidden="true">
@@ -123,11 +125,39 @@
                     <input type="hidden" id="soruSoran" name="SoruSoran" value="@userAd @userSoyad">
                     
 
+                    <!-- ✅ Kategori Seçimi -->
+                    <div class="mb-3">
+                        <label class="form-label">Kategori Seçin</label>
+                        <select id="kategoriId" name="KategoriId" class="form-select" required>
+                            <option disabled selected>Bir kategori seçiniz</option>
+                            @foreach (var kategori in ViewBag.SoruKategoriler)
+                            {
+                                <option value="@kategori.Id">@kategori.Ad</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- ✅ Soru Metni -->
                     <div class="mb-3">
                         <label class="form-label">Sorunuz</label>
                         <textarea id="soruMetni" name="SoruMetni" class="form-control" rows="4" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Soruyu Gönder</button>
+
+                    <!-- ✅ E-Posta (Kaydedilmeyecek) -->
+                    <div class="mb-3">
+                        <label class="form-label">E-Posta Adresiniz (Sadece bilgilendirme için, kaydedilmeyecektir.)</label>
+                        <input type="email" id="eposta" class="form-control" placeholder="E-posta adresinizi giriniz">
+                    </div>
+
+                    <!-- ✅ Ahlak Kuralları ve Kişisel Bilgiler Onayı -->
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="onayKutusu" required>
+                        <label class="form-check-label" for="onayKutusu">
+                            Sorduğum sorunun ahlak kurallarına uygun olduğunu ve ad, soyad bilgilerimin paylaşılacağını onaylıyorum.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100" disabled id="soruGonderBtn">Soruyu Gönder</button>
                 </form>
             </div>
         </div>
@@ -148,6 +178,8 @@
                 document.getElementById("modalSoru").textContent = this.getAttribute("data-soru");
                 document.getElementById("modalCevap").textContent = this.getAttribute("data-cevap");
                 document.getElementById("modalKaynak").textContent = this.getAttribute("data-kaynak");
+                document.getElementById("modalSoran").textContent = this.getAttribute("data-soran");
+                
 
                 let modal = new bootstrap.Modal(document.getElementById("cevapModal"));
                 modal.show();
@@ -188,11 +220,18 @@
         });
     });
 
+    //SORU SOR MODAL KISMI
+
     document.addEventListener("DOMContentLoaded", function () {
         // ✅ Soru Sor Modalını Aç
         document.getElementById("soruSorBtn").addEventListener("click", function () {
             let modal = new bootstrap.Modal(document.getElementById("soruSorModal"));
             modal.show();
+        });
+
+        // ✅ Onay Kutucuğu Kontrolü
+        document.getElementById("onayKutusu").addEventListener("change", function () {
+            document.getElementById("soruGonderBtn").disabled = !this.checked;
         });
 
         // ✅ Soru Gönderme İşlemi
@@ -214,5 +253,6 @@
                 .catch(error => alert("⚠️ Sunucu hatası: " + error.message));
         });
     });
+
 
 </script>

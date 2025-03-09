@@ -36,8 +36,10 @@
             <tr>
                 <th>Kategori</th>
                 <th>Soru</th>
+                <th>Soran</th>
                 <th>Cevaplayan</th>
                 <th>Kaynak</th>
+                <th>Soru Tarihi</th>
                 <th>Cevap Tarihi</th>
                 <th>İşlemler</th>
             </tr>
@@ -48,8 +50,10 @@
                 <tr>
                     <td>@soru.SoruKategori.Ad</td>
                     <td>@soru.SoruMetni</td>
+                    <td>@soru.SoruSoran</td>
                     <td>@soru.Cevaplayan</td>
                     <td>@soru.Kaynak</td>
+                    <td>@(soru.SoruTarihi.ToString("dd.MM.yyyy") ?? "-")</td>
                     <td>@(soru.CevapTarihi?.ToString("dd.MM.yyyy") ?? "-")</td>
                     <td>
                         <button class="btn btn-sm btn-primary edit-soru" data-id="@soru.Id">Düzenle</button>

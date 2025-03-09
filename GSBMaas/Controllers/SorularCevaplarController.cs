@@ -21,28 +21,24 @@ namespace GSBMaas.Controllers
             }
 
             // ✅ Yalnızca onaylanmamış soruları listele
-            var onaylanmamisSorular = db.Sorular
-                .Where(s => !s.OnaylandiMi)
-                .OrderBy(s => s.SoruMetni)
-                .ToList();
-
             ViewBag.SoruKategoriler = db.SoruKategoriler.ToList();
-            ViewBag.Sorular = onaylanmamisSorular;
+            ViewBag.Sorular = db.Sorular.Where(s => s.OnaylandiMi).OrderBy(s => s.SoruMetni).ToList();
             return View();
         }
 
         [HttpPost]
-        public IActionResult SoruEkle(string SoruMetni, string SoruSoran)
+        public IActionResult SoruEkle(int KategoriId, string SoruMetni, string SoruSoran)
         {
             try
             {
-                if (string.IsNullOrEmpty(SoruMetni))
+                if (KategoriId <= 0 || string.IsNullOrEmpty(SoruMetni))
                 {
-                    return Json(new { success = false, message = "⚠️ Soru boş olamaz!" });
+                    return Json(new { success = false, message = "⚠️ Lütfen bir kategori seçin ve soruyu doldurun!" });
                 }
 
                 var yeniSoru = new Soru
                 {
+                    KategoriId = KategoriId,
                     SoruMetni = SoruMetni,
                     CevapMetni = "Henüz cevaplanmadı.",
                     Cevaplayan = "Beklemede",
@@ -64,5 +60,6 @@ namespace GSBMaas.Controllers
                 return Json(new { success = false, message = "⚠️ Hata oluştu: " + ex.Message });
             }
         }
+
     }
 }
