@@ -211,6 +211,9 @@ namespace GSBMaas.Controllers
                     return Json(new { success = false, message = "Tüm alanları doldurun!" });
                 }
 
+                // 🔹 Kullanıcı adı ve soyadı Session'dan alınıyor
+                string cevaplayan = HttpContext.Session.GetString("ModeratorAd") + " " + HttpContext.Session.GetString("ModeratorSoyad");
+
                 DateTime now = DateTime.Now;
 
                 var yeniSoru = new Soru
@@ -218,11 +221,12 @@ namespace GSBMaas.Controllers
                     KategoriId = kategoriId,
                     SoruMetni = SoruMetni,
                     CevapMetni = CevapMetni,
-                    Cevaplayan = "Sistem Yöneticisi",
+                    Cevaplayan = cevaplayan,      // ✅ Moderatörün Adı ve Soyadı
+                    SoruSoran = "Sistem Yöneticisi", // ✅ "Sistem Yöneticisi" olarak kaydet
                     Kaynak = Kaynak,
                     SoruTarihi = now,
                     CevapTarihi = now,
-                    OnaylandiMi = true
+                    OnaylandiMi = true // ✅ Direkt onaylanmış olarak eklenecek
                 };
 
                 db.Sorular.Add(yeniSoru);
@@ -235,6 +239,7 @@ namespace GSBMaas.Controllers
                 return Json(new { success = false, message = "⚠️ Hata oluştu: " + ex.Message });
             }
         }
+
 
         //SORU DÜZENLEME
 
@@ -267,11 +272,15 @@ namespace GSBMaas.Controllers
                 var soru = db.Sorular.Find(id);
                 if (soru != null)
                 {
+                    // 🔹 Giriş yapan moderatörün adı ve soyadı Session'dan alınıyor
+                    string cevaplayan = HttpContext.Session.GetString("ModeratorAd") + " " + HttpContext.Session.GetString("ModeratorSoyad");
+
                     soru.KategoriId = kategoriId;
                     soru.SoruMetni = SoruMetni;
                     soru.CevapMetni = CevapMetni;
                     soru.Kaynak = Kaynak;
-                    soru.CevapTarihi = DateTime.Now; // Güncellendiğinde tarihi güncelle
+                    soru.Cevaplayan = cevaplayan; // ✅ Güncelleme sırasında giriş yapan moderatörün adı-soyadı kaydedilecek
+                    soru.CevapTarihi = DateTime.Now; // ✅ Güncellendiğinde tarihi güncelle
 
                     db.SaveChanges();
                     return Json(new { success = true, message = "✅ Soru başarıyla güncellendi!" });
@@ -283,6 +292,7 @@ namespace GSBMaas.Controllers
                 return Json(new { success = false, message = "⚠️ Hata oluştu: " + ex.Message });
             }
         }
+
 
 
 
