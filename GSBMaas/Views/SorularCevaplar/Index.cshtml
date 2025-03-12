@@ -145,8 +145,8 @@
 
                     <!-- ✅ E-Posta (Kaydedilmeyecek) -->
                     <div class="mb-3">
-                        <label class="form-label">E-Posta Adresiniz (Sadece bilgilendirme için, kaydedilmeyecektir.)</label>
-                        <input type="email" id="eposta" class="form-control" placeholder="E-posta adresinizi giriniz">
+                        <label class="form-label">E-Posta Adresiniz (Sorunuzun ulaşması ve cevaplanması halinde size e-posta gönderilecektir.)</label>
+                        <input type="email" id="eposta" name="Eposta" class="form-control" placeholder="E-posta adresinizi giriniz">
                     </div>
 
                     <!-- ✅ Ahlak Kuralları ve Kişisel Bilgiler Onayı -->
@@ -179,7 +179,6 @@
                 document.getElementById("modalCevap").textContent = this.getAttribute("data-cevap");
                 document.getElementById("modalKaynak").textContent = this.getAttribute("data-kaynak");
                 document.getElementById("modalSoran").textContent = this.getAttribute("data-soran");
-                
 
                 let modal = new bootstrap.Modal(document.getElementById("cevapModal"));
                 modal.show();
@@ -218,11 +217,7 @@
                 row.style.display = soruMetni.includes(query) ? "" : "none";
             });
         });
-    });
 
-    //SORU SOR MODAL KISMI
-
-    document.addEventListener("DOMContentLoaded", function () {
         // ✅ Soru Sor Modalını Aç
         document.getElementById("soruSorBtn").addEventListener("click", function () {
             let modal = new bootstrap.Modal(document.getElementById("soruSorModal"));
@@ -234,7 +229,7 @@
             document.getElementById("soruGonderBtn").disabled = !this.checked;
         });
 
-        // ✅ Soru Gönderme İşlemi
+        // ✅ Soru Gönderme İşlemi (E-Posta Gönderme Dahil)
         document.getElementById("soruSorForm").addEventListener("submit", function (event) {
             event.preventDefault();
 
@@ -245,7 +240,26 @@
                 .then(data => {
                     if (data.success) {
                         alert("✅ " + data.message);
-                        location.reload();
+
+                        // ✅ E-Posta Gönderme İşlemi
+                        fetch("/SorularCevaplar/GonderMail", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                eposta: formData.get("Eposta"),
+                                soruMetni: formData.get("SoruMetni")
+                            })
+                        })
+                            .then(response => response.json())
+                            .then(mailData => {
+                                if (mailData.success) {
+                                    alert("📧 E-Posta başarıyla gönderildi.");
+                                } else {
+                                    alert("⚠️ E-Posta gönderilirken hata oluştu: " + mailData.message);
+                                }
+                                location.reload();
+                            })
+                            .catch(error => alert("⚠️ E-Posta sunucu hatası: " + error.message));
                     } else {
                         alert("❌ Hata: " + data.message);
                     }

@@ -26,6 +26,9 @@ namespace GSBMaas.Models
         [Required, MaxLength(100)]
         public string Cevaplayan { get; set; }
 
+        [Required, MaxLength(100)]
+        public string CevaplayanMail { get; set; }
+
         [MaxLength(500)]
         public string Kaynak { get; set; }
 

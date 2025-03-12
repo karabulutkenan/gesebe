@@ -221,7 +221,8 @@ namespace GSBMaas.Controllers
                     KategoriId = kategoriId,
                     SoruMetni = SoruMetni,
                     CevapMetni = CevapMetni,
-                    Cevaplayan = cevaplayan,      // ✅ Moderatörün Adı ve Soyadı
+                    Cevaplayan = cevaplayan,
+                    CevaplayanMail= "Sistem Yöneticisi",// ✅ Moderatörün Adı ve Soyadı
                     SoruSoran = "Sistem Yöneticisi", // ✅ "Sistem Yöneticisi" olarak kaydet
                     Kaynak = Kaynak,
                     SoruTarihi = now,
@@ -309,9 +310,14 @@ namespace GSBMaas.Controllers
                 {
                     return Json(new { success = false, message = "❌ Soru bulunamadı!" });
                 }
+                // 🔹 Giriş yapan moderatörün adı ve soyadı Session'dan alınıyor
+                string cevaplayan = HttpContext.Session.GetString("ModeratorAd") + " " + HttpContext.Session.GetString("ModeratorSoyad");
+
+
 
                 soru.OnaylandiMi = true;
                 soru.CevapTarihi = DateTime.Now;
+                soru.Cevaplayan = cevaplayan;
                 db.SaveChanges();
 
                 return Json(new { success = true, message = "✅ Soru başarıyla onaylandı!" });
