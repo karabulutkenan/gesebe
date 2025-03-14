@@ -67,9 +67,12 @@
                         {
                             <button class="btn btn-sm btn-secondary" disabled>Onaylanmış</button>
                         }
-                        <button class="btn btn-sm btn-info cevapla-soru" data-id="@soru.Id" data-soru="@soru.SoruMetni">
-                            Cevapla
+                        @if (soru.Cevaplayan=="Beklemede")
+                        {
+                            <button class="btn btn-sm btn-warning cevapla-soru" data-id="@soru.Id" data-soru="@soru.SoruMetni">
+                                Cevapla
                         </button>
+                        }
                     </td>
                 </tr>
             }
@@ -249,7 +252,8 @@
 
                 <!-- ✅ Cevap Metni -->
                 <label class="form-label mt-2">Cevabınızı yazın:</label>
-                <textarea id="cevapMetni" class="form-control" rows="4" placeholder="Cevabınızı yazın..." required></textarea>
+                <!-- Cevap Yazma Modalı'ndaki textarea'nın ID'sini değiştirin -->
+<textarea id="modalCevapMetni" class="form-control" rows="4" placeholder="Cevabınızı yazın..." required></textarea>
 
                 <!-- ✅ Kaynak Alanı -->
                 <label class="form-label mt-2">Kaynak:</label>
@@ -268,58 +272,76 @@
 
 <!-- ✅ JavaScript -->
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // ✅ MODAL AÇMA - Soru Ekle
-            document.getElementById("openSoruEkleModal").addEventListener("click", function () {
-                document.getElementById("soruForm").reset();
-                document.getElementById("soruForm").setAttribute("data-id", "");
-                var modal = new bootstrap.Modal(document.getElementById("soruEkleModal"));
-                modal.show();
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Sayfa yüklendiğinde otomatik olarak onaylanmamışları göster
+        filterOnaylanmamis();
+
+        // ✅ Onaylanmamışları Filtreleme Fonksiyonu
+        function filterOnaylanmamis() {
+            document.querySelectorAll("tbody tr").forEach(row => {
+                if (row.querySelector(".btn-success.onayla-soru")) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
             });
 
-            // ✅ MODAL AÇMA - Kategori Ekle/Düzenle
-            document.getElementById("openKategoriEkleModal").addEventListener("click", function () {
-                document.getElementById("kategoriForm").reset();
-                document.getElementById("kategoriId").value = ""; // Yeni kategori ekleme için ID sıfırla
-                var modal = new bootstrap.Modal(document.getElementById("kategoriEkleModal"));
-                modal.show();
-            });
+            // Butonları vurgula
+            document.getElementById("filterOnaylanmamis").classList.add("active");
+            document.getElementById("showAll").classList.remove("active");
+        }
 
-            // ✅ SORU EKLEME VEYA GÜNCELLEME
-            document.getElementById("soruForm").addEventListener("submit", function (event) {
-                event.preventDefault();
-                let formData = new FormData(this);
-                let soruId = this.getAttribute("data-id");
-                let url = soruId ? `/Moderator/SoruGuncelle/${soruId}` : "/Moderator/SoruEkle";
-                let method = "POST"; // Güncellemeyi de POST ile yapıyoruz
+        // ✅ MODAL AÇMA - Soru Ekle
+        document.getElementById("openSoruEkleModal").addEventListener("click", function () {
+            document.getElementById("soruForm").reset();
+            document.getElementById("soruForm").setAttribute("data-id", "");
+            var modal = new bootstrap.Modal(document.getElementById("soruEkleModal"));
+            modal.show();
+        });
 
-                fetch(url, { method: method, body: formData })
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.success ? "✅ " + data.message : "❌ Hata: " + data.message);
-                        location.reload();
-                    })
-                    .catch(error => alert("⚠️ Sunucu hatası: " + error.message));
-            });
+        // ✅ MODAL AÇMA - Kategori Ekle/Düzenle
+        document.getElementById("openKategoriEkleModal").addEventListener("click", function () {
+            document.getElementById("kategoriForm").reset();
+            document.getElementById("kategoriId").value = ""; // Yeni kategori ekleme için ID sıfırla
+            var modal = new bootstrap.Modal(document.getElementById("kategoriEkleModal"));
+            modal.show();
+        });
 
-            // ✅ KATEGORİ EKLEME VEYA GÜNCELLEME
-            document.getElementById("kategoriForm").addEventListener("submit", function (event) {
-                event.preventDefault();
-                let formData = new FormData(this);
-                let kategoriId = document.getElementById("kategoriId").value;
-                let url = kategoriId ? `/Moderator/SoruKategoriGuncelle/${kategoriId}` : "/Moderator/SoruKategoriEkle";
+        // ✅ SORU EKLEME VEYA GÜNCELLEME
+        document.getElementById("soruForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            let formData = new FormData(this);
+            let soruId = this.getAttribute("data-id");
+            let url = soruId ? `/Moderator/SoruGuncelle/${soruId}` : "/Moderator/SoruEkle";
+            let method = "POST"; // Güncellemeyi de POST ile yapıyoruz
 
-                fetch(url, { method: "POST", body: formData })
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.success ? "✅ " + data.message : "❌ Hata: " + data.message);
-                        location.reload();
-                    })
-                    .catch(error => alert("⚠️ Sunucu hatası: " + error.message));
-            });
+            fetch(url, { method: method, body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.success ? "✅ " + data.message : "❌ Hata: " + data.message);
+                    location.reload();
+                })
+                .catch(error => alert("⚠️ Sunucu hatası: " + error.message));
+        });
 
-            // ✅ EVENT DELEGATION: Kategori Silme (Çalışması için böyle olmalı)
+        // ✅ KATEGORİ EKLEME VEYA GÜNCELLEME
+        document.getElementById("kategoriForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            let formData = new FormData(this);
+            let kategoriId = document.getElementById("kategoriId").value;
+            let url = kategoriId ? `/Moderator/SoruKategoriGuncelle/${kategoriId}` : "/Moderator/SoruKategoriEkle";
+
+            fetch(url, { method: "POST", body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.success ? "✅ " + data.message : "❌ Hata: " + data.message);
+                    location.reload();
+                })
+                .catch(error => alert("⚠️ Sunucu hatası: " + error.message));
+        });
+
+        // ✅ EVENT DELEGATION: Kategori Silme (Çalışması için böyle olmalı)
         document.getElementById("kategoriListesi").addEventListener("click", function (event) {
             if (event.target.classList.contains("delete-kategori")) {
                 let kategoriId = event.target.getAttribute("data-id");
@@ -342,7 +364,7 @@
         });
 
 
-            // ✅ EVENT DELEGATION: Kategori Düzenleme
+        // ✅ EVENT DELEGATION: Kategori Düzenleme
         document.getElementById("kategoriListesi").addEventListener("click", function (event) {
             if (event.target.classList.contains("edit-kategori")) {
                 let kategoriId = event.target.getAttribute("data-id");
@@ -362,108 +384,100 @@
         });
 
 
-            // ✅ SORU SİLME (ÇALIŞIR HALDE)
-            document.querySelectorAll(".delete-soru").forEach(button => {
-                button.addEventListener("click", function () {
-                    let soruId = this.getAttribute("data-id");
+        // ✅ SORU SİLME (ÇALIŞIR HALDE)
+        document.querySelectorAll(".delete-soru").forEach(button => {
+            button.addEventListener("click", function () {
+                let soruId = this.getAttribute("data-id");
 
-                    if (confirm("Bu soruyu silmek istediğinize emin misiniz?")) {
-                        fetch(`/Moderator/SoruSil/${soruId}`, { method: "DELETE" })
-                            .then(response => response.json())
-                            .then(data => {
-                                alert(data.success ? "✅ " + data.message : "❌ Hata: " + data.message);
-                                location.reload();
-                            })
-                            .catch(error => alert("⚠️ Sunucu hatası: " + error.message));
-                    }
-                });
-            });
-
-            // ✅ SORU DÜZENLEME (DOĞRU MODAL AÇILIYOR)
-            document.querySelectorAll(".edit-soru").forEach(button => {
-                button.addEventListener("click", function () {
-                    let soruId = this.getAttribute("data-id");
-
-                    fetch(`/Moderator/GetSoru/${soruId}`)
+                if (confirm("Bu soruyu silmek istediğinize emin misiniz?")) {
+                    fetch(`/Moderator/SoruSil/${soruId}`, { method: "DELETE" })
                         .then(response => response.json())
                         .then(data => {
-                            if (data.success) {
-                                document.getElementById("duzenleSoruId").value = soruId;
-                                document.getElementById("duzenleKategoriId").value = data.kategoriId;
-                                document.getElementById("duzenleSoruMetni").value = data.soruMetni;
-                                document.getElementById("duzenleCevapMetni").value = data.cevapMetni;
-                                document.getElementById("duzenleKaynak").value = data.kaynak;
-
-                                var modal = new bootstrap.Modal(document.getElementById("soruDuzenleModal"));
-                                modal.show();
-                            } else {
-                                alert("❌ Hata: " + data.message);
-                            }
+                            alert(data.success ? "✅ " + data.message : "❌ Hata: " + data.message);
+                            location.reload();
                         })
                         .catch(error => alert("⚠️ Sunucu hatası: " + error.message));
-                });
+                }
             });
+        });
 
-            // ✅ SORU GÜNCELLEME FORMU (DOĞRU MODALDA)
-            document.getElementById("soruDuzenleForm").addEventListener("submit", function (event) {
-                event.preventDefault();
+        // ✅ SORU DÜZENLEME (DOĞRU MODAL AÇILIYOR)
+        document.querySelectorAll(".edit-soru").forEach(button => {
+            button.addEventListener("click", function () {
+                let soruId = this.getAttribute("data-id");
 
-                let formData = new FormData(this);
-                let soruId = document.getElementById("duzenleSoruId").value;
-
-                fetch(`/Moderator/SoruGuncelle/${soruId}`, { method: "POST", body: formData })
+                fetch(`/Moderator/GetSoru/${soruId}`)
                     .then(response => response.json())
                     .then(data => {
-                        alert(data.success ? "✅ " + data.message : "❌ Hata: " + data.message);
-                        location.reload();
+                        if (data.success) {
+                            document.getElementById("duzenleSoruId").value = soruId;
+                            document.getElementById("duzenleKategoriId").value = data.kategoriId;
+                            document.getElementById("duzenleSoruMetni").value = data.soruMetni;
+                            document.getElementById("duzenleCevapMetni").value = data.cevapMetni;
+                            document.getElementById("duzenleKaynak").value = data.kaynak;
+
+                            var modal = new bootstrap.Modal(document.getElementById("soruDuzenleModal"));
+                            modal.show();
+                        } else {
+                            alert("❌ Hata: " + data.message);
+                        }
                     })
                     .catch(error => alert("⚠️ Sunucu hatası: " + error.message));
             });
         });
 
-        document.addEventListener("DOMContentLoaded", function () {
-    // ✅ Onaylama Modalını Aç
-    document.querySelectorAll(".onayla-soru").forEach(button => {
-        button.addEventListener("click", function () {
-            let soruId = this.getAttribute("data-id");
-            document.getElementById("onaySoruId").value = soruId;
+        // ✅ SORU GÜNCELLEME FORMU (DOĞRU MODALDA)
+        document.getElementById("soruDuzenleForm").addEventListener("submit", function (event) {
+            event.preventDefault();
 
-            let modal = new bootstrap.Modal(document.getElementById("soruOnayModal"));
-            modal.show();
+            let formData = new FormData(this);
+            let soruId = document.getElementById("duzenleSoruId").value;
+
+            fetch(`/Moderator/SoruGuncelle/${soruId}`, { method: "POST", body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.success ? "✅ " + data.message : "❌ Hata: " + data.message);
+                    location.reload();
+                })
+                .catch(error => alert("⚠️ Sunucu hatası: " + error.message));
         });
-    });
 
-    // ✅ Soru Onaylama İşlemi
-    document.getElementById("onaylaSoruBtn").addEventListener("click", function () {
-        let soruId = document.getElementById("onaySoruId").value;
+        // ✅ Onaylama Modalını Aç
+        document.querySelectorAll(".onayla-soru").forEach(button => {
+            button.addEventListener("click", function () {
+                let soruId = this.getAttribute("data-id");
+                document.getElementById("onaySoruId").value = soruId;
 
-        fetch(`/Moderator/SoruOnayla/${soruId}`, { method: "POST" })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.success ? "✅ " + data.message : "❌ Hata: " + data.message);
-                location.reload();
-            })
-            .catch(error => alert("⚠️ Sunucu hatası: " + error.message));
-    });
-});
-
-    document.addEventListener("DOMContentLoaded", function () {
-        // ✅ Onaylanmamışları Filtreleme
-        document.getElementById("filterOnaylanmamis").addEventListener("click", function () {
-            document.querySelectorAll("tbody tr").forEach(row => {
-                if (row.querySelector(".btn-success.onayla-soru")) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
+                let modal = new bootstrap.Modal(document.getElementById("soruOnayModal"));
+                modal.show();
             });
         });
+
+        // ✅ Soru Onaylama İşlemi
+        document.getElementById("onaylaSoruBtn").addEventListener("click", function () {
+            let soruId = document.getElementById("onaySoruId").value;
+
+            fetch(`/Moderator/SoruOnayla/${soruId}`, { method: "POST" })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.success ? "✅ " + data.message : "❌ Hata: " + data.message);
+                    location.reload();
+                })
+                .catch(error => alert("⚠️ Sunucu hatası: " + error.message));
+        });
+
+        // ✅ Onaylanmamışları Filtreleme
+        document.getElementById("filterOnaylanmamis").addEventListener("click", filterOnaylanmamis);
 
         // ✅ Tüm Soruları Gösterme
         document.getElementById("showAll").addEventListener("click", function () {
             document.querySelectorAll("tbody tr").forEach(row => {
                 row.style.display = "";
             });
+
+            // Butonları vurgula
+            document.getElementById("showAll").classList.add("active");
+            document.getElementById("filterOnaylanmamis").classList.remove("active");
         });
 
         // ✅ Arama Fonksiyonu
@@ -481,24 +495,22 @@
                 }
             });
         });
-    });
 
-    // ✅ Kategoriye Göre Filtreleme
-    document.getElementById("kategoriFilter").addEventListener("change", function () {
-        let selectedKategori = this.value.toLowerCase();
+        // ✅ Kategoriye Göre Filtreleme
+        document.getElementById("kategoriFilter").addEventListener("change", function () {
+            let selectedKategori = this.value.toLowerCase();
 
-        document.querySelectorAll("tbody tr").forEach(row => {
-            let kategori = row.cells[0].textContent.toLowerCase();
+            document.querySelectorAll("tbody tr").forEach(row => {
+                let kategori = row.cells[0].textContent.toLowerCase();
 
-            if (selectedKategori === "" || kategori === selectedKategori) {
-                row.style.display = "";
-            } else {
-                row.style.display = "none";
-            }
+                if (selectedKategori === "" || kategori === selectedKategori) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
         });
-    });
 
-    document.addEventListener("DOMContentLoaded", function () {
         // ✅ "Cevapla" Butonuna Basınca Modalı Aç
         document.querySelectorAll(".cevapla-soru").forEach(button => {
             button.addEventListener("click", function () {
@@ -507,7 +519,7 @@
 
                 document.getElementById("modalSoruMetni").textContent = soruMetni;
                 document.getElementById("cevapSoruId").value = soruId;
-                document.getElementById("cevapMetni").value = ""; // Önceki değeri temizle
+                document.getElementById("modalCevapMetni").value = ""; // ID değiştirildi
                 document.getElementById("cevapKaynak").value = ""; // Önceki değeri temizle
 
                 let modal = new bootstrap.Modal(document.getElementById("cevapModal"));
@@ -518,7 +530,7 @@
         // ✅ Cevap Kaydetme İşlemi
         document.getElementById("cevapKaydetBtn").addEventListener("click", function () {
             let soruId = document.getElementById("cevapSoruId").value;
-            let cevapMetniElement = document.getElementById("cevapMetni");
+            let cevapMetniElement = document.getElementById("modalCevapMetni"); // ID değiştirildi
             let kaynakElement = document.getElementById("cevapKaynak");
 
             let cevapMetni = cevapMetniElement.value.trim();
@@ -564,9 +576,7 @@
                     console.error("Hata detayları:", error);
                 });
         });
-
     });
-
 </script>
 
 

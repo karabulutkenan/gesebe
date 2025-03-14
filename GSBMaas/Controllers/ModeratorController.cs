@@ -12,6 +12,8 @@ using System.Linq;
 using BCrypt.Net;
 using System;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+using System.Net.Mail;
 
 namespace GSBMaas.Controllers
 {
@@ -294,11 +296,6 @@ namespace GSBMaas.Controllers
             }
         }
 
-
-
-
-
-        // ✅ Moderatör soruyu onaylayacak
         [Authorize(AuthenticationSchemes = Scheme)]
         [HttpPost]
         public IActionResult SoruOnayla(int id)
@@ -310,23 +307,93 @@ namespace GSBMaas.Controllers
                 {
                     return Json(new { success = false, message = "❌ Soru bulunamadı!" });
                 }
+
                 // 🔹 Giriş yapan moderatörün adı ve soyadı Session'dan alınıyor
                 string cevaplayan = HttpContext.Session.GetString("ModeratorAd") + " " + HttpContext.Session.GetString("ModeratorSoyad");
-
-
 
                 soru.OnaylandiMi = true;
                 soru.CevapTarihi = DateTime.Now;
                 soru.Cevaplayan = cevaplayan;
                 db.SaveChanges();
 
-                return Json(new { success = true, message = "✅ Soru başarıyla onaylandı!" });
+                // Soruyu soran kişiye email gönder
+                try
+                {
+                    // CevaplayanMail alanını kullanarak e-posta gönderiyoruz
+                    string toEmail = soru.CevaplayanMail;
+
+                    // Email içeriğini HTML formatında hazırla
+                    string htmlBody = $@"<html>
+                <body>
+                    <h2>Sorunuz Onaylandı</h2>
+                    <p>Merhaba,</p>
+                    <p>Sormuş olduğunuz soru moderatörlerimiz tarafından onaylanmıştır.</p>
+                    <hr>
+                    <h3>Soru Detayları:</h3>
+                    <p><strong>Soru:</strong> {soru.SoruMetni}</p>
+                    <p><strong>Cevap:</strong> {soru.CevapMetni}</p>
+                    <p><strong>Kaynak:</strong> {soru.Kaynak}</p>
+                    <p><strong>Cevaplayan:</strong> {soru.Cevaplayan}</p>
+                    <p><strong>Onaylanma Tarihi:</strong> {soru.CevapTarihi:dd.MM.yyyy HH:mm}</p>
+                    <hr>
+                    <p>Teşekkür ederiz.</p>
+                    <p>GSBMaas Ekibi</p>
+                </body>
+                </html>";
+
+                    SendEmail(toEmail, htmlBody);
+                }
+                catch (Exception ex)
+                {
+                    // Email gönderimi başarısız olursa hata logla ama işlem devam etsin
+                    Console.WriteLine($"Email gönderimi başarısız: {ex.Message}");
+                }
+
+                return Json(new { success = true, message = "✅ Soru başarıyla onaylandı ve bildirim e-postası gönderildi!" });
             }
             catch (Exception ex)
             {
                 return Json(new { success = false, message = "⚠️ Hata oluştu: " + ex.Message });
             }
         }
+
+        // Email gönderme metodu
+        private bool SendEmail(string toEmail, string body)
+        {
+            try
+            {
+                var fromAddress = new MailAddress("sorucevap@toleyis.org.tr", "E-Sendika");
+                var toAddress = new MailAddress(toEmail);
+                const string subject = "E-sendika Sorulan Soru";
+
+                using (var smtp = new SmtpClient("mail.kurumsaleposta.com", 587)
+                {
+                    EnableSsl = false,
+                    Credentials = new NetworkCredential("sorucevap@toleyis.org.tr", "Melis2604K25!!"),
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    Timeout = 20000 // 20 saniye timeout
+                })
+                {
+                    var message = new MailMessage(fromAddress, toAddress)
+                    {
+                        Subject = subject,
+                        Body = body,
+                        IsBodyHtml = true // HTML formatındaki içerik için true olmalı
+                    };
+
+                    smtp.Send(message);
+                }
+
+                Console.WriteLine($"✅ E-posta başarıyla gönderildi: {toEmail}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ E-posta gönderme hatası: {ex.Message}");
+                return false;
+            }
+        }
+
 
         //CEVAP EKLAMA BÖLÜMÜ BEKENT :) 
         [Authorize(AuthenticationSchemes = Scheme)]
@@ -339,12 +406,13 @@ namespace GSBMaas.Controllers
                 if (soru != null)
                 {
                     // 🔹 Moderatörün adını ve soyadını Session'dan al
-                    string moderatorAdSoyad = HttpContext.Session.GetString("ModeratorAd") + " " +
-                                              HttpContext.Session.GetString("ModeratorSoyad");
+                    // 🔹 Giriş yapan moderatörün adı ve soyadı Session'dan alınıyor
+                    string cevaplayan = HttpContext.Session.GetString("ModeratorAd") + " " + HttpContext.Session.GetString("ModeratorSoyad");
+
 
                     soru.CevapMetni = cevapMetni;
                     soru.Kaynak = string.IsNullOrEmpty(kaynak) ? "-" : kaynak; // Eğer boşsa "-" koy
-                    soru.Cevaplayan = moderatorAdSoyad; // 🔹 Cevaplayan moderatör olacak
+                    soru.Cevaplayan = cevaplayan; // 🔹 Cevaplayan moderatör olacak
                     soru.CevapTarihi = DateTime.Now;
 
                     db.SaveChanges();

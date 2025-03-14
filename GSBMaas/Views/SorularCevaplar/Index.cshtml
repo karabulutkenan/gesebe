@@ -14,7 +14,7 @@
         <div class="container d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
                 <h9 class=" mb-0 text-white text-uppercase me-2">İşçi İşveren İlişkileri (Sorular - Cevaplar)</h9>
-                
+
             </div>
             <button class="btn btn-danger fw-bold px-3 border-light " id="soruSorBtn">
                 <i class="bi bi-pencil-square"></i> Soru Sor
@@ -52,7 +52,6 @@
         <input type="text" id="soruAra" class="form-control" placeholder="Sorular içinde ara...">
     </div>
 
-    <!-- ✅ Soru Listesi Tablo -->
     <!-- ✅ Soru Listesi Tablo -->
     <div class="container mt-4">
         <table class="table table-hover table-bordered shadow-sm" id="soruTablo">
@@ -121,32 +120,52 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="soruSorForm">
+                <form id="soruSorForm" class="needs-validation" novalidate>
                     <input type="hidden" id="soruSoran" name="SoruSoran" value="@userAd @userSoyad">
-                    
 
                     <!-- ✅ Kategori Seçimi -->
                     <div class="mb-3">
                         <label class="form-label">Kategori Seçin</label>
                         <select id="kategoriId" name="KategoriId" class="form-select" required>
-                            <option disabled selected>Bir kategori seçiniz</option>
+                            <option disabled selected value="">Bir kategori seçiniz</option>
                             @foreach (var kategori in ViewBag.SoruKategoriler)
                             {
                                 <option value="@kategori.Id">@kategori.Ad</option>
                             }
                         </select>
+                        <div class="invalid-feedback">
+                            Lütfen bir kategori seçin.
+                        </div>
                     </div>
 
                     <!-- ✅ Soru Metni -->
                     <div class="mb-3">
                         <label class="form-label">Sorunuz</label>
                         <textarea id="soruMetni" name="SoruMetni" class="form-control" rows="4" required></textarea>
+                        <div class="invalid-feedback">
+                            Lütfen sorunuzu girin.
+                        </div>
                     </div>
 
-                    <!-- ✅ E-Posta (Kaydedilmeyecek) -->
+                    <!-- ✅ E-Posta (İki parçalı tasarım) -->
                     <div class="mb-3">
                         <label class="form-label">E-Posta Adresiniz (Sorunuzun ulaşması ve cevaplanması halinde size e-posta gönderilecektir.)</label>
-                        <input type="email" id="eposta" name="Eposta" class="form-control" placeholder="E-posta adresinizi giriniz">
+                        <div class="input-group">
+                            <input type="text" id="epostaKullaniciAdi" name="EpostaKullaniciAdi" class="form-control"
+                                   placeholder="kullaniciadi " required>
+                            <select id="epostaDomain" name="EpostaDomain" class="form-select" style="max-width: 40%;">
+                                <option value="gmail.com">@@gmail.com</option>
+                                <option value="hotmail.com">@@hotmail.com</option>
+                                <option value="outlook.com">@@outlook.com</option>
+                                <option value="icloud.com">@@icloud.com</option>
+                                <option value="yahoo.com">@@yahoo.com</option>
+                                <option value="diger">Diğer</option>
+                            </select>
+                            <input type="text" id="epostaDigerDomain" name="EpostaDigerDomain" class="form-control"
+                                   placeholder="@@ornek.com" style="display: none;">
+                        </div>
+                        <div class="form-text mt-1">Örnek: kullaniciadi@gmail.com</div>
+                        <input type="hidden" id="eposta" name="Eposta">
                     </div>
 
                     <!-- ✅ Ahlak Kuralları ve Kişisel Bilgiler Onayı -->
@@ -155,6 +174,9 @@
                         <label class="form-check-label" for="onayKutusu">
                             Sorduğum sorunun ahlak kurallarına uygun olduğunu ve ad, soyad bilgilerimin paylaşılacağını onaylıyorum.
                         </label>
+                        <div class="invalid-feedback">
+                            Devam etmek için onaylamanız gerekiyor.
+                        </div>
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100" disabled id="soruGonderBtn">Soruyu Gönder</button>
@@ -229,40 +251,63 @@
             document.getElementById("soruGonderBtn").disabled = !this.checked;
         });
 
-        // ✅ Soru Gönderme İşlemi (E-Posta Gönderme Dahil)
-        document.getElementById("soruSorForm").addEventListener("submit", function (event) {
-            event.preventDefault();
+        // ✅ E-posta domain seçimi
+        const epostaDomain = document.getElementById('epostaDomain');
+        const epostaDigerDomain = document.getElementById('epostaDigerDomain');
 
-            let formData = new FormData(this);
-
-            fetch("/SorularCevaplar/SoruEkle", { method: "POST", body: formData })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("✅ " + data.message);
-
-                        // ✅ Modalı Kapat
-                        let modalElement = document.getElementById("soruSorModal");
-                        let modalInstance = bootstrap.Modal.getInstance(modalElement);
-                        if (modalInstance) {
-                            modalInstance.hide();
-                        }
-
-                        // ✅ Sayfayı Yenile
-                        location.reload();
-                    } else {
-                        alert("❌ Hata: " + data.message);
-                    }
-                })
-                .catch(error => {
-                    alert("⚠️ Sunucu hatası: " + error.message);
-                    console.error("Hata detayları:", error);
-                });
+        epostaDomain.addEventListener('change', function () {
+            if (this.value === 'diger') {
+                epostaDigerDomain.style.display = 'block';
+            } else {
+                epostaDigerDomain.style.display = 'none';
+            }
         });
 
+        // ✅ Form gönderilmeden önce doğrulama
+        const form = document.getElementById("soruSorForm");
+        form.addEventListener("submit", function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
 
+            form.classList.add("was-validated");
 
+            // E-posta adresini birleştir
+            // E-posta adresini birleştirme kodu
+const kullaniciAdi = document.getElementById('epostaKullaniciAdi').value;
+const domain = epostaDomain.value === 'diger' ? epostaDigerDomain.value : epostaDomain.value;
+const tamEposta = kullaniciAdi + domain;  
+document.getElementById('eposta').value = tamEposta;
+
+            // Form geçerliyse devam et
+            if (form.checkValidity()) {
+                let formData = new FormData(this);
+
+                fetch("/SorularCevaplar/SoruEkle", { method: "POST", body: formData })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("✅ " + data.message);
+
+                            // ✅ Modalı Kapat
+                            let modalElement = document.getElementById("soruSorModal");
+                            let modalInstance = bootstrap.Modal.getInstance(modalElement);
+                            if (modalInstance) {
+                                modalInstance.hide();
+                            }
+
+                            // ✅ Sayfayı Yenile
+                            location.reload();
+                        } else {
+                            alert("❌ Hata: " + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        alert("⚠️ Sunucu hatası: " + error.message);
+                        console.error("Hata detayları:", error);
+                    });
+            }
+        });
     });
-
-
 </script>

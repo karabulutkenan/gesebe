@@ -21,7 +21,6 @@ namespace GSBMaas.Controllers
             {
                 return RedirectToAction("Giris", "Home");
             }
-
             // ✅ Yalnızca onaylanmış soruları listele
             ViewBag.SoruKategoriler = db.SoruKategoriler.ToList();
             ViewBag.Sorular = db.Sorular.Where(s => s.OnaylandiMi).OrderBy(s => s.SoruMetni).ToList();
@@ -29,10 +28,15 @@ namespace GSBMaas.Controllers
         }
 
         [HttpPost]
-        public IActionResult SoruEkle(int KategoriId, string SoruMetni, string SoruSoran, string Eposta)
+        public IActionResult SoruEkle(int KategoriId, string SoruMetni, string SoruSoran, string EpostaKullaniciAdi, string EpostaDomain, string EpostaDigerDomain)
         {
             try
             {
+                // E-posta adresini birleştir
+                string domain = EpostaDomain == "diger" ? EpostaDigerDomain : EpostaDomain;
+                // Domain zaten @ ile başlıyor, ekstra @ eklemeye gerek yok
+                string Eposta = EpostaKullaniciAdi + domain;
+
                 var yeniSoru = new Soru
                 {
                     KategoriId = KategoriId,
@@ -46,12 +50,9 @@ namespace GSBMaas.Controllers
                     OnaylandiMi = false,
                     SoruSoran = SoruSoran
                 };
-
                 db.Sorular.Add(yeniSoru);
                 db.SaveChanges();
-
                 bool emailSent = SoruSoranaEpostaGonder(Eposta, SoruMetni);
-
                 return Json(new
                 {
                     success = true,
@@ -74,7 +75,6 @@ namespace GSBMaas.Controllers
                 var toAddress = new MailAddress(eposta);
                 const string subject = "E-sendika Sorulan Soru";
                 string body = $"Sorunuz: \"{soruMetni}\"\n\nSorunuz sistemimize ulaşmıştır.";
-
                 using (var smtp = new SmtpClient("mail.kurumsaleposta.com", 587)
                 {
                     EnableSsl = false,
@@ -85,7 +85,6 @@ namespace GSBMaas.Controllers
                 {
                     smtp.Send(fromAddress.Address, toAddress.Address, subject, body);
                 }
-
                 Console.WriteLine($"✅ E-posta başarıyla gönderildi: {eposta}");
                 return true;
             }
@@ -95,6 +94,5 @@ namespace GSBMaas.Controllers
                 return false;
             }
         }
-
     }
 }
