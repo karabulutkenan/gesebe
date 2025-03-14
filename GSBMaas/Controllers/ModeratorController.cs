@@ -328,6 +328,39 @@ namespace GSBMaas.Controllers
             }
         }
 
+        //CEVAP EKLAMA BÖLÜMÜ BEKENT :) 
+        [Authorize(AuthenticationSchemes = Scheme)]
+        [HttpPost]
+        public IActionResult CevapEkle(int id, string cevapMetni, string kaynak)
+        {
+            try
+            {
+                var soru = db.Sorular.Find(id);
+                if (soru != null)
+                {
+                    // 🔹 Moderatörün adını ve soyadını Session'dan al
+                    string moderatorAdSoyad = HttpContext.Session.GetString("ModeratorAd") + " " +
+                                              HttpContext.Session.GetString("ModeratorSoyad");
+
+                    soru.CevapMetni = cevapMetni;
+                    soru.Kaynak = string.IsNullOrEmpty(kaynak) ? "-" : kaynak; // Eğer boşsa "-" koy
+                    soru.Cevaplayan = moderatorAdSoyad; // 🔹 Cevaplayan moderatör olacak
+                    soru.CevapTarihi = DateTime.Now;
+
+                    db.SaveChanges();
+
+                    return Json(new { success = true, message = "✅ Cevap başarıyla eklendi!" });
+                }
+                return Json(new { success = false, message = "❌ Soru bulunamadı!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "⚠️ Hata oluştu: " + ex.Message });
+            }
+        }
+
+
+
 
         // ✅ Moderatör soruyu silebilir
         [Authorize(AuthenticationSchemes = Scheme)]

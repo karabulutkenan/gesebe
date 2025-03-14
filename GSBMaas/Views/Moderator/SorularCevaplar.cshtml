@@ -67,6 +67,9 @@
                         {
                             <button class="btn btn-sm btn-secondary" disabled>Onaylanmış</button>
                         }
+                        <button class="btn btn-sm btn-info cevapla-soru" data-id="@soru.Id" data-soru="@soru.SoruMetni">
+                            Cevapla
+                        </button>
                     </td>
                 </tr>
             }
@@ -232,6 +235,34 @@
     </div>
 </div>
 
+</div>
+<!-- ✅ Cevap Yazma Modalı -->
+<div class="modal fade" id="cevapModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Soruyu Cevapla</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Soru:</strong> <span id="modalSoruMetni"></span></p>
+
+                <!-- ✅ Cevap Metni -->
+                <label class="form-label mt-2">Cevabınızı yazın:</label>
+                <textarea id="cevapMetni" class="form-control" rows="4" placeholder="Cevabınızı yazın..." required></textarea>
+
+                <!-- ✅ Kaynak Alanı -->
+                <label class="form-label mt-2">Kaynak:</label>
+                <input type="text" id="cevapKaynak" class="form-control" placeholder="Kaynak ekleyebilirsiniz. (Opsiyonel)">
+
+                <input type="hidden" id="cevapSoruId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-success" id="cevapKaydetBtn">Cevabı Kaydet</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -467,6 +498,74 @@
         });
     });
 
+    document.addEventListener("DOMContentLoaded", function () {
+        // ✅ "Cevapla" Butonuna Basınca Modalı Aç
+        document.querySelectorAll(".cevapla-soru").forEach(button => {
+            button.addEventListener("click", function () {
+                let soruId = this.getAttribute("data-id");
+                let soruMetni = this.getAttribute("data-soru");
+
+                document.getElementById("modalSoruMetni").textContent = soruMetni;
+                document.getElementById("cevapSoruId").value = soruId;
+                document.getElementById("cevapMetni").value = ""; // Önceki değeri temizle
+                document.getElementById("cevapKaynak").value = ""; // Önceki değeri temizle
+
+                let modal = new bootstrap.Modal(document.getElementById("cevapModal"));
+                modal.show();
+            });
+        });
+
+        // ✅ Cevap Kaydetme İşlemi
+        document.getElementById("cevapKaydetBtn").addEventListener("click", function () {
+            let soruId = document.getElementById("cevapSoruId").value;
+            let cevapMetniElement = document.getElementById("cevapMetni");
+            let kaynakElement = document.getElementById("cevapKaynak");
+
+            let cevapMetni = cevapMetniElement.value.trim();
+            let kaynak = kaynakElement.value.trim();
+
+            // 🛠️ **Konsolda hata ayıklama için log ekleyelim**
+            console.log("Soru ID:", soruId);
+            console.log("Cevap Metni:", cevapMetni);
+            console.log("Kaynak:", kaynak);
+
+            // ✅ Eğer cevap metni boşsa uyarı ver ve işlemi durdur
+            if (!cevapMetni || cevapMetni.length === 0) {
+                alert("⚠️ Lütfen bir cevap girin.");
+                cevapMetniElement.focus(); // Kullanıcıyı tekrar giriş alanına yönlendir
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append("id", soruId);
+            formData.append("cevapMetni", cevapMetni);
+            formData.append("kaynak", kaynak);
+
+            fetch("/Moderator/CevapEkle", {
+                method: "POST",
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Sunucudan geçerli bir yanıt alınamadı.");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert("✅ Cevap başarıyla kaydedildi!");
+                        location.reload();
+                    } else {
+                        alert("❌ Hata: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert("⚠️ Sunucu hatası: " + error.message);
+                    console.error("Hata detayları:", error);
+                });
+        });
+
+    });
 
 </script>
 

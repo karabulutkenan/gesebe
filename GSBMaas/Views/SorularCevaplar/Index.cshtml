@@ -241,31 +241,27 @@
                     if (data.success) {
                         alert("✅ " + data.message);
 
-                        // ✅ E-Posta Gönderme İşlemi
-                        fetch("/SorularCevaplar/GonderMail", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                eposta: formData.get("Eposta"),
-                                soruMetni: formData.get("SoruMetni")
-                            })
-                        })
-                            .then(response => response.json())
-                            .then(mailData => {
-                                if (mailData.success) {
-                                    alert("📧 E-Posta başarıyla gönderildi.");
-                                } else {
-                                    alert("⚠️ E-Posta gönderilirken hata oluştu: " + mailData.message);
-                                }
-                                location.reload();
-                            })
-                            .catch(error => alert("⚠️ E-Posta sunucu hatası: " + error.message));
+                        // ✅ Modalı Kapat
+                        let modalElement = document.getElementById("soruSorModal");
+                        let modalInstance = bootstrap.Modal.getInstance(modalElement);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+
+                        // ✅ Sayfayı Yenile
+                        location.reload();
                     } else {
                         alert("❌ Hata: " + data.message);
                     }
                 })
-                .catch(error => alert("⚠️ Sunucu hatası: " + error.message));
+                .catch(error => {
+                    alert("⚠️ Sunucu hatası: " + error.message);
+                    console.error("Hata detayları:", error);
+                });
         });
+
+
+
     });
 
 

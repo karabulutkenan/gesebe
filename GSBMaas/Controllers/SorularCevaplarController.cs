@@ -78,17 +78,23 @@ namespace GSBMaas.Controllers
                 using (var smtp = new SmtpClient("mail.kurumsaleposta.com", 587)
                 {
                     EnableSsl = false,
-                    Credentials = new NetworkCredential("kenan@toleyis.org.tr", "Melis2604K25")
+                    Credentials = new NetworkCredential("kenan@toleyis.org.tr", "Melis2604K25"),
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    Timeout = 20000 // 20 saniye timeout
                 })
                 {
                     smtp.Send(fromAddress.Address, toAddress.Address, subject, body);
                 }
+
+                Console.WriteLine($"✅ E-posta başarıyla gönderildi: {eposta}");
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"❌ E-posta gönderme hatası: {ex.Message}");
                 return false;
             }
         }
+
     }
 }
