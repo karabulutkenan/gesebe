@@ -23,7 +23,8 @@ namespace GSBMaas.Context
         public DbSet<Misafirhane> Misafirhaneler { get; set; }
         public DbSet<Moderator> Moderatorler { get; set; }
         public DbSet<Soru> Sorular { get; set; }
-        public DbSet<SoruKategori> SoruKategoriler { get; set; } 
+        public DbSet<SoruKategori> SoruKategoriler { get; set; }
+        public DbSet<UserProfile> UserProfiles { get; set; }
 
 
 

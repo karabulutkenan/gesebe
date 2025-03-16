@@ -125,13 +125,13 @@ namespace GSBMaas.Controllers
                 Console.WriteLine("📤 API'ye Gönderilen Veri: " + json); // 📌 API'ye gönderilen veriyi logla
 
                 var response = await httpClient.PostAsync(apiUrl, content);
-                var responseString = await response.Content.ReadAsStringAsync();
+                var jsonResponse = await response.Content.ReadAsStringAsync();
 
-                Console.WriteLine("📥 API Cevabı: " + responseString); // 📌 API’den dönen cevabı logla
+                Console.WriteLine("📥 API Cevabı: " + jsonResponse);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = JsonSerializer.Deserialize<ApiResponse>(responseString);
+                    var result = JsonSerializer.Deserialize<ApiResponse>(jsonResponse);
 
                     if (result.code == 200 && result.result != null && result.result.uye == "E") // ✅ API başarılı döndü mü kontrol et
                     {
@@ -140,6 +140,9 @@ namespace GSBMaas.Controllers
                         HttpContext.Session.SetString("UserAd", result.result.ad);
                         HttpContext.Session.SetString("UserSoyad", result.result.soyad);
                         HttpContext.Session.SetString("Unvan", result.result.unvan);
+                        HttpContext.Session.SetString("Subesi", result.result.sube);
+                        HttpContext.Session.SetString("UyelikTarihi", result.result.uyelikBaslangicTarihi);
+
                         return Json(new { success = true });
                     }
                     else
@@ -163,7 +166,7 @@ namespace GSBMaas.Controllers
 
                 if (moderator != null && BCrypt.Net.BCrypt.Verify(model.UyelikKodu, moderator.SifreHash)) // Şifreyi doğrula
                 {
-                    // Giriş başarılı, Session’a bilgileri ekleyelim
+                    // Giriş başarılı, Session'a bilgileri ekleyelim
                     HttpContext.Session.SetString("UserLoggedIn", "true");
                     HttpContext.Session.SetString("UserAd", moderator.Ad);
                     HttpContext.Session.SetString("UserSoyad", moderator.Soyad);
@@ -220,5 +223,8 @@ namespace GSBMaas.Controllers
         public string soyad { get; set; }
         public string uye { get; set; }
         public string unvan { get; set; }
+        public string sube { get; set; }
+        public string uyelikBaslangicTarihi { get; set; }
+        
     }
 }

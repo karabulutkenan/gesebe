@@ -28,15 +28,10 @@ namespace GSBMaas.Controllers
         }
 
         [HttpPost]
-        public IActionResult SoruEkle(int KategoriId, string SoruMetni, string SoruSoran, string EpostaKullaniciAdi, string EpostaDomain, string EpostaDigerDomain)
+        public IActionResult SoruEkle(int KategoriId, string SoruMetni, string SoruSoran, string Eposta)
         {
             try
             {
-                // E-posta adresini birleştir
-                string domain = EpostaDomain == "diger" ? EpostaDigerDomain : EpostaDomain;
-                // Domain zaten @ ile başlıyor, ekstra @ eklemeye gerek yok
-                string Eposta = EpostaKullaniciAdi + domain;
-
                 var yeniSoru = new Soru
                 {
                     KategoriId = KategoriId,

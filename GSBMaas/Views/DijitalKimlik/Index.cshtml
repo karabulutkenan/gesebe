@@ -1,0 +1,138 @@
+@{
+    ViewData["Title"] = "Dijital Üye Kimlik Kartı";
+}
+
+<div class="container py-3">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <!-- Kimlik Kartı -->
+            <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, 
+                rgba(255, 179, 107, 0.7) 0%, 
+                rgba(245, 245, 245, 0.9) 50%, 
+                rgba(173, 216, 230, 0.7) 100%);">
+                <!-- Başlık -->
+                <div class="card-header text-black font-weight-bold text-center py-3 position-relative" style=" border-radius: 0 0 50% 50% / 0 0 100px 100px; height: 130px; background-color:aliceblue ;">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <img src="/images/toleyis-logo.png" alt="TOLEYİS Logo" style="height: 45px; margin-left: 5px;">
+                        <h6 class="mb-0 flex-grow-1 text-center">TOLEYİS <br/> DİJİTAL ÜYE KİMLİK KARTI</h6>
+                        <img src="/images/turkis-logo.png" alt="TURKIS Logo" style="height: 45px; margin-right: 5px;">
+                    </div>
+                </div>
+                
+                <div class="card-body p-2" >
+                    <!-- Profil Fotoğrafı -->
+                    <div class="text-center mb-4" style="margin-top: -30px;">
+                        <div class="position-relative d-inline-block">
+                            <div class="rounded-circle overflow-hidden" style="width: 130px; height: 130px; cursor: pointer; border: 4px solid white; box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);" 
+                                 data-bs-toggle="modal" data-bs-target="#photoUploadModal">
+                                <img src="@(ViewBag.PhotoPath)" alt="Profil Fotoğrafı" 
+                                     class="img-fluid w-100 h-100" 
+                                     style="object-fit: cover;" 
+                                     id="profilePhoto">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kimlik Bilgileri -->
+                    <div class="row g-2">
+                        <div class="col-12 mb-1">
+                            <div class="p-2 rounded d-flex align-items-center" style="background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);">
+                                <div class="fw-bold font-weight-bold" style="width: 120px;">AD SOYAD:</div>
+                                <div class="fs-5 ms-3">@ViewBag.Ad @ViewBag.Soyad</div>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-1">
+                            <div class="p-2 rounded d-flex align-items-center" style="background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);">
+                                <div class="fw-bold font-weight-bold" style="width: 120px;">TC KİMLİK NO:</div>
+                                <div class="fs-5 ms-3">@ViewBag.TcNo</div>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-1">
+                            <div class="p-2 rounded d-flex align-items-center" style="background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);">
+                                <div class="fw-bold font-weight-bold" style="width: 120px;">İŞYERİ:</div>
+                                <div class="fs-5 ms-3">@ViewBag.Unvan</div>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-1">
+                            <div class="p-2 rounded d-flex align-items-center" style="background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);">
+                                <div class="fw-bold font-weight-bold" style="width: 120px;">ŞUBESİ:</div>
+                                <div class="fs-5 ms-3 text-uppercase">@ViewBag.Subesi</div>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-1">
+                            <div class="p-2 rounded d-flex align-items-center" style="background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);">
+                                <div class="fw-bold font-weight-bold" style="width: 120px;">ÜYELİK TARİHİ:</div>
+                                <div class="fs-5 ms-3">@ViewBag.UyelikTarihi</div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="p-2 rounded text-center text-white fw-bold" style="background-color: #198754;">
+                                <div class="fs-5">AKTİF ÜYEMİZDİR</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fotoğraf Yükleme Modal -->
+<div class="modal fade" id="photoUploadModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Profil Fotoğrafı Yükle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="photoInput" class="form-label">Fotoğraf Seçin</label>
+                    <input type="file" class="form-control" id="photoInput" accept="image/jpeg,image/png">
+                </div>
+                <small class="text-muted">Not: Sadece JPG, JPEG veya PNG formatında dosyalar kabul edilmektedir.</small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-primary" id="uploadButton">Yükle</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#uploadButton').click(function () {
+                var file = $('#photoInput')[0].files[0];
+                if (file) {
+                    var formData = new FormData();
+                    formData.append('photo', file);
+
+                    $.ajax({
+                        url: '@Url.Action("UploadPhoto", "DijitalKimlik")',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (response) {
+                            if (response.success) {
+                                $('#profilePhoto').attr('src', response.photoPath);
+                                $('#photoUploadModal').modal('hide');
+                                alert('Fotoğraf başarıyla yüklendi');
+                                $('#photoInput').val(''); // Input'u temizle
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function () {
+                            alert('Fotoğraf yüklenirken bir hata oluştu');
+                        }
+                    });
+                } else {
+                    alert('Lütfen bir fotoğraf seçiniz');
+                }
+            });
+        });
+    </script>
+} 
