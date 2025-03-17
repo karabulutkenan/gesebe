@@ -7,8 +7,7 @@ namespace GSBMaas.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            
-
+           
             migrationBuilder.CreateTable(
                 name: "UserProfiles",
                 columns: table => new
@@ -24,9 +23,7 @@ namespace GSBMaas.Migrations
                     table.PrimaryKey("PK_UserProfiles", x => x.Id);
                 });
 
-           
-
-           
+            
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

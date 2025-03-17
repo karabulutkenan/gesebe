@@ -77,7 +77,7 @@
                                 <div class="fw-bold font-weight-bold" style="width: 120px;">ÜYELİK TARİHİ:</div>
                                 <div class="fs-5 ms-3">@ViewBag.UyelikTarihi</div>
                             </div>
-                        </di>
+                        </div>
                         <div class="col-12">
                             <div class="p-2 rounded text-center text-white fw-bold" style="background-color: #198754;">
                                 <div class="fs-5">AKTİF ÜYEMİZDİR</div>
@@ -92,7 +92,7 @@
 
 <!-- Fotoğraf Yükleme Modal -->
 <div class="modal fade" id="photoUploadModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Profil Fotoğrafı Yükle</h5>
@@ -103,48 +103,128 @@
                     <label for="photoInput" class="form-label">Fotoğraf Seçin</label>
                     <input type="file" class="form-control" id="photoInput" accept="image/jpeg,image/png">
                 </div>
+                <div class="img-container" style="width: 100%; height: 300px; display: none; position: relative;">
+                    <img id="cropperImage" src="" alt="Kırpılacak fotoğraf" style="max-width: 100%; max-height: 100%;">
+                </div>
                 <small class="text-muted">Not: Sadece JPG, JPEG veya PNG formatında dosyalar kabul edilmektedir.</small>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-                <button type="button" class="btn btn-primary" id="uploadButton">Yükle</button>
+                <button type="button" class="btn btn-primary" id="uploadButton" disabled>Yükle</button>
             </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Cropper.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script>
-        $(document).ready(function () {
-            $('#uploadButton').click(function () {
-                var file = $('#photoInput')[0].files[0];
-                if (file) {
-                    var formData = new FormData();
-                    formData.append('photo', file);
+        let cropper = null;
 
-                    $.ajax({
-                        url: '@Url.Action("UploadPhoto", "DijitalKimlik")',
-                        type: 'POST',
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function (response) {
-                            if (response.success) {
-                                $('#profilePhoto').attr('src', response.photoPath);
-                                $('#photoUploadModal').modal('hide');
-                                alert('Fotoğraf başarıyla yüklendi');
-                                $('#photoInput').val(''); // Input'u temizle
-                            } else {
-                                alert(response.message);
-                            }
-                        },
-                        error: function () {
-                            alert('Fotoğraf yüklenirken bir hata oluştu');
+        $(document).ready(function () {
+            // Fotoğraf seçildiğinde
+            $('#photoInput').on('change', function (e) {
+                console.log('Fotoğraf seçildi');
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        console.log('Fotoğraf yüklendi');
+                        $('.img-container').show();
+                        $('#cropperImage').attr('src', e.target.result);
+                        
+                        if (cropper) {
+                            cropper.destroy();
                         }
-                    });
-                } else {
-                    alert('Lütfen bir fotoğraf seçiniz');
+                        
+                        // Cropper'ı başlat
+                        cropper = new Cropper(document.getElementById('cropperImage'), {
+                            aspectRatio: 1,
+                            viewMode: 1,
+                            dragMode: 'move',
+                            autoCropArea: 1,
+                            restore: false,
+                            guides: true,
+                            center: true,
+                            highlight: false,
+                            cropBoxMovable: true,
+                            cropBoxResizable: true,
+                            toggleDragModeOnDblclick: true,
+                            background: true,
+                            responsive: true,
+                            autoCropWidth: 200,
+                            autoCropHeight: 200,
+                            ready: function() {
+                                console.log('Cropper hazır');
+                                $('#uploadButton').prop('disabled', false);
+                            }
+                        });
+                        
+                        console.log('Cropper başlatıldı');
+                    };
+                    reader.readAsDataURL(file);
                 }
+            });
+
+            // Yükle butonuna tıklandığında
+            $('#uploadButton').on('click', function () {
+                console.log('Yükle butonuna tıklandı');
+                if (cropper) {
+                    const canvas = cropper.getCroppedCanvas({
+                        width: 400,
+                        height: 400
+                    });
+                    
+                    canvas.toBlob(function (blob) {
+                        console.log('Fotoğraf blob\'a dönüştürüldü');
+                        const formData = new FormData();
+                        formData.append('photo', blob, 'cropped_photo.jpg');
+
+                        $.ajax({
+                            url: '@Url.Action("UploadPhoto", "DijitalKimlik")',
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                console.log('Sunucu yanıtı:', response);
+                                if (response.success) {
+                                    $('#profilePhoto').attr('src', response.photoPath);
+                                    $('#photoUploadModal').modal('hide');
+                                    alert('Fotoğraf başarıyla yüklendi');
+                                    $('#photoInput').val('');
+                                    $('.img-container').hide();
+                                    $('#uploadButton').prop('disabled', true);
+                                } else {
+                                    alert(response.message || 'Bir hata oluştu');
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Ajax hatası:', error);
+                                alert('Fotoğraf yüklenirken bir hata oluştu: ' + error);
+                            }
+                        });
+                    }, 'image/jpeg', 0.9);
+                } else {
+                    console.error('Cropper bulunamadı');
+                    alert('Lütfen önce bir fotoğraf seçin');
+                }
+            });
+
+            // Modal kapandığında
+            $('#photoUploadModal').on('hidden.bs.modal', function () {
+                console.log('Modal kapatıldı');
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+                $('.img-container').hide();
+                $('#photoInput').val('');
+                $('#uploadButton').prop('disabled', true);
             });
         });
     </script>

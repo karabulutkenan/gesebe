@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using GSBMaas.Context;
 using System.Linq;
-
+using System.IO;
 
 namespace GSBMaas.Controllers
 {
@@ -191,9 +191,6 @@ namespace GSBMaas.Controllers
             return Json(new { Ad = userAd, Soyad = userSoyad });
         }
 
-
-
-
         [HttpPost]
         public IActionResult Cikis()
         {
@@ -201,6 +198,26 @@ namespace GSBMaas.Controllers
             return RedirectToAction("Giris"); // ✅ Giriş sayfasına yönlendir
         }
 
+        [HttpGet]
+        public IActionResult DownloadPdf(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+                return BadRequest("Dosya yolu belirtilmedi.");
+
+            var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", filePath.TrimStart('/'));
+            
+            if (!System.IO.File.Exists(fullPath))
+                return NotFound("Dosya bulunamadı.");
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(fullPath, FileMode.Open))
+            {
+                stream.CopyTo(memory);
+            }
+            memory.Position = 0;
+
+            return File(memory, "application/pdf", Path.GetFileName(fullPath));
+        }
     }
 
     public class GirisModel

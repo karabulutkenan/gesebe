@@ -73,7 +73,7 @@ namespace GSBMaas.Controllers
                     return Json(new { success = false, message = "Sadece .jpg, .jpeg veya .png formatında dosya yükleyebilirsiniz." });
 
                 // Dosya adını oluştur
-                var fileName = $"{tcNo}_{DateTime.Now.Ticks}{extension}";
+                var fileName = $"{tcNo}_{DateTime.Now.Ticks}.jpg";
                 var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "photos", fileName);
 
                 // Uploads klasörünü oluştur
@@ -87,14 +87,15 @@ namespace GSBMaas.Controllers
                     await photo.CopyToAsync(stream);
                 }
 
-                // Veritabanını güncelle - Sadece fotoğraf bilgisi için
+                // Veritabanını güncelle
                 if (userProfile == null)
                 {
                     userProfile = new UserProfile
                     {
                         TcNo = tcNo,
                         PhotoPath = $"/uploads/photos/{fileName}",
-                        CreatedDate = DateTime.Now
+                        CreatedDate = DateTime.Now,
+                        UpdatedDate = DateTime.Now
                     };
                     _context.UserProfiles.Add(userProfile);
                 }
@@ -109,6 +110,7 @@ namespace GSBMaas.Controllers
                     }
 
                     userProfile.PhotoPath = $"/uploads/photos/{fileName}";
+                    userProfile.UpdatedDate = DateTime.Now;
                 }
 
                 await _context.SaveChangesAsync();
