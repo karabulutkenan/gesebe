@@ -34,6 +34,7 @@ namespace GSBMaas.Controllers
             var unvan = HttpContext.Session.GetString("Unvan");
             var sube = HttpContext.Session.GetString("Subesi");
             var uyelikBaslangicTarihi = HttpContext.Session.GetString("UyelikTarihi");
+            var sgkSicilNo = HttpContext.Session.GetString("SgkSicilNo");
 
             // Sadece fotoğraf bilgisi için veritabanına bakıyoruz
             var userProfile = _context.UserProfiles.FirstOrDefault(x => x.TcNo == tcNo);
@@ -44,6 +45,7 @@ namespace GSBMaas.Controllers
             ViewBag.TcNo = tcNo;
             ViewBag.Subesi = sube;
             ViewBag.UyelikTarihi = uyelikBaslangicTarihi;
+            ViewBag.SgkSicilNo = sgkSicilNo;
             ViewBag.PhotoPath = userProfile?.PhotoPath ?? "/images/default-avatar.png";
 
             return View();

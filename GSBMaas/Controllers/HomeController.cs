@@ -142,6 +142,7 @@ namespace GSBMaas.Controllers
                         HttpContext.Session.SetString("Unvan", result.result.unvan);
                         HttpContext.Session.SetString("Subesi", result.result.sube);
                         HttpContext.Session.SetString("UyelikTarihi", result.result.uyelikBaslangicTarihi);
+                        HttpContext.Session.SetString("SgkSicilNo", result.result.sgkSicilNo);
 
                         return Json(new { success = true });
                     }
@@ -225,6 +226,7 @@ namespace GSBMaas.Controllers
         public string unvan { get; set; }
         public string sube { get; set; }
         public string uyelikBaslangicTarihi { get; set; }
+        public string sgkSicilNo { get; set; }
         
     }
 }

@@ -17,34 +17,101 @@
             </div>
         </div>
     </header>
+
+    <!-- Arama ve Filtreleme -->
     <div class="container mt-3">
-        <div class="row">
-            <div class="col-md-4 ">
-                <input type="text" class="form-control" id="aramaKelime" placeholder="Misafirhane Adı ile Ara">
-            </div>
-            <div class="col-md-4">
-                <select class="form-select form-control" id="ilSec">
-                    <option value="">İl Seçiniz</option>
-                    @foreach (var il in iller)
-                    {
-                        <option value="@il">@il</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-4">
-                <button class="btn btn-primary w-100" onclick="MisafirhaneAra()">Ara</button>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="input-group">
+                    <select class="form-select select2" id="ilSec" style="width: 200px;">
+                        <option value="">Tüm İller</option>
+                        @foreach (var il in iller)
+                        {
+                            <option value="@il">@il</option>
+                        }
+                    </select>
+                    <input type="text" class="form-control" id="aramaKelime" placeholder="Arama yapın...">
+                    <span class="input-group-text bg-white border-start-0">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                </div>
             </div>
         </div>
     </div>
-    <p class=" text-danger mb-0" style="font-size: 0.8rem;">ÖNEMLİ: Tüm Misafirhaneler ücretldir. Ücretleri ilgili misafirhanenin telefonundan öğrenebilirsiniz.</p>
-    <div class="container mt-4" id="sonucListesi">
-        <p class="text-muted">Yükleniyor...</p>
+
+    <p class="text-danger mb-0 mt-2 container" style="font-size: 0.8rem;">ÖNEMLİ: Tüm Misafirhaneler ücretlidir. Ücretleri ilgili misafirhanenin telefonundan öğrenebilirsiniz.</p>
+
+    <!-- Misafirhane Listesi -->
+    <div class="container mt-4">
+        <div class="row" id="sonucListesi">
+            <p class="text-muted">Yükleniyor...</p>
+        </div>
     </div>
 </div>
 
+<!-- Detay Modalı -->
+<div class="modal fade" id="detayModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Misafirhane Detayı</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Misafirhane:</strong> <span id="modalAd"></span></p>
+                <p><strong>İl:</strong> <span id="modalIl"></span></p>
+                <p><strong>Telefon:</strong> <span id="modalTelefon"></span></p>
+                <p><strong>Adres:</strong> <span id="modalAdres"></span></p>
+                <a href="#" class="btn btn-primary w-100" id="haritaLink" target="_blank">
+                    <i class="bi bi-map"></i> Yol Tarifi Al
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<!-- Bootstrap Icons CDN -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    $(document).ready(function() {
+        // Select2 başlatma
+        $('#ilSec').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'İl seçin...',
+            allowClear: true,
+            language: {
+                noResults: function() {
+                    return "Sonuç bulunamadı";
+                }
+            }
+        });
+
+        // Sayfa yüklendiğinde ilk aramayı yap
         MisafirhaneAra();
+
+        // İl değiştiğinde veya arama yapıldığında otomatik arama
+        $('#ilSec').on('change', function() {
+            MisafirhaneAra();
+        });
+
+        // Arama kutusuna yazıldığında debounce ile arama
+        let timeout = null;
+        $('#aramaKelime').on('input', function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                MisafirhaneAra();
+            }, 300); // 300ms bekle
+        });
     });
 
     function MisafirhaneAra() {
@@ -58,33 +125,88 @@
                 sonucDiv.innerHTML = "";
 
                 if (!data || data.length === 0) {
-                    sonucDiv.innerHTML = `<p class="text-danger">Bu ilde kayıtlı bir misafirhane bulunamadı.</p>`;
+                    sonucDiv.innerHTML = `
+                        <div class="col-12 text-center mt-4">
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Bu kriterlere uygun misafirhane bulunamadı.
+                            </div>
+                        </div>`;
                 } else {
-                    var table = `<div class="table-responsive">
-                                        <table class="table table-bordered table-hover">
-                                            <thead class="table-dark">
-                                                <tr>
-                                                    <th>Adı</th>
-                                                    <th>İli</th>
-                                                    <th>Telefon</th>
-                                                    <th>Adres</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>`;
-
                     data.forEach(m => {
-                        table += `<tr>
-                                        <td>${m.adi}</td>
-                                        <td>${m.il}</td>
-                                        <td>${m.telefon ? m.telefon : "Belirtilmemiş"}</td>
-                                        <td>${m.adres}</td>
-                                      </tr>`;
+                        sonucDiv.innerHTML += `
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${m.adi}</h5>
+                                        <p class="card-text text-muted mb-2">
+                                            <i class="bi bi-geo-alt me-1"></i>${m.il}
+                                        </p>
+                                        <button class="btn btn-info btn-sm w-100" 
+                                                onclick="detayGoster('${m.adi}', '${m.il}', '${m.telefon || "Belirtilmemiş"}', '${m.adres}')">
+                                            <i class="bi bi-info-circle me-1"></i>Detayları Göster
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>`;
                     });
-
-                    table += `</tbody></table></div>`;
-                    sonucDiv.innerHTML = table;
                 }
             })
-            .catch(error => console.error("Hata:", error));
+            .catch(error => {
+                console.error("Hata:", error);
+                var sonucDiv = document.getElementById("sonucListesi");
+                sonucDiv.innerHTML = `
+                    <div class="col-12 text-center mt-4">
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Veriler yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.
+                        </div>
+                    </div>`;
+            });
+    }
+
+    function detayGoster(ad, il, telefon, adres) {
+        document.getElementById("modalAd").textContent = ad;
+        document.getElementById("modalIl").textContent = il;
+        document.getElementById("modalTelefon").textContent = telefon;
+        document.getElementById("modalAdres").textContent = adres;
+        
+        const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(adres + ', ' + il)}`;
+        document.getElementById("haritaLink").href = googleMapsUrl;
+
+        let modal = new bootstrap.Modal(document.getElementById("detayModal"));
+        modal.show();
     }
 </script>
+
+<style>
+    .select2-container--bootstrap-5 {
+        width: auto !important;
+    }
+    
+    .input-group .select2-container--bootstrap-5 .select2-selection {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        height: 100%;
+    }
+
+    .input-group .form-control {
+        border-left: 0;
+    }
+
+    .input-group .input-group-text {
+        background-color: transparent;
+    }
+
+    #aramaKelime:focus {
+        box-shadow: none;
+    }
+
+    .card {
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+</style>
