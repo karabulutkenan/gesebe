@@ -1,0 +1,45 @@
+@{
+    ViewData["Title"] = "Hesaplamalar";
+}
+
+<div class="container-fluid p-0">
+    <!-- Header -->
+    <header class="bg-info shadow-sm py-2">
+        <div class="container">
+            <div class="d-flex align-items-center">
+                <a href="/" class="text-white me-3" style="text-decoration: none; font-size: 1.5rem;">
+                    ↩️
+                </a>
+                <h1 class="h6 mb-0 text-white text-uppercase" style="margin-right: 10px;">Hesaplamalar</h1>
+                <p class="text-white mb-0" style="font-size: 0.8rem;">GSB maaş ve kıdem tazminatı hesaplama araçları</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- İçerik -->
+    <main class="bg-light py-2">
+        <div class="container mt-2">
+            <div class="row gx-0" style="row-gap: 15px;">
+                <!-- GSB Maaş Hesaplama -->
+                <div class="col-6 col-md-4">
+                    <a href="/Tablo" class="text-decoration-none">
+                        <div class="tile bg-info shadow rounded text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
+                            <i class="bi bi-calculator" style="font-size: 3rem;"></i>
+                            <h5 class="mt-2">GSB Maaş Hesaplama</h5>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Kamu Kıdem Tazminatı Hesaplama -->
+                <div class="col-6 col-md-4">
+                    <a href="/KamuKidemTazminatiHesaplama/Index" class="text-decoration-none">
+                        <div class="tile bg-success rounded shadow text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
+                            <i class="bi bi-cash-stack" style="font-size: 3rem;"></i>
+                            <h5 class="mt-2">Kamu Kıdem Tazminatı Hesaplama</h5>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div> 

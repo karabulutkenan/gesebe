@@ -31,11 +31,18 @@
             outline: none;
             transition: 0.3s;
             z-index: 1050;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
         }
 
         .custom-close:hover {
             color: red;
-            transform: scale(1.2);
+            background-color: rgba(0, 0, 0, 0.05);
+            transform: rotate(90deg);
         }
 
         .html-container {
@@ -62,6 +69,47 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .search-container {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            z-index: 1040;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .search-count {
+            background: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .highlight {
+            background-color: yellow;
+            padding: 0 2px;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .highlight.active {
+            background-color: #ffd700;
+            box-shadow: 0 0 0 2px #ffd700;
         }
 
         /* HTML içeriği için stil */
@@ -97,6 +145,9 @@
     <header class="bg-warning shadow-sm py-2">
         <div class="container">
             <div class="d-flex align-items-center">
+                <a href="/" class="text-white me-3" style="text-decoration: none; font-size: 1.5rem;">
+                    ↩️
+                </a>
                 <h1 class="h6 mb-0 text-white text-uppercase" style="margin-right: 10px;">Kanun ve Yönetmelikler</h1>
                 <p class="text-white mb-0" style="font-size: 0.8rem;">Resmi kanun ve yönetmelikleri okuyabilirsiniz</p>
             </div>
@@ -143,7 +194,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="htmlModalLabel"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="custom-close" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+            </div>
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="İçerikte ara...">
+                <div class="search-count" id="searchCount"></div>
             </div>
             <div class="modal-body p-0">
                 <div id="htmlContent" class="html-container"></div>
@@ -180,6 +235,78 @@
         // Modal kapandığında içeriği temizle
         document.getElementById('htmlModal').addEventListener('hidden.bs.modal', function () {
             document.getElementById('htmlContent').innerHTML = '';
+            document.getElementById('searchInput').value = '';
+        });
+
+        // Arama fonksiyonu
+        let currentHighlightIndex = -1;
+        let highlights = [];
+
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchText = e.target.value.toLowerCase();
+            const content = document.getElementById('htmlContent');
+            const textNodes = document.evaluate(
+                '//text()[not(ancestor::script) and not(ancestor::style)]',
+                content,
+                null,
+                XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
+                null
+            );
+
+            // Önceki highlight'ları temizle
+            const existingHighlights = content.getElementsByClassName('highlight');
+            while (existingHighlights.length > 0) {
+                const parent = existingHighlights[0].parentNode;
+                parent.replaceChild(document.createTextNode(existingHighlights[0].textContent), existingHighlights[0]);
+            }
+
+            highlights = [];
+            currentHighlightIndex = -1;
+
+            if (searchText === '') {
+                document.getElementById('searchCount').textContent = '';
+                return;
+            }
+
+            for (let i = 0; i < textNodes.snapshotLength; i++) {
+                const node = textNodes.snapshotItem(i);
+                const text = node.textContent;
+                const lowerText = text.toLowerCase();
+
+                if (lowerText.includes(searchText)) {
+                    const span = document.createElement('span');
+                    span.className = 'highlight';
+                    span.textContent = text;
+                    span.addEventListener('click', () => {
+                        // Tüm highlight'ları pasif yap
+                        highlights.forEach(h => h.classList.remove('active'));
+                        // Tıklanan highlight'ı aktif yap
+                        span.classList.add('active');
+                        // İlgili elemana scroll yap
+                        span.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    });
+                    node.parentNode.replaceChild(span, node);
+                    highlights.push(span);
+                }
+            }
+
+            // Sonuç sayısını göster
+            document.getElementById('searchCount').textContent = `${highlights.length} sonuç`;
+        });
+
+        // Klavye ile navigasyon
+        document.getElementById('searchInput').addEventListener('keydown', function(e) {
+            if (highlights.length === 0) return;
+
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (currentHighlightIndex >= 0) {
+                    highlights[currentHighlightIndex].classList.remove('active');
+                }
+                currentHighlightIndex = (currentHighlightIndex + 1) % highlights.length;
+                highlights[currentHighlightIndex].classList.add('active');
+                highlights[currentHighlightIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         });
     </script>
 }

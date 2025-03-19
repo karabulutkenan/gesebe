@@ -1,25 +1,24 @@
 ﻿@using Microsoft.AspNetCore.Http
 @{
-    ViewData["Title"] = "Kamu Kıdem Tazminatı Hesaplama";
-
+    ViewData["Title"] = "Kıdem Tazminatı Hesaplama";
 }
 @{
     var userAd = Context.Session.GetString("UserAd") ?? "Misafir";
     var userSoyad = Context.Session.GetString("UserSoyad") ?? "";
 }
 
-
-
 <div class="container-fluid p-0">
     <!-- Header -->
     <header class="bg-success shadow-sm py-2">
         <div class="container">
             <div class="d-flex align-items-center">
+                <a href="javascript:history.back()" class="text-white me-3" style="text-decoration: none; font-size: 1.5rem;">
+                    ↩️
+                </a>
                 <h1 class="h6 mb-0 text-white text-uppercase" style="margin-right: 10px;">Kıdem Tazminatı Hesaplama</h1>
-                <p class="text-white mb-0" style="font-size: 0.8rem;">Şimdilik Sadece Kamu İşçileri İçin Çalışmaktadır</p>
+                <p class="text-white mb-0" style="font-size: 0.8rem;">Kıdem tazminatı hesaplama aracı</p>
             </div>
         </div>
-
     </header>
    @*  <div class="container mt-2">
         <div class="d-flex justify-content-between align-items-center bg-light rounded shadow-sm p-2">
@@ -29,11 +28,58 @@
             </form>
         </div>
     </div> *@
-    <!-- Body -->
+    <!-- İçerik -->
     <main class="bg-light py-2">
         <div class="container mt-2">
-            <p class="text-black mb-0" style="font-size: 0.8rem;">ÇOK YAKINDA HİZMETİNİZDE OLACAK.</p>
-
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form id="kidemTazminatiForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">İşe Başlama Tarihi</label>
+                                <input type="date" class="form-control" id="iseBaslamaTarihi" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">İşten Çıkış Tarihi</label>
+                                <input type="date" class="form-control" id="istenCikisTarihi" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Son Brüt Ücret</label>
+                                <input type="number" class="form-control" id="sonBrutUcret" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Yıllık İzin Kullanılan Gün</label>
+                                <input type="number" class="form-control" id="yillikIzinGun" value="0">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Mazeret İzni Kullanılan Gün</label>
+                                <input type="number" class="form-control" id="mazeretIzinGun" value="0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ücretsiz İzin Kullanılan Gün</label>
+                                <input type="number" class="form-control" id="ucretsizIzinGun" value="0">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Rapor Günü</label>
+                                <input type="number" class="form-control" id="raporGun" value="0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Askerlik Süresi (Ay)</label>
+                                <input type="number" class="form-control" id="askerlikSure" value="0">
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success">Hesapla</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -45,3 +91,38 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+@section Scripts {
+    <script>
+        document.getElementById('kidemTazminatiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const iseBaslamaTarihi = new Date(document.getElementById('iseBaslamaTarihi').value);
+            const istenCikisTarihi = new Date(document.getElementById('istenCikisTarihi').value);
+            const sonBrutUcret = parseFloat(document.getElementById('sonBrutUcret').value);
+            const yillikIzinGun = parseInt(document.getElementById('yillikIzinGun').value) || 0;
+            const mazeretIzinGun = parseInt(document.getElementById('mazeretIzinGun').value) || 0;
+            const ucretsizIzinGun = parseInt(document.getElementById('ucretsizIzinGun').value) || 0;
+            const raporGun = parseInt(document.getElementById('raporGun').value) || 0;
+            const askerlikSure = parseInt(document.getElementById('askerlikSure').value) || 0;
+
+            // Toplam çalışma süresini hesapla
+            let toplamGun = Math.floor((istenCikisTarihi - iseBaslamaTarihi) / (1000 * 60 * 60 * 24));
+            
+            // Çıkarılacak günleri topla
+            const cikarilacakGun = yillikIzinGun + mazeretIzinGun + ucretsizIzinGun + raporGun + (askerlikSure * 30);
+            
+            // Net çalışma günü
+            const netCalismaGun = toplamGun - cikarilacakGun;
+            
+            // Yıl hesaplama
+            const calismaYili = Math.floor(netCalismaGun / 365);
+            
+            // Kıdem tazminatı hesaplama
+            const kidemTazminati = (sonBrutUcret / 30) * calismaYili * 30;
+
+            // Sonuçları göster
+            alert(`Kıdem Tazminatı: ${kidemTazminati.toFixed(2)} TL\nToplam Çalışma Süresi: ${calismaYili} yıl`);
+        });
+    </script>
+}

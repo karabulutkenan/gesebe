@@ -1,13 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Http
 @{
-    ViewData["Title"] = "E-Sendika Anasayfa";
+    ViewData["Title"] = "Ana Sayfa";
 }
 @{
     var userAd = Context.Session.GetString("UserAd") ?? "Misafir";
     var userSoyad = Context.Session.GetString("UserSoyad") ?? "";
     var unvan = Context.Session.GetString("Unvan") ?? "";
-   
-
 }
 
 <div class="container mt-2">
@@ -33,18 +31,17 @@
 
 <div class="container-fluid px-2 mt-2 ">
     <div class="row gx-0" style="row-gap: 15px;">
-        <!-- Satır aralığı 10px -->
-        <!-- GSB Maaş Hesaplama -->
+        <!-- Hesaplamalar -->
         <div class="col-6 col-md-4">
-            <a href="/Tablo" class="text-decoration-none">
+            <a href="/Home/Hesaplamalar" class="text-decoration-none">
                 <div class="tile bg-info shadow rounded text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
                     <i class="bi bi-calculator" style="font-size: 3rem;"></i>
-                    <h5 class="mt-2">GSB Maaş Hesaplama</h5>
+                    <h5 class="mt-2">Hesaplamalar</h5>
                 </div>
             </a>
         </div>
 
-<!-- İşçi İşveren İlişkileri (Sorular-Cevaplar) -->
+        <!-- İşçi İşveren İlişkileri (Sorular-Cevaplar) -->
         <div class="col-6 col-md-4">
             <a href="/SorularCevaplar" class="text-decoration-none">
                 <div class="tile bg-primary rounded shadow text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
@@ -54,7 +51,6 @@
             </a>
         </div>
 
-       
         <!-- Kamu Misafirhaneleri -->
         <div class="col-6 col-md-4">
             <a href="/KamuMisafirhaneleri" class="text-decoration-none">
@@ -75,17 +71,17 @@
             </a>
         </div>
 
-        <!-- Kıdem Tazminatı Hesaplama -->
+        <!-- Emek Akademisi -->
         <div class="col-6 col-md-4">
-            <a href="/KamuKidemTazminatiHesaplama/Index" class="text-decoration-none">
+            <a href="/Home/EmekAkademisi" class="text-decoration-none">
                 <div class="tile bg-success rounded shadow text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">
-                    <i class="bi bi-cash-stack" style="font-size: 3rem;"></i>
-                    <h5 class="mt-2">Kamu Kıdem Tazminatı Hesaplama</h5>
+                    <i class="bi bi-mortarboard" style="font-size: 3rem;"></i>
+                    <h5 class="mt-2">Emek Akademisi</h5>
                 </div>
             </a>
         </div>
 
-         <!-- Dilekçe Örnekleri -->
+        <!-- Dilekçe Örnekleri -->
         <div class="col-6 col-md-4">
             <a href="/Home/DilekceOrnekleri" class="text-decoration-none">
                 <div class="tile bg-danger rounded shadow text-white text-center d-flex flex-column align-items-center justify-content-center" style="height: 150px;">

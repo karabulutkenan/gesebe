@@ -9,85 +9,96 @@
     var userSoyad = Context.Session.GetString("UserSoyad") ?? "";
 }
 
-<!-- ✅ Sayfa Başlığı -->
-<div class="d-flex align-items-center bg-info py-1 ">
-    <h1 class=" mb-0 text-white text-uppercase mx-2" style="font-size: 1rem" > GSB MAAŞ HESAPLAMA </h1>
-    <p class="text-white mb-0 " style="font-size: 0.8rem;">Maaş - Tediye - İkramiye Hesaplamaları</p>
-</div>
+<div class="container-fluid p-0">
+    <!-- Header -->
+    <header class="bg-info shadow-sm py-2">
+        <div class="container">
+            <div class="d-flex align-items-center">
+                <a href="javascript:history.back()" class="text-white me-3" style="text-decoration: none; font-size: 1.5rem;">
+                    ↩️
+                </a>
+                <h1 class="h6 mb-0 text-white text-uppercase" style="margin-right: 10px;">GSB Maaş Hesaplama</h1>
+                <p class="text-white mb-0" style="font-size: 0.8rem;">GSB maaş hesaplama aracı</p>
+            </div>
+        </div>
+    </header>
 
-<!-- ✅ Kullanıcı Bilgisi ve Hesaplama Butonu -->
-<div class=" mt-2">
-    <div class="d-flex justify-content-between align-items-center bg-light rounded shadow-sm">
-        <h6 class="text-dark">👋 @userAd @userSoyad</h6>
-        <a href="/GsbMaasHesaplama" class="btn btn-primary">Kendi Maaşını Hesapla</a>
+    <!-- Kullanıcı Bilgisi ve Hesaplama Butonu -->
+    <div class="container mt-2">
+        <div class="d-flex justify-content-between align-items-center bg-light rounded shadow-sm p-3">
+            <h6 class="text-dark mb-0">👋 @userAd @userSoyad</h6>
+            <a href="/GsbMaasHesaplama" class="btn btn-primary">Kendi Maaşını Hesapla</a>
+        </div>
     </div>
-</div>
 
-<!-- ✅ TABLO VERİLERİ -->
-<div class=" mt-2">
-    <div class="table-responsive">
-        <table class="table table-bordered  text-center" style="text-transform: uppercase; font-size: 12px;">
-            <tr>
-                <th class="table-bordered  text-center bg-danger text-white" colspan="3">
-                    <p class="mb-0" style="font-size: 13px;"><b>ORTALAMA ÖRNEK ELE GEÇECEK NET MAAŞLAR @ViewBag.Ikramiye</b></p>
-                </th>
-            </tr>
-            <tr>
-                <td class="text-white bg-primary table-bordered ">@ViewBag.AyAdi AYI</td>
-                <td class="text-white bg-success table-bordered ">B. Şehir</td>
-                <td class="text-white bg-info table-bordered ">K. Şehir</td>
-            </tr>
-            <tr>
-                <td class="table-info table-bordered">Temizlik Görevlisi (26 GÜN)</td>
-                <td >@ViewBag.TemizlikBuyuk</</td>
-                <td >@ViewBag.TemizlikKucuk</td>
-            </tr>
-            <tr>
-                <td class=" .table-sm table-primary table-bordered  text-start">Özel Güvenlik Görevlisi (12 SAAT)</td>
-                <td>@ViewBag.OnIkiGuvenlikBuyuk</td>
-                <td>@ViewBag.OnIkiGuvenlikKucuk</td>
-            </tr>
-            <tr>
-                <td class="table-info table-bordered  text-start">Özel Güvenlik Görevlisi (8 SAAT)</td>
-                <td>@ViewBag.SekizGuvenlikBuyuk</td>
-                <td>@ViewBag.SekizGuvenlikKucuk</td>
-            </tr>
-            <tr>
-                <td class="table-primary table-bordered   text-start">İklimlendirme Görevlisi (8 SAAT)</td>
-                <td>@ViewBag.IklimlendirmeBuyuk</td>
-                <td>@ViewBag.IklimlendirmeKucuk</td>
-            </tr>
-            <tr>
-                <td class="table-info table-bordered   text-start">İklimlendirme Görevlisi (12 SAAT)</td>
-                <td>@ViewBag.IklimlendirmeBuyuk12</td>
-                <td>@ViewBag.IklimlendirmeKucuk12</td>
-            </tr>
-            <tr>
-                <td class="table-primary table-bordered   text-start">Bakım Onarım - Teknisyen (26 GÜN)</td>
-                <td>@ViewBag.TeknisyenBuyuk</td>
-                <td>@ViewBag.TeknisyenKucuk</td>
-            </tr>
-        </table>
+    <!-- TABLO VERİLERİ -->
+    <div class="container mt-2">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center" style="text-transform: uppercase; font-size: 12px;">
+                <tr>
+                    <th class="table-bordered text-center bg-danger text-white" colspan="3">
+                        <p class="mb-0" style="font-size: 13px;"><b>ORTALAMA ÖRNEK ELE GEÇECEK NET MAAŞLAR @ViewBag.Ikramiye</b></p>
+                    </th>
+                </tr>
+                <tr>
+                    <td class="text-white bg-primary table-bordered">@ViewBag.AyAdi AYI</td>
+                    <td class="text-white bg-success table-bordered">B. Şehir</td>
+                    <td class="text-white bg-info table-bordered">K. Şehir</td>
+                </tr>
+                <tr>
+                    <td class="table-info table-bordered">Temizlik Görevlisi (26 GÜN)</td>
+                    <td>@ViewBag.TemizlikBuyuk</td>
+                    <td>@ViewBag.TemizlikKucuk</td>
+                </tr>
+                <tr>
+                    <td class="table-primary table-bordered text-start">Özel Güvenlik Görevlisi (12 SAAT)</td>
+                    <td>@ViewBag.OnIkiGuvenlikBuyuk</td>
+                    <td>@ViewBag.OnIkiGuvenlikKucuk</td>
+                </tr>
+                <tr>
+                    <td class="table-info table-bordered text-start">Özel Güvenlik Görevlisi (8 SAAT)</td>
+                    <td>@ViewBag.SekizGuvenlikBuyuk</td>
+                    <td>@ViewBag.SekizGuvenlikKucuk</td>
+                </tr>
+                <tr>
+                    <td class="table-primary table-bordered text-start">İklimlendirme Görevlisi (8 SAAT)</td>
+                    <td>@ViewBag.IklimlendirmeBuyuk</td>
+                    <td>@ViewBag.IklimlendirmeKucuk</td>
+                </tr>
+                <tr>
+                    <td class="table-info table-bordered text-start">İklimlendirme Görevlisi (12 SAAT)</td>
+                    <td>@ViewBag.IklimlendirmeBuyuk12</td>
+                    <td>@ViewBag.IklimlendirmeKucuk12</td>
+                </tr>
+                <tr>
+                    <td class="table-primary table-bordered text-start">Bakım Onarım - Teknisyen (26 GÜN)</td>
+                    <td>@ViewBag.TeknisyenBuyuk</td>
+                    <td>@ViewBag.TeknisyenKucuk</td>
+                </tr>
+            </table>
+        </div>
     </div>
-</div>
 
+    <!-- Önemli Uyarı -->
+    <div class="container mt-3">
+        <div class="alert alert-danger text-center">
+            <h4 class="alert-heading">⚠️ ÖNEMLİ UYARI!</h4>
+            <p class="mb-0" style="font-size: 12px;">
+                BU TABLO AİDAT KESİLMİŞ, VERGİ DÜŞÜLMÜŞ VE ORTALAMA HESAPLANMIŞ NET ÜCRETLERİ GÖSTERİR. NAFAKA ÖDEMESİ, İCRA KESİNTİSİ VE BES GİBİ ÖDEMELERİ İÇERMEMEKTEDİR. NET OLARAK KENDİ MAAŞINIZI HESAPLAMAK İÇİN LÜTFEN "KENDİ MAAŞIMI HESAPLA" BUTONUNA BASARAK İLGİLİ SAYFAYA GİDİNİZ.
+            </p>
+        </div>
+    </div>
 
+    <div class="container text-center">
+        <a href="/GsbMaasHesaplama" class="btn btn-primary btn-large btn-block hesapla">Kendi Maaşımı Hesapla</a>
+    </div>
 
-<!-- ✅ Önemli Uyarı -->
-<div class="alert alert-danger text-center mt-3">
-    <h4 class="alert-heading">⚠️ ÖNEMLİ UYARI!</h4>
-    <p class="mb-0" style="font-size: 12px;">
-        BU TABLO AİDAT KESİLMİŞ, VERGİ DÜŞÜLMÜŞ VE ORTALAMA HESAPLANMIŞ NET ÜCRETLERİ GÖSTERİR. NAFAKA ÖDEMESİ, İCRA KESİNTİSİ VE BES GİBİ ÖDEMELERİ İÇERMEMEKTEDİR. NET OLARAK KENDİ MAAŞINIZI HESAPLAMAK İÇİN LÜTFEN "KENDİ MAAŞIMI HESAPLA" BUTONUNA BASARAK İLGİLİ SAYFAYA GİDİNİZ.
-    </p>
-</div>
-<div class="text-center">
-    <a href="/GsbMaasHesaplama" class="btn btn-primary btn-large btn-block hesapla">Kendi Maaşımı Hesapla</a>
-</div>
-<div class="text-center p-3">
+    <div class="container text-center p-3">
         <p style="font-size:12px;">Bu hesaplamada yer alan bilgiler sadece genel bilgilendirme amaçlıdır ve Toleyis Sendikası, yetkilileri ve çalışanları tarafından profesyonel bağlamda herhangi bir tavsiye veya hizmet sunmayı amaçlamamakta ve bilgilerin doğruluğuna dair herhangi bir garanti vermemektedir. Toleyis Sendikası, yetkilileri ya da çalışanları bu hesaplamada yer alan bilgilerin üçüncü kişiler tarafından kullanılması sonucunda ortaya çıkabilecek zarar veya ziyandan sorumlu değildir.</p>
+    </div>
 </div>
 
-<!-- ✅ Pop-up Modal -->
+<!-- Pop-up Modal -->
 <div class="modal fade" id="popupModal" tabindex="-1" aria-labelledby="popupModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -97,7 +108,7 @@
             <div class="modal-body text-center">
                 <p>
                     Bu hesaplamada yer alan bilgiler sadece genel bilgilendirme amaçlıdır ve Toleyis Sendikası, yetkilileri ve çalışanları tarafından profesyonel bağlamda herhangi bir tavsiye veya hizmet sunmayı amaçlamamakta ve bilgilerin doğruluğuna dair herhangi bir garanti vermemektedir.
-                    Toleyis Sendikası, yetkilileri ya da çalışanları bu hesaplamada yer alan bilgilerin üçüncü kişiler tarafından kullanılması sonucunda ortaya çıkabilecek zarar veya ziyandan sorumlu değildir.
+                    Toleyis Sendikası, yetkilileri ya da çalışanları bu hesaplamada yer alan bilgilerin üçüncü kişiler tarafından kullanılması sonucunda ortaya çıkabilecek zarar veya ziyandan sorumlu değildir.
                 </p>
                 <label class="d-flex justify-content-center align-items-center">
                     <input type="checkbox" id="checkbox" />
@@ -111,27 +122,28 @@
     </div>
 </div>
 
-<!-- ✅ JS Kodları -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var popupModal = new bootstrap.Modal(document.getElementById("popupModal"));
-        var checkbox = document.getElementById("checkbox");
-        var tamamButton = document.getElementById("tamamButton");
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var popupModal = new bootstrap.Modal(document.getElementById("popupModal"));
+            var checkbox = document.getElementById("checkbox");
+            var tamamButton = document.getElementById("tamamButton");
 
-        // Kullanıcı daha önce onayladı mı kontrol et
-        const popupOnaylandi = localStorage.getItem("popupOnaylandi");
+            // Kullanıcı daha önce onayladı mı kontrol et
+            const popupOnaylandi = localStorage.getItem("popupOnaylandi");
 
-        if (!popupOnaylandi) {
-            popupModal.show();
-        }
+            if (!popupOnaylandi) {
+                popupModal.show();
+            }
 
-        checkbox.addEventListener("change", function () {
-            tamamButton.disabled = !this.checked;
+            checkbox.addEventListener("change", function () {
+                tamamButton.disabled = !this.checked;
+            });
+
+            tamamButton.addEventListener("click", function () {
+                popupModal.hide();
+                localStorage.setItem("popupOnaylandi", true);
+            });
         });
-
-        tamamButton.addEventListener("click", function () {
-            popupModal.hide();
-            localStorage.setItem("popupOnaylandi", true);
-        });
-    });
-</script>
+    </script>
+}

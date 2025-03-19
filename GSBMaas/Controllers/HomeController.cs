@@ -33,6 +33,28 @@ namespace GSBMaas.Controllers
             return View();
         }
 
+        public IActionResult Hesaplamalar()
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserAd")) ||
+                string.IsNullOrEmpty(HttpContext.Session.GetString("UserSoyad")))
+            {
+                return RedirectToAction("Giris", "Home");
+            }
+            return View();
+        }
+
+        public IActionResult EmekAkademisi()
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserAd")) ||
+                string.IsNullOrEmpty(HttpContext.Session.GetString("UserSoyad")))
+            {
+                return RedirectToAction("Giris", "Home");
+            }
+            return View();
+        }
+
+        
+
         public IActionResult KamuMisafirhaneleri()
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserAd")) ||
@@ -218,6 +240,8 @@ namespace GSBMaas.Controllers
 
             return File(memory, "application/pdf", Path.GetFileName(fullPath));
         }
+
+        
     }
 
     public class GirisModel
