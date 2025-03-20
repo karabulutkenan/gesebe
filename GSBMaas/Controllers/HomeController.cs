@@ -11,6 +11,7 @@ using System;
 using GSBMaas.Context;
 using System.Linq;
 using System.IO;
+using System.Collections.Generic;
 
 namespace GSBMaas.Controllers
 {
@@ -43,17 +44,54 @@ namespace GSBMaas.Controllers
             return View();
         }
 
-        public IActionResult EmekAkademisi()
+        public async Task<IActionResult> EmekAkademisi()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserAd")) ||
-                string.IsNullOrEmpty(HttpContext.Session.GetString("UserSoyad")))
+            var videos = new List<YouTubeVideo>();
+            try
             {
-                return RedirectToAction("Giris", "Home");
+                var apiKey = "AIzaSyB7BaHIJcCer26YDvHpiKby9K4cjr_uKD8";
+                var channelId = "UCxxxxxxxxxxxxxxxx"; // Toleyis kanal ID'si
+                var maxResults = 50;
+
+                using (var client = new HttpClient())
+                {
+                    // Önce kanal ID'sini al
+                    var channelUrl = $"https://www.googleapis.com/youtube/v3/search?part=id&q=@toleyis1977&type=channel&key={apiKey}";
+                    var channelResponse = await client.GetStringAsync(channelUrl);
+                    var channelData = JsonSerializer.Deserialize<JsonDocument>(channelResponse);
+                    
+                    if (channelData.RootElement.GetProperty("items").GetArrayLength() > 0)
+                    {
+                        channelId = channelData.RootElement.GetProperty("items")[0].GetProperty("id").GetProperty("channelId").GetString();
+                    }
+
+                    // Kanal videolarını al
+                    var videoUrl = $"https://www.googleapis.com/youtube/v3/search?part=snippet&channelId={channelId}&maxResults={maxResults}&order=date&type=video&key={apiKey}";
+                    var videoResponse = await client.GetStringAsync(videoUrl);
+                    var videoData = JsonSerializer.Deserialize<JsonDocument>(videoResponse);
+
+                    foreach (var item in videoData.RootElement.GetProperty("items").EnumerateArray())
+                    {
+                        var snippet = item.GetProperty("snippet");
+                        videos.Add(new YouTubeVideo
+                        {
+                            VideoId = item.GetProperty("id").GetProperty("videoId").GetString(),
+                            Title = snippet.GetProperty("title").GetString(),
+                            Description = snippet.GetProperty("description").GetString(),
+                            ThumbnailUrl = snippet.GetProperty("thumbnails").GetProperty("high").GetProperty("url").GetString(),
+                            PublishedAt = DateTime.Parse(snippet.GetProperty("publishedAt").GetString())
+                        });
+                    }
+                }
             }
+            catch (Exception ex)
+            {
+                _logger.LogError($"YouTube API Hatası: {ex.Message}");
+            }
+
+            ViewBag.Videos = videos;
             return View();
         }
-
-        
 
         public IActionResult KamuMisafirhaneleri()
         {
@@ -240,8 +278,6 @@ namespace GSBMaas.Controllers
 
             return File(memory, "application/pdf", Path.GetFileName(fullPath));
         }
-
-        
     }
 
     public class GirisModel
@@ -268,6 +304,5 @@ namespace GSBMaas.Controllers
         public string sube { get; set; }
         public string uyelikBaslangicTarihi { get; set; }
         public string sgkSicilNo { get; set; }
-        
     }
 }
