@@ -139,13 +139,15 @@
             </div>
 
             <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
-            <!-- Moderatör Girişi Butonu -->
+            <!-- Moderatör ve Misafir Girişi Butonları -->
             <div class="text-center mt-3">
-                <a href="#" id="moderatorGirisBtn" class="text-primary">Moderatör Girişi</a>
+                <a href="#" id="moderatorGirisBtn" class="text-primary me-3">Moderatör Girişi</a>
+                <a href="#" id="misafirGirisBtn" class="text-primary">Misafir Girişi</a>
             </div>
 
         </form>
     </div>
+
     <!-- Moderatör Girişi Modal -->
     <div class="modal fade" id="moderatorGirisModal" tabindex="-1" aria-labelledby="moderatorModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -172,6 +174,42 @@
         </div>
     </div>
 
+    <!-- Misafir Girişi Modal -->
+    <div class="modal fade" id="misafirGirisModal" tabindex="-1" aria-labelledby="misafirModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="misafirModalLabel">Misafir Girişi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="misafirLoginForm">
+                        <div class="mb-3">
+                            <label for="misafirAd" class="form-label">Adınız</label>
+                            <input type="text" id="misafirAd" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="misafirSoyad" class="form-label">Soyadınız</label>
+                            <input type="text" id="misafirSoyad" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="misafirEmail" class="form-label">E-posta Adresiniz</label>
+                            <input type="email" id="misafirEmail" class="form-control" required>
+                            <small class="form-text text-muted">Doğrulama kodu e-posta adresinize gönderilecektir.</small>
+                        </div>
+                        <div id="misafirDogrulamaKodu" style="display: none;">
+                            <div class="mb-3">
+                                <label for="dogrulamaKodu" class="form-label">Doğrulama Kodu</label>
+                                <input type="text" id="dogrulamaKodu" class="form-control" maxlength="6">
+                            </div>
+                        </div>
+                        <div id="misafirError" class="text-danger text-center" style="display: none;"></div>
+                        <button type="submit" class="btn btn-primary w-100" id="misafirGirisBtn">Doğrulama Kodu Gönder</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- ❗ Giriş Başarılı Modal -->
     <div class="modal fade" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeModalLabel" aria-hidden="true">
@@ -211,9 +249,107 @@
 
         document.getElementById("onamMetniLink").addEventListener("click", function (event) {
             event.preventDefault();
-            $("#kisiselVeriModal").modal("show"); // ✅ Kişisel Veri Modalı açılacak
+            $("#kisiselVeriModal").modal("show");
         });
 
+        // Moderatör Girişi Modal
+        document.getElementById("moderatorGirisBtn").addEventListener("click", function (event) {
+            event.preventDefault();
+            $("#moderatorGirisModal").modal("show");
+        });
+
+        // Misafir Girişi Modal
+        document.getElementById("misafirGirisBtn").addEventListener("click", function (event) {
+            event.preventDefault();
+            $("#misafirGirisModal").modal("show");
+        });
+
+        // Misafir Girişi Form İşlemleri
+        document.getElementById("misafirLoginForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            
+            const dogrulamaKoduDiv = document.getElementById("misafirDogrulamaKodu");
+            const dogrulamaKoduInput = document.getElementById("dogrulamaKodu");
+            const girisBtn = document.getElementById("misafirGirisBtn");
+            const errorDiv = document.getElementById("misafirError");
+
+            if (dogrulamaKoduDiv.style.display === "none") {
+                // İlk aşama - Email gönderme
+                const ad = document.getElementById("misafirAd").value;
+                const soyad = document.getElementById("misafirSoyad").value;
+                const email = document.getElementById("misafirEmail").value;
+
+                // Form verilerini doğrula
+                if (!ad || !soyad || !email) {
+                    errorDiv.textContent = "Lütfen tüm alanları doldurunuz.";
+                    errorDiv.style.display = "block";
+                    return;
+                }
+
+                fetch("/Home/MisafirGiris", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        Ad: ad,
+                        Soyad: soyad,
+                        Email: email
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        dogrulamaKoduDiv.style.display = "block";
+                        girisBtn.textContent = "Giriş Yap";
+                        errorDiv.style.display = "none";
+                    } else {
+                        errorDiv.textContent = data.message;
+                        errorDiv.style.display = "block";
+                    }
+                })
+                .catch(error => {
+                    errorDiv.textContent = "Bir hata oluştu. Lütfen tekrar deneyiniz.";
+                    errorDiv.style.display = "block";
+                    console.error("Hata:", error);
+                });
+            } else {
+                // İkinci aşama - Kod doğrulama
+                const email = document.getElementById("misafirEmail").value;
+                const kod = dogrulamaKoduInput.value;
+
+                fetch("/Home/MisafirDogrulama", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        Email: email,
+                        Kod: kod
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        $("#misafirGirisModal").modal("hide");
+                        $("#welcomeModal").modal("show");
+                        setTimeout(() => {
+                            window.location.href = "/";
+                        }, 1500);
+                    } else {
+                        errorDiv.textContent = data.message;
+                        errorDiv.style.display = "block";
+                    }
+                })
+                .catch(error => {
+                    errorDiv.textContent = "Bir hata oluştu. Lütfen tekrar deneyiniz.";
+                    errorDiv.style.display = "block";
+                    console.error("Hata:", error);
+                });
+            }
+        });
+
+        // Mevcut login form işlemleri
         document.getElementById("loginForm").addEventListener("submit", function (event) {
             event.preventDefault();
 
@@ -230,7 +366,6 @@
                 errorDiv.style.display = "none";
             }
 
-            // ✅ Eğer kişisel veri onayı işaretlenmemişse form gönderme
             if (!onayKutusu.checked) {
                 onayHata.style.display = "block";
                 return;
@@ -250,54 +385,43 @@
                     if (data.success) {
                         $("#welcomeModal").modal("show");
                         setTimeout(() => {
-                            window.location.href = "/Home/Index";
-                        }, 3000);
+                            window.location.href = "/";
+                        }, 1500);
                     } else {
                         $("#errorModal").modal("show");
                     }
-                })
-                .catch(error => {
-                    $("#errorModal").modal("show");
                 });
         });
-    </script>
-    <script>
-        $(document).ready(function () {
-            // Moderatör giriş butonuna tıklanınca modalı aç
-            $("#moderatorGirisBtn").click(function (event) {
-                event.preventDefault();
-                $("#moderatorGirisModal").modal("show");
-            });
 
-            // Moderatör giriş formunu gönder
-            $("#moderatorLoginForm").submit(function (event) {
-                event.preventDefault(); // Sayfanın yenilenmesini engelle
+        // Moderatör girişi form işlemleri
+        document.getElementById("moderatorLoginForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            
+            const kullaniciAdi = document.getElementById("moderatorKullaniciAdi").value;
+            const sifre = document.getElementById("moderatorSifre").value;
+            const errorDiv = document.getElementById("moderatorError");
 
-                let kullaniciAdi = $("#moderatorKullaniciAdi").val();
-                let sifre = $("#moderatorSifre").val();
-
-                $.ajax({
-                    type: "POST",
-                    url: "/Home/GirisKontrolModerator", // Yeni eklediğimiz metoda istek yap
-                    contentType: "application/json",
-                    data: JSON.stringify({ TcKimlik: kullaniciAdi, UyelikKodu: sifre }), // Moderatör kullanıcı adı ve şifre gönderiyoruz
-                    success: function (data) {
-                        if (data.success) {
-                            $("#moderatorGirisModal").modal("hide"); // Başarılıysa modalı kapat
-                            window.location.href = "/Home/Index"; // Ana sayfaya yönlendir
-                        } else {
-                            $("#moderatorError").show(); // Hata mesajını göster
-                        }
-                    },
-                    error: function () {
-                        $("#moderatorError").show(); // Genel hata mesajını göster
-                    }
-                });
+            fetch("/Home/GirisKontrolModerator", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ tcKimlik: kullaniciAdi, uyelikKodu: sifre })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    $("#moderatorGirisModal").modal("hide");
+                    $("#welcomeModal").modal("show");
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 1500);
+                } else {
+                    errorDiv.textContent = data.message;
+                    errorDiv.style.display = "block";
+                }
             });
         });
     </script>
-
-
-
 </body>
 </html>

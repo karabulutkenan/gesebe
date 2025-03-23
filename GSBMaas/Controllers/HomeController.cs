@@ -12,6 +12,9 @@ using GSBMaas.Context;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using System.Net.Mail;
+using System.Net;
+using System.Security.Cryptography;
 
 namespace GSBMaas.Controllers
 {
@@ -278,6 +281,188 @@ namespace GSBMaas.Controllers
 
             return File(memory, "application/pdf", Path.GetFileName(fullPath));
         }
+
+        [HttpPost]
+        public IActionResult MisafirGiris([FromBody] MisafirKullanici model)
+        {
+            try
+            {
+                // Gelen veriyi logla
+                _logger.LogInformation($"Misafir girişi denemesi - Email: {model.Email}, Ad: {model.Ad}, Soyad: {model.Soyad}");
+
+                if (model == null)
+                {
+                    _logger.LogError("Model null geldi");
+                    return Json(new { success = false, message = "Geçersiz veri" });
+                }
+
+                if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Ad) || string.IsNullOrEmpty(model.Soyad))
+                {
+                    _logger.LogError($"Eksik veri - Email: {model.Email}, Ad: {model.Ad}, Soyad: {model.Soyad}");
+                    return Json(new { success = false, message = "Lütfen tüm alanları doldurunuz" });
+                }
+
+                using (var db = new AppDbContext())
+                {
+                    try
+                    {
+                        // Email kontrolü
+                        _logger.LogInformation("Veritabanı kontrolü başlıyor");
+                        var mevcutKullanici = db.MisafirKullanicilar.FirstOrDefault(m => m.Email == model.Email);
+                        
+                        if (mevcutKullanici != null)
+                        {
+                            _logger.LogInformation($"Mevcut kullanıcı bulundu: {mevcutKullanici.Email}");
+                            // Kullanıcı varsa, son giriş tarihini güncelle
+                            mevcutKullanici.SonGirisTarihi = DateTime.Now;
+                            db.SaveChanges();
+                        }
+                        else
+                        {
+                            _logger.LogInformation("Yeni kullanıcı oluşturuluyor");
+                            // Yeni kullanıcı oluştur
+                            model.SonGirisTarihi = DateTime.Now;
+                            db.MisafirKullanicilar.Add(model);
+                            db.SaveChanges();
+                        }
+                    }
+                    catch (Exception dbEx)
+                    {
+                        _logger.LogError($"Veritabanı hatası: {dbEx.Message}");
+                        throw;
+                    }
+                }
+
+                // Doğrulama kodu oluştur
+                _logger.LogInformation("Doğrulama kodu oluşturuluyor");
+                var dogrulamaKodu = GenerateVerificationCode();
+
+                try
+                {
+                    // Email gönder
+                    _logger.LogInformation($"Email gönderiliyor: {model.Email}");
+                    SendVerificationEmail(model.Email, dogrulamaKodu);
+                }
+                catch (Exception emailEx)
+                {
+                    _logger.LogError($"Email gönderme hatası: {emailEx.Message}");
+                    _logger.LogError($"Email gönderme hatası detay: {emailEx.StackTrace}");
+                    return Json(new { success = false, message = "Email gönderilemedi: " + emailEx.Message });
+                }
+
+                // Doğrulama kodunu session'da sakla
+                HttpContext.Session.SetString("MisafirDogrulamaKodu", dogrulamaKodu);
+                HttpContext.Session.SetString("MisafirEmail", model.Email);
+                HttpContext.Session.SetString("MisafirAd", model.Ad);
+                HttpContext.Session.SetString("MisafirSoyad", model.Soyad);
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Misafir girişi genel hata: {ex.Message}");
+                _logger.LogError($"Hata detayı: {ex.StackTrace}");
+                return Json(new { success = false, message = "Bir hata oluştu: " + ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult MisafirDogrulama([FromBody] MisafirDogrulamaModel model)
+        {
+            try
+            {
+                var sessionKod = HttpContext.Session.GetString("MisafirDogrulamaKodu");
+                var sessionEmail = HttpContext.Session.GetString("MisafirEmail");
+                var sessionAd = HttpContext.Session.GetString("MisafirAd");
+                var sessionSoyad = HttpContext.Session.GetString("MisafirSoyad");
+
+                if (string.IsNullOrEmpty(sessionKod) || string.IsNullOrEmpty(sessionEmail) || 
+                    string.IsNullOrEmpty(sessionAd) || string.IsNullOrEmpty(sessionSoyad))
+                {
+                    return Json(new { success = false, message = "Oturum süresi dolmuş. Lütfen tekrar deneyiniz." });
+                }
+
+                if (model.Email != sessionEmail)
+                {
+                    return Json(new { success = false, message = "E-posta adresi eşleşmiyor." });
+                }
+
+                if (model.Kod != sessionKod)
+                {
+                    return Json(new { success = false, message = "Geçersiz doğrulama kodu." });
+                }
+
+                // Giriş başarılı, session'ı güncelle
+                HttpContext.Session.SetString("UserLoggedIn", "true");
+                HttpContext.Session.SetString("UserAd", sessionAd);
+                HttpContext.Session.SetString("UserSoyad", sessionSoyad);
+                HttpContext.Session.SetString("MisafirKullanici", "true");
+
+                // Session'daki geçici bilgileri temizle
+                HttpContext.Session.Remove("MisafirDogrulamaKodu");
+                HttpContext.Session.Remove("MisafirEmail");
+                HttpContext.Session.Remove("MisafirAd");
+                HttpContext.Session.Remove("MisafirSoyad");
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Misafir doğrulama hatası: {ex.Message}");
+                return Json(new { success = false, message = "Bir hata oluştu. Lütfen tekrar deneyiniz." });
+            }
+        }
+
+        private string GenerateVerificationCode()
+        {
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                var bytes = new byte[4]; // 3 yerine 4 byte kullanacağız
+                rng.GetBytes(bytes);
+                var number = Math.Abs(BitConverter.ToInt32(bytes, 0)) % 1000000; // 6 haneli sayı için mod 1000000
+                return number.ToString("D6"); // Her zaman 6 haneli olmasını sağla
+            }
+        }
+
+        private void SendVerificationEmail(string email, string code)
+        {
+            try
+            {
+                _logger.LogInformation($"Email gönderme başlıyor - Alıcı: {email}");
+
+                var fromAddress = new MailAddress("kenan@toleyis.org.tr", "E-Sendika");
+                var toAddress = new MailAddress(email);
+                const string subject = "GSB Maaş - Misafir Girişi Doğrulama Kodu";
+                string body = $"Merhaba,\n\nMisafir girişi için doğrulama kodunuz: {code}\n\nBu kod 5 dakika süreyle geçerlidir.\n\nSaygılarımızla,\nGSB Maaş Ekibi";
+
+                _logger.LogInformation("SMTP client oluşturuluyor");
+                using (var smtp = new SmtpClient("mail.kurumsaleposta.com", 587)
+                {
+                    EnableSsl = false,
+                    Credentials = new NetworkCredential("kenan@toleyis.org.tr", "Melis2604K25"),
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    Timeout = 20000 // 20 saniye timeout
+                })
+                {
+                    _logger.LogInformation("Email gönderiliyor...");
+                    smtp.Send(fromAddress.Address, toAddress.Address, subject, body);
+                    _logger.LogInformation($"✅ Email başarıyla gönderildi: {email}");
+                }
+            }
+            catch (SmtpException smtpEx)
+            {
+                _logger.LogError($"SMTP Hatası: {smtpEx.Message}");
+                _logger.LogError($"SMTP Hata Kodu: {smtpEx.StatusCode}");
+                _logger.LogError($"SMTP Hata Detayı: {smtpEx.StackTrace}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Email gönderme hatası: {ex.Message}");
+                _logger.LogError($"Hata detayı: {ex.StackTrace}");
+                throw;
+            }
+        }
     }
 
     public class GirisModel
@@ -304,5 +489,11 @@ namespace GSBMaas.Controllers
         public string sube { get; set; }
         public string uyelikBaslangicTarihi { get; set; }
         public string sgkSicilNo { get; set; }
+    }
+
+    public class MisafirDogrulamaModel
+    {
+        public string Email { get; set; }
+        public string Kod { get; set; }
     }
 }
