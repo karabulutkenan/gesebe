@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GSBMaas.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250321202304_KenanPC3")]
-    partial class KenanPC3
+    [Migration("20250324063041_Misafirler")]
+    partial class Misafirler
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

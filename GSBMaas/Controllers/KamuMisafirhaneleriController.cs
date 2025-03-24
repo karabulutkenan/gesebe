@@ -27,9 +27,15 @@ namespace GSBMaas.Controllers
                 ViewBag.Iller = iller;
 
                 if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserAd")) ||
-                string.IsNullOrEmpty(HttpContext.Session.GetString("UserSoyad")))
+                    string.IsNullOrEmpty(HttpContext.Session.GetString("UserSoyad")))
                 {
                     return RedirectToAction("Giris", "Home");
+                }
+
+                // Sadece misafir kullanıcı kontrolü
+                if (HttpContext.Session.GetString("MisafirKullanici") == "true")
+                {
+                    return RedirectToAction("Index", "Home");
                 }
 
                 return View();

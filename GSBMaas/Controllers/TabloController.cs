@@ -196,6 +196,12 @@ namespace GSBMaas.Controllers
             {
                 return RedirectToAction("Giris", "Home");
             }
+             // Sadece misafir kullanıcı kontrolü
+            if (HttpContext.Session.GetString("MisafirKullanici") == "true")
+            {
+                return RedirectToAction("Index", "Home", new { showUyelikModal = true });
+            }
+            
             return View();
         }
     }

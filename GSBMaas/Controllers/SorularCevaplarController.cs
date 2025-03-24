@@ -15,12 +15,18 @@ namespace GSBMaas.Controllers
 
         public IActionResult Index()
         {
-            // Kullanıcı giriş yapmış mı kontrol et
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserAd")) ||
                 string.IsNullOrEmpty(HttpContext.Session.GetString("UserSoyad")))
             {
                 return RedirectToAction("Giris", "Home");
             }
+
+            // Sadece misafir kullanıcı kontrolü
+            if (HttpContext.Session.GetString("MisafirKullanici") == "true")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             // ✅ Yalnızca onaylanmış soruları listele
             ViewBag.SoruKategoriler = db.SoruKategoriler.ToList();
             ViewBag.Sorular = db.Sorular.Where(s => s.OnaylandiMi).OrderBy(s => s.SoruMetni).ToList();
