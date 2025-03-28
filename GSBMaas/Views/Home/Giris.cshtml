@@ -28,7 +28,7 @@
 
         .login-container {
             background: white;
-            padding: 30px;
+            padding: 15px;
             border-radius: 15px;
             box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
             text-align: center;
@@ -43,7 +43,7 @@
             }
 
         .info-text {
-            font-size: 15px;
+            font-size: 12px;
             color: #555;
             margin-bottom: 20px;
         }
@@ -94,6 +94,59 @@
             font-size: 14px;
             margin-top: 5px;
         }
+
+        /* Tab Stilleri */
+        .nav-tabs {
+            border: none;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .nav-tabs .nav-link {
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: normal;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #333;
+            font-weight: bold;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: #333;
+            border: none;
+            background-color: rgba(255,255,255,0.5);
+        }
+
+        /* Misafir Girişi Butonu */
+        .btn-secondary {
+            background: #6c757d;
+            border: none;
+            padding: 2px;
+            font-size: 14px;
+            border-radius: 8px;
+            color: white;
+            width: 50%;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -105,72 +158,77 @@
             Giriş yapmak için Üyeliğinize ait <b>Sendika Üyeliği Doğrulama Kodu</b> ile <b>T.C. Kimlik numaranızı</b> giriniz.
         </p>
 
-        <form id="loginForm">
-            <div class="mb-3">
-                <input type="text" id="tcKimlik" class="form-control" required maxlength="11" minlength="11" placeholder="🔑 11 Haneli T.C. Kimlik Numaranızı Giriniz">
-                <div id="tcError" class="text-danger mt-2" style="display: none;">Geçersiz T.C. Kimlik Numarası!</div>
-            </div>
-            <div class="mb-3">
-                <input type="text" id="uyelikKodu" class="form-control" required maxlength="9" placeholder="🔑 9 Haneli Üyelik Doğrulama Kodunuzu Giriniz">
-            </div>
+        <!-- Tab Menü -->
+        <ul class="nav nav-tabs nav-fill mb-4" id="loginTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="uye-tab" data-bs-toggle="tab" data-bs-target="#uye" type="button" role="tab" aria-controls="uye" aria-selected="true">Üye Girişi</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="moderator-tab" data-bs-toggle="tab" data-bs-target="#moderator" type="button" role="tab" aria-controls="moderator" aria-selected="false">Moderatör Girişi</button>
+            </li>
+        </ul>
 
-            <!-- Kişisel Veri Onayı -->
-            <div class="mb-3 text-start radio-label">
-                <input type="radio" id="kisiselVeriOnay">
-                <label for="kisiselVeriOnay">
-                    Kişisel verileriniz <a href="#" id="onamMetniLink">Kişisel Veri Onam Metni</a> doğrultusunda işlenecektir.
-                </label>
-            </div>
-            <div id="onayHata" class="error-message">Kişisel Veri Onam Metni'ni onaylamalısınız!</div>
+        <!-- Tab İçerikleri -->
+        <div class="tab-content" id="loginTabsContent">
+            <!-- Üye Girişi Tab -->
+            <div class="tab-pane fade show active" id="uye" role="tabpanel" aria-labelledby="uye-tab">
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <input type="text" id="tcKimlik" class="form-control" required maxlength="11" minlength="11" placeholder="🔑 11 Haneli T.C. Kimlik Numaranızı Giriniz">
+                        <div id="tcError" class="text-danger mt-2" style="display: none;">Geçersiz T.C. Kimlik Numarası!</div>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" id="uyelikKodu" class="form-control" required maxlength="9" placeholder="🔑 9 Haneli Üyelik Doğrulama Kodunuzu Giriniz">
+                    </div>
 
-            <!-- ❗ Kişisel Veri Onam Modalı -->
-            <div class="modal fade" id="kisiselVeriModal" tabindex="-1" aria-labelledby="kisiselVeriModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Kişisel Veri Onam Metni</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-                        </div>
-                        <div class="modal-body">
-                            @Html.Partial("_KisiselVeriOnamMetni")
+                    <!-- Kişisel Veri Onayı -->
+                    <div class="mb-3 text-start radio-label">
+                        <input type="radio" id="kisiselVeriOnay">
+                        <label for="kisiselVeriOnay">
+                            Kişisel verileriniz <a href="#" id="onamMetniLink">Kişisel Veri Onam Metni</a> doğrultusunda işlenecektir.
+                        </label>
+                    </div>
+                    <div id="onayHata" class="error-message">Kişisel Veri Onam Metni'ni onaylamalısınız!</div>
+
+                    <!-- ❗ Kişisel Veri Onam Modalı -->
+                    <div class="modal fade" id="kisiselVeriModal" tabindex="-1" aria-labelledby="kisiselVeriModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Kişisel Veri Onam Metni</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                                </div>
+                                <div class="modal-body">
+                                    @Html.Partial("_KisiselVeriOnamMetni")
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+                </form>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
-            <!-- Moderatör ve Misafir Girişi Butonları -->
-            <div class="text-center mt-3">
-                <a href="#" id="moderatorGirisBtn" class="text-primary me-3">Moderatör Girişi</a>
-                <a href="#" id="misafirGirisBtn" class="text-primary">Misafir Girişi</a>
+            <!-- Moderatör Girişi Tab -->
+            <div class="tab-pane fade" id="moderator" role="tabpanel" aria-labelledby="moderator-tab">
+                <form id="moderatorLoginForm">
+                    <div class="mb-3">
+                        <label for="moderatorKullaniciAdi" class="form-label">Kullanıcı Adı</label>
+                        <input type="text" id="moderatorKullaniciAdi" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="moderatorSifre" class="form-label">Şifre</label>
+                        <input type="password" id="moderatorSifre" class="form-control" required>
+                    </div>
+                    <div id="moderatorError" class="text-danger text-center" style="display: none;">Hatalı giriş!</div>
+                    <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+                </form>
             </div>
+        </div>
 
-        </form>
-    </div>
-
-    <!-- Moderatör Girişi Modal -->
-    <div class="modal fade" id="moderatorGirisModal" tabindex="-1" aria-labelledby="moderatorModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="moderatorModalLabel">Moderatör Girişi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="moderatorLoginForm">
-                        <div class="mb-3">
-                            <label for="moderatorKullaniciAdi" class="form-label">Kullanıcı Adı</label>
-                            <input type="text" id="moderatorKullaniciAdi" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="moderatorSifre" class="form-label">Şifre</label>
-                            <input type="password" id="moderatorSifre" class="form-control" required>
-                        </div>
-                        <div id="moderatorError" class="text-danger text-center" style="display: none;">Hatalı giriş!</div>
-                        <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
-                    </form>
-                </div>
-            </div>
+        <!-- Misafir Girişi Butonu -->
+        <div class="text-center mt-3">
+            <button type="button" id="misafirGirisBtn" class="btn btn-secondary">Misafir Girişi</button>
         </div>
     </div>
 
@@ -256,14 +314,8 @@
             $("#kisiselVeriModal").modal("show");
         });
 
-        // Moderatör Girişi Modal
-        document.getElementById("moderatorGirisBtn").addEventListener("click", function (event) {
-            event.preventDefault();
-            $("#moderatorGirisModal").modal("show");
-        });
-
-        // Misafir Girişi Modal
-        document.getElementById("misafirGirisBtn").addEventListener("click", function (event) {
+        // Misafir Girişi Link
+        document.getElementById("misafirGirisBtn").addEventListener("click", function(event) {
             event.preventDefault();
             $("#misafirGirisModal").modal("show");
         });
@@ -442,7 +494,6 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    $("#moderatorGirisModal").modal("hide");
                     $("#welcomeModal").modal("show");
                     setTimeout(() => {
                         window.location.href = "/";

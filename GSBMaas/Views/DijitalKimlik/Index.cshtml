@@ -14,9 +14,9 @@
                 <!-- Başlık -->
                 <div class="card-header text-black font-weight-bold text-center py-3 position-relative" style=" border-radius: 0 0 50% 50% / 0 0 100px 100px; height: 130px; background-color:aliceblue ;">
                     <div class="d-flex align-items-center justify-content-between">
-                        <img src="/images/toleyis-logo.png" alt="TOLEYİS Logo" style="height: 45px; margin-left: 5px;">
-                        <h6 class="mb-0 flex-grow-1 text-center font-weight-bold">TOLEYİS <br/> DİJİTAL ÜYE KİMLİK KARTI</h6>
-                        <img src="/images/turkis-logo.png" alt="TURKIS Logo" style="height: 45px; margin-right: 5px;">
+                        <img src="/images/toleyis-logo.png" alt="TOLEYİS Logo" style="height: 65px; margin-left: 5px;">
+                        <h5 class="mb-0 flex-grow-1 text-center font-weight-bold">TOLEYİS <br/> DİJİTAL ÜYE KİMLİK KARTI</h5>
+                        <img src="/images/turkis-logo.png" alt="TURKIS Logo" style="height: 65px; margin-right: 5px;">
                     </div>
                 </div>
                 
@@ -90,6 +90,19 @@
     </div>
 </div>
 
+<!-- İndirme Butonu -->
+<div class="container py-3">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="text-center">
+                <button type="button" class="btn btn-primary" id="downloadBtn">
+                    <i class="bi bi-download me-2"> </i> Dijital Kimliğini İndir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Fotoğraf Yükleme Modal -->
 <div class="modal fade" id="photoUploadModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -122,7 +135,89 @@
     <!-- Cropper.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <!-- html2canvas -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script>
+        // JPEG indirme işlemi
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            const element = document.querySelector('.card');
+            const adSoyad = '@ViewBag.Ad @ViewBag.Soyad'.replace(/\s+/g, '-').toLowerCase();
+            
+            // Tarih ibaresini ekle
+            const today = new Date().toLocaleDateString('tr-TR');
+            const dateText = document.createElement('div');
+            dateText.className = 'text-center mt-2';
+            dateText.style.fontSize = '10px';
+            dateText.style.color = '#000';
+            dateText.textContent = `*Bu belge ${today} tarihinde oluşturulmuştur.`;
+            element.querySelector('.card-body').appendChild(dateText);
+            
+            // Önce canvas'a çevir
+            html2canvas(element, {
+                scale: 4,
+                useCORS: true,
+                logging: false,
+                backgroundColor: null,
+                width: 416, // 11cm * 37.8 (1cm = 37.8px)
+                height: 642, // 17cm * 37.8 (1cm = 37.8px)
+                onclone: function(clonedDoc) {
+                    const clonedElement = clonedDoc.querySelector('.card');
+                    clonedElement.style.width = '11cm';
+                    clonedElement.style.height = '17cm';
+                    clonedElement.style.margin = '0';
+                    clonedElement.style.padding = '0';
+                    
+                    // İçerik boyutlarını ayarla
+                    const header = clonedElement.querySelector('.card-header');
+                    header.style.height = '180px';
+                    
+                    // Profil fotoğrafını yukarı çek
+                    const profileContainer = clonedElement.querySelector('.text-center.mb-4');
+                    profileContainer.style.marginTop = '-50px';
+                    
+                    const profilePhoto = clonedElement.querySelector('.rounded-circle');
+                    profilePhoto.style.width = '160px';
+                    profilePhoto.style.height = '160px';
+                    
+                    const infoDivs = clonedElement.querySelectorAll('.p-2.rounded');
+                    infoDivs.forEach(div => {
+                        div.style.padding = '12px';
+                        div.style.marginBottom = '6px';
+                        div.style.minHeight = '45px';
+                    });
+                    
+                    const textElements = clonedElement.querySelectorAll('.fs-5');
+                    textElements.forEach(text => {
+                        text.style.fontSize = '14px';
+                    });
+                    
+                    const labels = clonedElement.querySelectorAll('.fw-bold');
+                    labels.forEach(label => {
+                        label.style.fontSize = '12px';
+                        label.style.width = '140px';
+                    });
+
+                    // Aktif üye yazısını kaldır
+                    const activeMemberDiv = clonedElement.querySelector('.text-center.text-white');
+                    if (activeMemberDiv) {
+                        activeMemberDiv.remove();
+                    }
+                }
+            }).then(canvas => {
+                // Canvas'ı JPEG'e çevir
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                
+                // JPEG'i indir
+                const link = document.createElement('a');
+                link.download = `${adSoyad}-toleyis-dijital-kimlik.jpg`;
+                link.href = imgData;
+                link.click();
+
+                // Tarih ibaresini kaldır
+                dateText.remove();
+            });
+        });
+
         let cropper = null;
 
         $(document).ready(function () {

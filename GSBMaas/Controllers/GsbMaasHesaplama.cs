@@ -27,6 +27,12 @@ namespace GSBMaas.Controllers
                 return RedirectToAction("Giris", "Home"); // Giriş yoksa yönlendir
             }
 
+             // Sadece misafir kullanıcı kontrolü
+            if (HttpContext.Session.GetString("MisafirKullanici") == "true")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
 
             var deger = db.Sabits.Find(1);
             var aylar = new Dictionary<string, int>
