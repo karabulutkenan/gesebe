@@ -11,10 +11,10 @@
                 <div class="card-bg" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('/images/dijital-kimlik-bg.png'); background-size: cover; background-position: center; opacity: 0.75;"></div>
                 <div style="position: relative; z-index: 2;">
                     <!-- Başlık -->
-                    <div class="card-header text-black font-weight-bold text-center py-3 position-relative" style=" border-radius: 0 0 50% 50% / 0 0 100px 100px; height: 130px; background-color:aliceblue ; opacity: 0.90;">
+                    <div class="card-header text-black font-weight-bold text-center py-3 position-relative" style=" border-radius: 0 0 50% 50% / 0 0 100px 100px; height: 130px; background-color:transparent;">
                         <div class="d-flex align-items-center justify-content-between">
                             <img src="/images/toleyis-logo.png" alt="TOLEYİS Logo" style="height: 65px; margin-left: 5px;">
-                            <h5 class="mb-0 flex-grow-1 text-center font-weight-bold">TOLEYİS <br/> DİJİTAL ÜYE KİMLİK KARTI</h5>
+                            <h5 class="mb-0 flex-grow-1 text-center font-weight-bold text-light ">TOLEYİS <br/> DİJİTAL ÜYE KİMLİK KARTI</h5>
                             <img src="/images/turkis-logo.png" alt="TURKIS Logo" style="height: 65px; margin-right: 5px;">
                         </div>
                     </div>
@@ -119,7 +119,7 @@
                 <div class="img-container" style="width: 100%; height: 300px; display: none; position: relative;">
                     <img id="cropperImage" src="" alt="Kırpılacak fotoğraf" style="max-width: 100%; max-height: 100%;">
                 </div>
-                <small class="text-muted">Not: Sadece JPG, JPEG veya PNG formatında dosyalar kabul edilmektedir.</small>
+                <small class="text-muted">Not: Sadece JPG, JPEG veya PNG formatında dosyalar kabul edilmektedir. Eklediğiniz fotoğrafın içeriği yalnızca kendi yüzünüzü göstermelidir. Şahsınız haricinde başka bir kişi, nesne vb. görüntülerde sorumluluk tamamen size aittir. Bu fotoğrafı yüklediğinizde bu koşulları kabul etmiş sayılırsınız. Bu görsel ile alakalı Toleyis Sendikası tüzel kişiliği ile yöneticileri, çalışanları sorumluluk kabul etmeyecektir.</small>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
@@ -147,7 +147,7 @@
             const today = new Date().toLocaleDateString('tr-TR');
             const dateText = document.createElement('div');
             dateText.className = 'text-center mt-2';
-            dateText.style.fontSize = '10px';
+            dateText.style.fontSize = '14px';
             dateText.style.color = '#fff';
             dateText.textContent = `*Bu belge ${today} tarihinde oluşturulmuştur.`;
             element.querySelector('.card-body').appendChild(dateText);
