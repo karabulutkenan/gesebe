@@ -36,11 +36,11 @@
                     <form id="kidemTazminatiForm">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">İşe Başlama Tarihi</label>
+                                <label class="form-label">İşe Başlama Tarihi (KADRO ÖNCESİ DE DAHİL)</label>
                                 <input type="date" class="form-control" id="iseBaslamaTarihi" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">İşten Çıkış Tarihi</label>
+                                <label class="form-label">İşten Ayrılma Tarihi</label>
                                 <input type="date" class="form-control" id="istenCikisTarihi" required>
                             </div>
                         </div>
@@ -78,6 +78,19 @@
                             <button type="submit" class="btn btn-success">Hesapla</button>
                         </div>
                     </form>
+
+                    <!-- Sonuç Gösterimi -->
+                    <div id="sonuc" class="mt-4" style="display: none;">
+                        <div class="alert alert-success">
+                            <h5 class="alert-heading">Hesaplama Sonucu</h5>
+                            <hr>
+                            <p class="mb-0">                                
+                                <strong>Toplam Çalışma Süresi:</strong> <span id="calismaYili">0</span> yıl<br>
+                                <strong>Net Çalışma Günü:</strong> <span id="netCalismaGun">0</span> gün <br>
+                                <strong>Toplam Kıdem Tazminatı:</strong> <span id="toplamKidemTazminati">0.00</span> TL
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -97,8 +110,8 @@
         document.getElementById('kidemTazminatiForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const iseBaslamaTarihi = new Date(document.getElementById('iseBaslamaTarihi').value);
-            const istenCikisTarihi = new Date(document.getElementById('istenCikisTarihi').value);
+            const iseBaslamaTarihi = document.getElementById('iseBaslamaTarihi').value;
+            const istenCikisTarihi = document.getElementById('istenCikisTarihi').value;
             const sonBrutUcret = parseFloat(document.getElementById('sonBrutUcret').value);
             const yillikIzinGun = parseInt(document.getElementById('yillikIzinGun').value) || 0;
             const mazeretIzinGun = parseInt(document.getElementById('mazeretIzinGun').value) || 0;
@@ -106,23 +119,54 @@
             const raporGun = parseInt(document.getElementById('raporGun').value) || 0;
             const askerlikSure = parseInt(document.getElementById('askerlikSure').value) || 0;
 
-            // Toplam çalışma süresini hesapla
-            let toplamGun = Math.floor((istenCikisTarihi - iseBaslamaTarihi) / (1000 * 60 * 60 * 24));
-            
-            // Çıkarılacak günleri topla
-            const cikarilacakGun = yillikIzinGun + mazeretIzinGun + ucretsizIzinGun + raporGun + (askerlikSure * 30);
-            
-            // Net çalışma günü
-            const netCalismaGun = toplamGun - cikarilacakGun;
-            
-            // Yıl hesaplama
-            const calismaYili = Math.floor(netCalismaGun / 365);
-            
-            // Kıdem tazminatı hesaplama
-            const kidemTazminati = (sonBrutUcret / 30) * calismaYili * 30;
+            console.log('Gönderilen veriler:', {
+                iseBaslamaTarihi,
+                istenCikisTarihi,
+                sonBrutUcret,
+                yillikIzinGun,
+                mazeretIzinGun,
+                ucretsizIzinGun,
+                raporGun,
+                askerlikSure
+            });
 
-            // Sonuçları göster
-            alert(`Kıdem Tazminatı: ${kidemTazminati.toFixed(2)} TL\nToplam Çalışma Süresi: ${calismaYili} yıl`);
+            // Form verilerini gönder
+            fetch('/KamuKidemTazminatiHesaplama/Hesapla', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    iseBaslamaTarihi: iseBaslamaTarihi,
+                    istenCikisTarihi: istenCikisTarihi,
+                    sonBrutUcret: sonBrutUcret,
+                    yillikIzinGun: yillikIzinGun,
+                    mazeretIzinGun: mazeretIzinGun,
+                    ucretsizIzinGun: ucretsizIzinGun,
+                    raporGun: raporGun,
+                    askerlikSure: askerlikSure
+                })
+            })
+            .then(response => {
+                console.log('Sunucu yanıtı:', response);
+                return response.json();
+            })
+            .then(data => {
+                console.log('İşlenmiş veri:', data);
+                if (data.success) {
+                    document.getElementById('birYillikKidemTazminati').textContent = data.birYillikKidemTazminati;
+                    document.getElementById('toplamKidemTazminati').textContent = data.toplamKidemTazminati;
+                    document.getElementById('calismaYili').textContent = data.calismaYili;
+                    document.getElementById('netCalismaGun').textContent = data.netCalismaGun;
+                    document.getElementById('sonuc').style.display = 'block';
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Hata:', error);
+                alert('Hesaplama sırasında bir hata oluştu.');
+            });
         });
     </script>
 }

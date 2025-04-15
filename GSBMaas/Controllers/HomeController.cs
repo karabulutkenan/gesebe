@@ -396,6 +396,34 @@ namespace GSBMaas.Controllers
                 Random random = new Random();
                 string verificationCode = random.Next(100000, 999999).ToString();
 
+                // Veritabanına kayıt işlemi
+                using (var db = new AppDbContext())
+                {
+                    // E-posta adresi daha önce kaydedilmiş mi kontrol et
+                    var existingUser = db.MisafirKullanicilar.FirstOrDefault(m => m.Email == model.Email);
+                    if (existingUser != null)
+                    {
+                        // Kullanıcı varsa güncelle
+                        existingUser.Ad = model.Ad;
+                        existingUser.Soyad = model.Soyad;
+                        existingUser.SonGirisTarihi = DateTime.Now;
+                    }
+                    else
+                    {
+                        // Yeni kullanıcı oluştur
+                        var newUser = new MisafirKullanici
+                        {
+                            Email = model.Email,
+                            Ad = model.Ad,
+                            Soyad = model.Soyad,
+                            OlusturmaTarihi = DateTime.Now,
+                            SonGirisTarihi = DateTime.Now
+                        };
+                        db.MisafirKullanicilar.Add(newUser);
+                    }
+                    db.SaveChanges();
+                }
+
                 // Doğrulama kodunu session'a kaydet
                 HttpContext.Session.SetString("MisafirDogrulamaKodu", verificationCode);
                 HttpContext.Session.SetString("MisafirEmail", model.Email);
@@ -416,7 +444,7 @@ namespace GSBMaas.Controllers
                     From = new MailAddress("e-sendika@toleyis.org.tr", "E-Sendika"),
                     ReplyTo = new MailAddress("no-reply@toleyis.org.tr"),
                     Subject = "GSB Maaş - Doğrulama Kodu",
-                    Body = $"Sayın {model.Ad} {model.Soyad},\n\nDoğrulama kodunuz: {verificationCode}\nBu kod 5 dakika süreyle geçerlidir.\n\nSaygılarımızla,\nGSB Maaş Ekibi",
+                    Body = $"Sayın {model.Ad} {model.Soyad},\n\nDoğrulama kodunuz: {verificationCode}\nBu kod 5 dakika süreyle geçerlidir.\n\nSaygılarımızla,\nE-Sendika Ekibi",
                     IsBodyHtml = true
                 };
 
